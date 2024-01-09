@@ -33,7 +33,7 @@ type CreatePlannerResponse struct {
 
 // CreatePlanner creates a new planner for a user based on the provided request.
 func (c *PlannerControl) CreatePlanner(req *CreatePlannerRequest) (*CreatePlannerResponse, error) {
-	id, err := generateUUID()
+	id, err := generatePlannerUUID()
 	if err != nil {
 		return nil, err
 	}
@@ -146,7 +146,7 @@ func (c *PlannerControl) ListPlanners() (*ListPlannersResponse, error) {
 
 // generateUUID generates a new UUID (Universally Unique Identifier).
 // It returns the UUID as a string and any error encountered.
-func generateUUID() (string, error) {
+func generatePlannerUUID() (string, error) {
 	id, err := uuid.NewRandom()
 	if err != nil {
 		return "", err

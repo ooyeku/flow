@@ -2,6 +2,7 @@ package handle
 
 import (
 	_ "encoding/json"
+	"github.com/google/uuid"
 	"goworkflow/models"
 	"goworkflow/services"
 	"time"
@@ -17,43 +18,6 @@ type TaskControl struct {
 // The `TaskControl` struct has methods to create, update, delete, get, and list tasks.
 // To create a new `TaskControl`, pass a pointer to a `TaskService` to the `NewTaskControl` function.
 // Usage example:
-//
-//	// create a new mockStore
-//	mockStore := store.NewMockStore()
-//
-//	// create a new TaskService
-//	taskService := services.NewTaskService(mockStore)
-//
-//	// create a new TaskControl
-//	taskControl := handle.NewTaskControl(taskService)
-//
-//	// create a new task
-//	task, err := taskControl.CreateTask(&handle.CreateTaskRequest{
-//	  Title:       "Task 1",
-//	  Description: "Task 1 description",
-//	  Owner:       "Task 1 owner",
-//	})
-//
-//	if err != nil {
-//	  log.Fatalf("Failed to create task: %v", err)
-//	}
-//
-//	log.Printf("Task created: %s", task.ID)
-//
-//	// get a task
-//	task, err := taskControl.GetTask(&handle.GetTaskRequest{ID: task.ID})
-//
-//	if err != nil {
-//	  log.Fatalf("Failed to get task: %v", err)
-//	}
-//
-//	log.Printf("Task retrieved: %s", task.Title)
-//	log.Printf("Description: %s", task.Description)
-//	log.Printf("Owner: %s", task.Owner)
-//	log.Printf("Started: %t", task.Started)
-//	log.Printf("Completed: %t", task.Completed)
-//	log.Printf("Created At: %s", task.CreatedAt)
-//	log.Printf("Updated At: %s", task.UpdatedAt)
 func NewTaskControl(service *services.TaskService) *TaskControl {
 	return &TaskControl{
 		service: service,
@@ -77,9 +41,13 @@ type CreateTaskRequest struct {
 }
 
 // CreateTask generates a unique id for the task and creates a new task with the provided request. It saves the task using the service's store and returns the task id in the response
-func (c *TaskControl) CreateTask(req *CreateTaskRequest) (*CreateTaskResponse, error) {
+func (c *TaskControl) CreateTask(req CreateTaskRequest) (*CreateTaskResponse, error) {
+
 	// generate unique id
-	id, err := generateUUID()
+	id, err := generateTaskUUID()
+	if err != nil {
+		return nil, err
+	}
 	task := &models.Task{
 		ID:          id,
 		Title:       req.Title,
@@ -92,10 +60,6 @@ func (c *TaskControl) CreateTask(req *CreateTaskRequest) (*CreateTaskResponse, e
 	}
 	err = c.service.CreateTask(task)
 	if err != nil {
-		return nil, err
-	}
-	// store task
-	if err := c.service.Store.CreateTask(task); err != nil {
 		return nil, err
 	}
 	return &CreateTaskResponse{
@@ -226,4 +190,14 @@ func (c *TaskControl) ListTasks() (*ListTasksResponse, error) {
 	return &ListTasksResponse{
 		Tasks: taskResponses,
 	}, nil
+}
+
+// generateUUID generates a new UUID (Universally Unique Identifier).
+// It returns the UUID as a string and any error encountered.
+func generateTaskUUID() (string, error) {
+	id, err := uuid.NewRandom()
+	if err != nil {
+		return "", err
+	}
+	return id.String(), nil
 }

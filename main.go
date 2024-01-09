@@ -17,17 +17,18 @@ func main() {
 	// Create a taskMake handler
 	taskHandler := handle.NewTaskControl(taskService)
 
+	log.Printf("Task handler: %v", taskHandler)
+
 	// Create a new taskMake
-	taskMake, err := taskHandler.CreateTask(&handle.CreateTaskRequest{
+	taskMake, err := taskHandler.CreateTask(handle.CreateTaskRequest{
 		Title:       "Task 1",
 		Description: "Task 1 description",
-		Owner:       "Task 1 owner",
+		Owner:       "Me",
 	})
 
 	if err != nil {
 		log.Fatalf("Failed to create taskMake: %v", err)
 	}
-
 	log.Printf("Task created: %s", taskMake.ID)
 
 	// Get the taskMake

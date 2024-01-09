@@ -3,53 +3,61 @@ package mock
 import (
 	"errors"
 	"goworkflow/models"
+	"sync"
 )
 
-type MockStore struct {
-	tasks map[string]*models.Task
+type Store struct {
+	Tasks map[string]*models.Task
+	mu    sync.Mutex // protects the Tasks map to prevent data races
 }
 
-func NewMockStore() *MockStore {
-	return &MockStore{
-		tasks: make(map[string]*models.Task),
+func NewMockStore() *Store {
+	return &Store{
+		Tasks: make(map[string]*models.Task),
 	}
 }
 
-func (m *MockStore) CreateTask(task *models.Task) error {
-	if _, exists := m.tasks[task.ID]; exists {
+func (m *Store) CreateTask(task *models.Task) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if _, exists := m.Tasks[task.ID]; exists {
 		return errors.New("task already exists")
 	}
-	m.tasks[task.ID] = task
+	m.Tasks[task.ID] = task
 	return nil
 }
 
-func (m *MockStore) UpdateTask(id string, task *models.Task) error {
-	if _, exists := m.tasks[id]; !exists {
+func (m *Store) UpdateTask(id string, task *models.Task) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if _, exists := m.Tasks[id]; !exists {
 		return errors.New("task not found")
 	}
-	m.tasks[id] = task
+	m.Tasks[id] = task
 	return nil
 }
 
-func (m *MockStore) DeleteTask(id string) error {
-	if _, exists := m.tasks[id]; !exists {
+func (m *Store) DeleteTask(id string) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if _, exists := m.Tasks[id]; !exists {
 		return errors.New("task not found")
 	}
-	delete(m.tasks, id)
+	delete(m.Tasks, id)
 	return nil
 }
 
-func (m *MockStore) GetTask(id string) (*models.Task, error) {
-	task, exists := m.tasks[id]
+func (m *Store) GetTask(id string) (*models.Task, error) {
+	task, exists := m.Tasks[id]
 	if !exists {
 		return nil, errors.New("task not found")
 	}
 	return task, nil
 }
 
-func (m *MockStore) ListTasks() ([]*models.Task, error) {
-	tasks := make([]*models.Task, 0, len(m.tasks))
-	for _, task := range m.tasks {
+func (m *Store) ListTasks() ([]*models.Task, error) {
+	tasks := make([]*models.Task, 0, len(m.Tasks))
+	for _, task := range m.Tasks {
 		tasks = append(tasks, task)
 	}
 	return tasks, nil
