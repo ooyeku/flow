@@ -8,15 +8,7 @@ import (
 
 // PlannerControl represents a controller that provides methods to manage planners.
 type PlannerControl struct {
-	service *services.PlannerService
-}
-
-// NewPlannerControl creates a new instance of PlannerControl with the provided PlannerService.
-// This function takes a pointer to a PlannerService as a parameter and returns a pointer to a PlannerControl.
-func NewPlannerControl(service *services.PlannerService) *PlannerControl {
-	return &PlannerControl{
-		service: service,
-	}
+	Service *services.PlannerService
 }
 
 // CreatePlannerRequest represents a request to create a planner.
@@ -41,7 +33,7 @@ func (c *PlannerControl) CreatePlanner(req *CreatePlannerRequest) (*CreatePlanne
 		Id:     id,
 		UserId: req.UserId,
 	}
-	err = c.service.CreatePlanner(planner)
+	err = c.Service.CreatePlanner(planner)
 	if err != nil {
 		return nil, err
 	}
@@ -63,12 +55,12 @@ type UpdatePlannerRequest struct {
 // If any error occurs during the process, it returns the error.
 // Otherwise, it returns nil.
 func (c *PlannerControl) UpdatePlanner(req *UpdatePlannerRequest) error {
-	planner, err := c.service.GetPlanner(req.Id)
+	planner, err := c.Service.GetPlanner(req.Id)
 	if err != nil {
 		return err
 	}
 	planner.UserId = req.UserId
-	if err := c.service.UpdatePlanner(planner); err != nil {
+	if err := c.Service.UpdatePlanner(planner); err != nil {
 		return err
 	}
 	return nil
@@ -82,7 +74,7 @@ type DeletePlannerRequest struct {
 // DeletePlanner deletes a planner from the planner service based on the provided request.
 // If the deletion is successful, nil is returned. Otherwise, an error is returned.
 func (c *PlannerControl) DeletePlanner(req *DeletePlannerRequest) error {
-	if err := c.service.DeletePlanner(req.Id); err != nil {
+	if err := c.Service.DeletePlanner(req.Id); err != nil {
 		return err
 	}
 	return nil
@@ -103,7 +95,7 @@ type GetPlannerResponse struct {
 // It takes a GetPlannerRequest as input, which contains the ID of the planner to retrieve.
 // It returns a GetPlannerResponse, containing the ID and user ID of the retrieved planner, or an error if the retrieval fails.
 func (c *PlannerControl) GetPlanner(req *GetPlannerRequest) (*GetPlannerResponse, error) {
-	planner, err := c.service.GetPlanner(req.Id)
+	planner, err := c.Service.GetPlanner(req.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +120,7 @@ type ListPlannersResponse struct {
 // control := &PlannerControl{service: &services.PlannerService{store: &store.MyPlannerStore{}}}
 // response, err := control.ListPlanners()
 func (c *PlannerControl) ListPlanners() (*ListPlannersResponse, error) {
-	planners, err := c.service.ListPlanners()
+	planners, err := c.Service.ListPlanners()
 	if err != nil {
 		return nil, err
 	}

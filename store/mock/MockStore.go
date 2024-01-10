@@ -21,7 +21,7 @@ func (m *Store) CreateTask(task *models.Task) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if _, exists := m.Tasks[task.ID]; exists {
-		return errors.New("task already exists")
+		return errors.New("task referenced by task ID already exists")
 	}
 	m.Tasks[task.ID] = task
 	return nil
@@ -31,7 +31,7 @@ func (m *Store) UpdateTask(id string, task *models.Task) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if _, exists := m.Tasks[id]; !exists {
-		return errors.New("task not found")
+		return errors.New("task referenced by task ID does not exist")
 	}
 	m.Tasks[id] = task
 	return nil
@@ -56,9 +56,15 @@ func (m *Store) GetTask(id string) (*models.Task, error) {
 }
 
 func (m *Store) ListTasks() ([]*models.Task, error) {
-	tasks := make([]*models.Task, 0, len(m.Tasks))
+	numTasks := len(m.Tasks)
+	tasks := make([]*models.Task, 0, numTasks)
+
+	if numTasks == 0 {
+		return tasks, nil
+	}
 	for _, task := range m.Tasks {
 		tasks = append(tasks, task)
 	}
+
 	return tasks, nil
 }

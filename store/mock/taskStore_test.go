@@ -20,8 +20,11 @@ func TestMockStore_CreateTask_AlreadyExists(t *testing.T) {
 	store := NewMockStore()
 	task := &models.Task{ID: "1", Title: "Task 1"}
 
-	store.CreateTask(task)
 	err := store.CreateTask(task)
+	if err != nil {
+		return
+	}
+	err = store.CreateTask(task)
 
 	assert.Error(t, err)
 }
@@ -76,7 +79,10 @@ func TestMockStore_GetTask(t *testing.T) {
 	store := NewMockStore()
 	task := &models.Task{ID: "1", Title: "Task 1"}
 
-	store.CreateTask(task)
+	err := store.CreateTask(task)
+	if err != nil {
+		return
+	}
 	retrievedTask, err := store.GetTask(task.ID)
 
 	assert.NoError(t, err)

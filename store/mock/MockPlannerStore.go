@@ -30,7 +30,7 @@ func (s *MockPlannerStore) CreatePlanner(planner *models.Planner) error {
 func (s *MockPlannerStore) GetPlanner(id string) (*models.Planner, error) {
 	planner, exists := s.Planner[id]
 	if !exists {
-		return nil, errors.New("planner not found")
+		return nil, errors.New("planner referenced by ID not found")
 	}
 	return planner, nil
 }
