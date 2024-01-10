@@ -1,19 +1,16 @@
-package main
+package inmemory
 
 import (
 	"github.com/asdine/storm"
 	"goworkflow/handle"
 	"goworkflow/services"
-	//"goworkflow/store/mock"
-	"goworkflow/store/inmemory"
 	"log"
+	"testing"
 )
 
-func main() {
-	// Create a mock mockStore
-	//mockStore := mock.NewMockStore()
+func TestTaskStore(t *testing.T) {
 
-	db, err := storm.Open("goworkflow.db", storm.BoltOptions(0600, nil))
+	db, err := storm.Open("test.db", storm.BoltOptions(0600, nil))
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
 	}
@@ -25,7 +22,7 @@ func main() {
 	}(db)
 
 	// Create a new in-memory store
-	inMemoryStore := inmemory.NewInMemoryTaskStore(db)
+	inMemoryStore := NewInMemoryTaskStore(db)
 
 	// create a new taskMake service
 	taskService := services.NewTaskService(inMemoryStore)
@@ -58,7 +55,4 @@ func main() {
 	log.Printf("Description: %s", taskGet.Description)
 	log.Printf("Owner: %s", taskGet.Owner)
 	log.Printf("Started: %t", taskGet.Started)
-	log.Printf("Completed: %t", taskGet.Completed)
-	log.Printf("Created At: %s", taskGet.CreatedAt)
-	log.Printf("Updated At: %s", taskGet.UpdatedAt)
 }
