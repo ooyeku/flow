@@ -1,81 +1,146 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"github.com/asdine/storm"
 	"goworkflow/handle"
 	"goworkflow/services"
-	//"goworkflow/store/mock"
+	"goworkflow/store"
 	"goworkflow/store/inmemory"
 	"log"
+	"os"
 )
 
-func main() {
-	// Create a mock mockStore
-	//mockStore := mock.NewMockStore()
+// Config  represents the configuration for the application.
+type Config struct {
+	DatabaseType string `json:"database_type"`
+}
 
+// decodeConfig decodes the JSON data in the specified file and updates the Config object with the result.
+func (c *Config) decodeConfig(file *os.File) error {
+	decoder := json.NewDecoder(file)
+	return decoder.Decode(c)
+}
+
+// createInMemoryDB creates a new in-memory database using the storm package.
+// It returns a pointer to the created storm.DB object and an error if any occurred.
+// The database is created at the specified path: "store/inmemory/goworkflow.db".
+// The database is opened with bolt options 0600 (read-write mode) and no specific options.
+func createInMemoryDB() (*storm.DB, error) {
 	db, err := storm.Open("store/inmemory/goworkflow.db", storm.BoltOptions(0600, nil))
 	if err != nil {
-		log.Fatalf("Failed to open database: %v", err)
+		return nil, err
 	}
-	defer func(db *storm.DB) {
-		err := db.Close()
+	return db, nil
+}
+
+// selectDatabase selects the appropriate task store based on the value of the DatabaseType field in the Config struct.
+func (c *Config) selectDatabase() (store.TaskStore, error) {
+	switch c.DatabaseType {
+	case "bolt":
+		db, err := createInMemoryDB()
 		if err != nil {
-			log.Fatalf("Failed to close database: %v", err)
+			return nil, err
 		}
-	}(db)
-
-	// Create a new in-memory store
-	inMemoryStore := inmemory.NewInMemoryTaskStore(db)
-
-	// create a new taskMake service
-	taskService := services.NewTaskService(inMemoryStore)
-
-	// Create a taskMake handler
-	taskHandler := handle.NewTaskControl(taskService)
-
-	log.Printf("Task handler: %v", taskHandler)
-
-	// Create a new taskMake
-	taskMake, err := taskHandler.CreateTask(handle.CreateTaskRequest{
-		Title: "Solidifying the basics",
-		Description: "We have a solid service and storage layer.  Now we need to solidify the basics of the application.  This includes the following:" +
-			"\n\n- [ ] Create a new taskMake" +
-			"\n- [ ] Get a taskMake" +
-			"\n- [ ] Update a taskMake" +
-			"\n- [ ] Delete a taskMake" +
-			"\n- [ ] List all tasks" +
-			"\n- [ ] Mark a taskMake as started" +
-			"\n- [ ] Mark a taskMake as completed" +
-			"\n- [ ] Add a comment to a taskMake" +
-			"\n- [ ] List all comments for a taskMake" +
-			"\n- [ ] Add a tag to a taskMake" +
-			"\n- [ ] List all tags for a taskMake" +
-			"\n- [ ] Add a user to a taskMake" +
-			"\n- [ ] List all users for a taskMake" +
-			"\n- [ ] Add a due date to a taskMake" +
-			"\n- [ ] List all due dates for a taskMake" +
-			"\n- [ ] Add a priority to a taskMake" +
-			" Once we have these basics, we can start to build out the rest of the application.",
-		Owner: "Me",
-	})
-
-	if err != nil {
-		log.Fatalf("Failed to create taskMake: %v", err)
+		return inmemory.NewInMemoryTaskStore(db), nil
+		// Other cases...
 	}
-	log.Printf("Task created: %s", taskMake.ID)
+	return nil, errors.New("invalid database type specified in config")
+}
 
-	// Get the taskMake
-	taskGet, err := taskHandler.GetTask(&handle.GetTaskRequest{ID: taskMake.ID})
-
+// initializeConfiguration initializes the configuration by decoding the configuration file at the given file path.
+// It returns a pointer to the Config struct and an error, if any.
+func initializeConfiguration(filePath string) (*Config, error) {
+	file, err := os.Open(filePath)
 	if err != nil {
-		log.Fatalf("Failed to get taskMake: %v", err)
+		return nil, err
+	}
+	defer file.Close()
+
+	var config Config
+	err = config.decodeConfig(file)
+	if err != nil {
+		return nil, err
 	}
 
-	log.Printf("Task retrieved: %s", taskGet.Title)
-	log.Printf("Description: %s", taskGet.Description)
-	log.Printf("Owner: %s", taskGet.Owner)
-	log.Printf("Started: %t", taskGet.Started)
-	log.Printf("Completed: %t", taskGet.Completed)
-	log.Printf("Created At: %s", taskGet.CreatedAt)
-	log.Printf("Updated At: %s", taskGet.UpdatedAt)
+	return &config, nil
+}
+
+// marshalTasks is a function that takes a pointer to a handle.ListTasksResponse struct and returns the JSON representation of the struct as a string.
+//
+// The function first uses the json.Marshal() function to convert the tasks struct to its JSON representation. If there is an error during marshaling, it logs a fatal error.
+//
+// Finally, it returns the JSON string representation of the tasks struct.
+//
+// Example usage:
+//
+//	tasks, err := router.ListTasks()
+//	if err != nil {
+//		log.Fatalf("Failed to list tasks: %v", err)
+//	}
+//	taskJson := marshalTasks(tasks)
+//	log.Printf("Tasks: %s", taskJson)
+func marshalTasks(tasks *handle.ListTasksResponse) string {
+	taskJson, err := json.Marshal(tasks)
+	if err != nil {
+		log.Fatalf("Failed to marshal tasks: %v", err)
+	}
+	return string(taskJson)
+}
+
+// initializeRouter initializes the router and returns a pointer to the TaskControl object.
+// It first initializes the configuration by calling the initializeConfiguration function with "config.json" as the file path.
+// If an error occurs during initialization, it logs the error and exits.
+// Then, it selects the database based on the database type specified in the configuration.
+// If the database type is "bolt", it creates an in-memory database by calling the createInMemoryDB function.
+// If an error occurs during database selection, it logs the error and exits.
+// Next, it creates a new TaskService object with the selected taskStore.
+// After that, it creates a new TaskControl object with the taskService and assigns it to the router variable.
+// Finally, it logs the success message and returns the router.
+// Example usage:
+//
+//	router := initializeRouter()
+//	tasks, err := router.ListTasks()
+//	if err != nil {
+//	    log.Fatalf("Failed to list tasks: %v", err)
+//	}
+//	taskJson := marshalTasks(tasks)
+//	log.Printf("Tasks: %s", taskJson)
+func initializeRouter() *handle.TaskControl {
+	config, err := initializeConfiguration("config.json")
+	if err != nil {
+		log.Fatalf("failed to initialize configuration: %v", err)
+	}
+	log.Print("Configuration initialized -- success")
+
+	taskStore, err := config.selectDatabase()
+	if err != nil {
+		log.Fatalf("failed to select database: %v", err)
+	}
+	log.Print("Database initialized -- success")
+
+	taskService := services.NewTaskService(taskStore)
+	router := handle.NewTaskControl(taskService)
+	log.Print("Router initialized -- success")
+
+	return router
+}
+
+func getAllTasks(r *handle.TaskControl) string {
+	// get all tasks db, pass initialized router
+	tasks, err := r.ListTasks()
+	if err != nil {
+		log.Fatalf("Failed to list tasks: %v", err)
+	}
+
+	taskJson := marshalTasks(tasks)
+	log.Printf("Tasks: %s", taskJson)
+
+	return taskJson
+}
+
+func main() {
+	router := initializeRouter()
+	getAllTasks(router)
 }
