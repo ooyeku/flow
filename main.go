@@ -13,7 +13,7 @@ func main() {
 	// Create a mock mockStore
 	//mockStore := mock.NewMockStore()
 
-	db, err := storm.Open("goworkflow.db", storm.BoltOptions(0600, nil))
+	db, err := storm.Open("store/inmemory/goworkflow.db", storm.BoltOptions(0600, nil))
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
 	}
@@ -37,9 +37,26 @@ func main() {
 
 	// Create a new taskMake
 	taskMake, err := taskHandler.CreateTask(handle.CreateTaskRequest{
-		Title:       "Task 1",
-		Description: "Task 1 description",
-		Owner:       "Me",
+		Title: "Solidifying the basics",
+		Description: "We have a solid service and storage layer.  Now we need to solidify the basics of the application.  This includes the following:" +
+			"\n\n- [ ] Create a new taskMake" +
+			"\n- [ ] Get a taskMake" +
+			"\n- [ ] Update a taskMake" +
+			"\n- [ ] Delete a taskMake" +
+			"\n- [ ] List all tasks" +
+			"\n- [ ] Mark a taskMake as started" +
+			"\n- [ ] Mark a taskMake as completed" +
+			"\n- [ ] Add a comment to a taskMake" +
+			"\n- [ ] List all comments for a taskMake" +
+			"\n- [ ] Add a tag to a taskMake" +
+			"\n- [ ] List all tags for a taskMake" +
+			"\n- [ ] Add a user to a taskMake" +
+			"\n- [ ] List all users for a taskMake" +
+			"\n- [ ] Add a due date to a taskMake" +
+			"\n- [ ] List all due dates for a taskMake" +
+			"\n- [ ] Add a priority to a taskMake" +
+			" Once we have these basics, we can start to build out the rest of the application.",
+		Owner: "Me",
 	})
 
 	if err != nil {
