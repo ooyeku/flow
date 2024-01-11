@@ -89,3 +89,186 @@ func (s *PlannerService) GetPlanner(id string) (*models.Planner, error) {
 func (s *PlannerService) ListPlanners() ([]*models.Planner, error) {
 	return s.store.ListPlanners()
 }
+
+// GoalService is a type that provides operations for managing goals.
+type GoalService struct {
+	store store.GoalStore
+}
+
+// NewGoalService creates a new GoalService with the given GoalStore.
+// It returns a pointer to the GoalService.
+func NewGoalService(store store.GoalStore) *GoalService {
+	return &GoalService{
+		store: store,
+	}
+}
+
+// CreateGoal creates a new goal with the given information.
+// It takes a pointer to a models.Goal and returns an error.
+// The goal parameter contains the following fields:
+// - Id: string (unique identifier for the goal)
+// - Name: string (name of the goal)
+// - Description: string (description of the goal)
+// - Tasks: []Task (list of tasks associated with the goal)
+// The method calls the CreateGoal method of the GoalStore interface to store the goal in the database.
+// Example usage:
+//
+//	id, err := generateUUID()
+//	if err != nil {
+//	  return nil, err
+//	}
+//	goal := &models.Goal{
+//	  Id:          id,
+//	  Name:        req.Name,
+//	  Description: req.Description,
+//	}
+//	err = c.service.CreateGoal(goal)
+//	if err != nil {
+//	  return nil, err
+//	}
+//	return &CreateGoalResponse{
+//	  ID: goal.Id,
+//	}, nil
+func (s *GoalService) CreateGoal(goal *models.Goal) error {
+	return s.store.CreateGoal(goal)
+}
+
+// UpdateGoal is a method of the GoalService struct that updates a goal with the provided data.
+// It takes a pointer to a Goal struct as a parameter and returns an error.
+// The method uses the UpdateGoal method of the GoalStore interface to update the goal in the data store.
+func (s *GoalService) UpdateGoal(goal *models.Goal) error {
+	return s.store.UpdateGoal(goal)
+}
+
+// DeleteGoal deletes a goal with the specified ID.
+func (s *GoalService) DeleteGoal(id string) error {
+	return s.store.DeleteGoal(id)
+}
+
+// GetGoal retrieves a goal with the given ID from the GoalService.
+// It returns the goal and an error if any occurred.
+func (s *GoalService) GetGoal(id string) (*models.Goal, error) {
+	return s.store.GetGoal(id)
+}
+
+// ListGoals is a method of GoalService that retrieves a list of goals and returns them along with any errors encountered.
+// Signature:
+// func (s *GoalService) ListGoals() ([]*models.Goal, error)
+// Usage example:
+// goals, err := c.service.ListGoals()
+//
+//	if err != nil {
+
+//	    return nil, err
+//	}
+//
+//	var goalResponses []*GetGoalResponse
+//
+//	for _, goal := range goals {
+//	    goalResponses = append(goalResponses, &GetGoalResponse{
+//	        Id:          goal.Id,
+
+//	        Name:        goal.Name,
+//	        Description: goal.Description,
+//	    })
+//	}
+//
+//	return &ListGoalsResponse{
+//	    Goals: goalResponses,
+//	}, nil
+func (s *GoalService) ListGoals() ([]*models.Goal, error) {
+	return s.store.ListGoals()
+}
+
+// PlanService is a type that provides operations for managing plans.
+type PlanService struct {
+	store store.PlanStore
+}
+
+// NewPlanService creates a new PlanService with the given PlanStore.
+// It returns a pointer to the PlanService.
+func NewPlanService(store store.PlanStore) *PlanService {
+	return &PlanService{
+		store: store,
+	}
+}
+
+// CreatePlan creates a new plan with the given information.
+// It takes a pointer to a models.Plan and returns an error.
+// The plan parameter contains the following fields:
+// - Id: string (unique identifier for the plan)
+// - Name: string (name of the plan)
+// - Description: string (description of the plan)
+// - Tasks: []Task (list of tasks associated with the plan)
+// The method calls the CreatePlan method of the PlanStore interface to store the plan in the database.
+// Example usage:
+//
+//	id, err := generateUUID()
+
+//	if err != nil {
+//	    return nil, err
+//	}
+//
+//	plan := &models.Plan{
+//	    Id:          id,
+//	    Name:        req.Name,
+//	    Description: req.Description,
+//	}
+//
+// err = c.service.CreatePlan(plan)
+//
+//	if err != nil {
+//	    return nil, err
+//	}
+//
+//	return &CreatePlanResponse{
+//	    ID: plan.Id,
+//	}, nil
+func (s *PlanService) CreatePlan(plan *models.Plan) error {
+	return s.store.CreatePlan(plan)
+}
+
+// UpdatePlan is a method of the PlanService struct that updates a plan with the provided data.
+// It takes a pointer to a Plan struct as a parameter and returns an error.
+// The method uses the UpdatePlan method of the PlanStore interface to update the plan in the data store.
+func (s *PlanService) UpdatePlan(plan *models.Plan) error {
+	return s.store.UpdatePlan(plan)
+}
+
+// DeletePlan deletes a plan with the specified ID.
+func (s *PlanService) DeletePlan(id string) error {
+	return s.store.DeletePlan(id)
+}
+
+// GetPlan retrieves a plan with the given ID from the PlanService.
+// It returns the plan and an error if any occurred.
+func (s *PlanService) GetPlan(id string) (*models.Plan, error) {
+	return s.store.GetPlan(id)
+}
+
+// ListPlans is a method of PlanService that retrieves a list of plans and returns them along with any errors encountered.
+// Signature:
+// func (s *PlanService) ListPlans() ([]*models.Plan, error)
+// Usage example:
+// plans, err := c.service.ListPlans()
+//
+//	if err != nil {
+//	    return nil, err
+//	}
+//
+//	var planResponses []*GetPlanResponse
+//
+//	for _, plan := range plans {
+//	    planResponses = append(planResponses, &GetPlanResponse{
+//	        Id:          plan.Id,
+//	        Name:        plan.Name,
+//	        Description: plan.Description,
+//	    })
+//	}
+//
+//	return &ListPlansResponse{
+//	    Plans: planResponses,
+//	}, nil
+func (s *PlanService) ListPlans() ([]*models.Plan, error) {
+	return s.store.ListPlans()
+}

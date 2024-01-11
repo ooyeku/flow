@@ -24,6 +24,7 @@ type Goal struct {
 	GoalCreatedAt time.Time `json:"goal_created_at"`
 	GoalUpdatedAt time.Time `json:"goal_updated_at"`
 	Deadline      time.Time `json:"deadline"`
+	PlannerId     string    `json:"planner_id"`
 }
 
 type Plan struct {
@@ -36,4 +37,5 @@ type Plan struct {
 	Tasks           []Task    `json:"tasks"`
 	PlanCreatedAt   time.Time `json:"plan_created_at"`
 	PlanUpdatedAt   time.Time `json:"plan_updated_at"`
+	GoalId          string    `json:"goal_id"`
 }
