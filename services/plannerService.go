@@ -10,6 +10,14 @@ type PlannerService struct {
 	store store.PlannerStore
 }
 
+// NewPlannerService creates a new PlannerService with the given PlannerStore.
+// It returns a pointer to the PlannerService.
+func NewPlannerService(store store.PlannerStore) *PlannerService {
+	return &PlannerService{
+		store: store,
+	}
+}
+
 // CreatePlanner creates a new planner with the given information.
 // It takes a pointer to a models.Planner and returns an error.
 // The planner parameter contains the following fields:

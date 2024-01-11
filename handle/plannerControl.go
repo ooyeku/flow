@@ -11,6 +11,14 @@ type PlannerControl struct {
 	Service *services.PlannerService
 }
 
+// NewPlannerControl creates a new PlannerControl with the given PlannerService.
+// It returns a pointer to the PlannerControl.
+func NewPlannerControl(service *services.PlannerService) *PlannerControl {
+	return &PlannerControl{
+		Service: service,
+	}
+}
+
 // CreatePlannerRequest represents a request to create a planner.
 // UserId is the ID of the user for whom the planner is being created.
 type CreatePlannerRequest struct {

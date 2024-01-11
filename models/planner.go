@@ -11,7 +11,7 @@ const (
 )
 
 type Planner struct {
-	Id     string `json:"id"`
+	Id     string `json:"id" storm:"id,unique"`
 	UserId string `json:"user_id"`
 	Goals  []Goal `json:"goals"`
 }
