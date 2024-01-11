@@ -2,8 +2,8 @@ package handle
 
 import (
 	"github.com/google/uuid"
-	"goworkflow/models"
-	"goworkflow/services"
+	"goworkflow/pkg/models"
+	"goworkflow/pkg/services"
 )
 
 // GoalControl represents a controller that provides methods to manage goals.

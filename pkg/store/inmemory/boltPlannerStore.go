@@ -2,7 +2,7 @@ package inmemory
 
 import (
 	"github.com/asdine/storm"
-	"goworkflow/models"
+	"goworkflow/pkg/models"
 )
 
 type BoltPlannerStore struct {

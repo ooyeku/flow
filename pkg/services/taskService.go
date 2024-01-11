@@ -1,8 +1,8 @@
 package services
 
 import (
-	"goworkflow/models"
-	"goworkflow/store"
+	"goworkflow/pkg/models"
+	"goworkflow/pkg/store"
 )
 
 // TaskService represents a service for managing tasks.

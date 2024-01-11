@@ -1,6 +1,6 @@
 package store
 
-import "goworkflow/models"
+import "goworkflow/pkg/models"
 
 // PlannerStore is an interface that defines the methods for managing planners in a store.
 // It provides functionality for creating, updating, deleting, retrieving, and listing planners.

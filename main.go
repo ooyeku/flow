@@ -3,12 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"goworkflow/conf"
-	"goworkflow/handle"
+	"goworkflow/pkg/conf"
+	handle2 "goworkflow/pkg/handle"
 	"log"
 )
 
-func getAllTasks(r *handle.TaskControl) string {
+func getAllTasks(r *handle2.TaskControl) string {
 	tasks, err := r.ListTasks()
 	conf.LogAndExitOnError(err, "Failed to list tasks: %v")
 	taskJson, err := json.Marshal(tasks)
@@ -17,7 +17,7 @@ func getAllTasks(r *handle.TaskControl) string {
 	return string(taskJson)
 }
 
-func getAllPlanners(r *handle.PlannerControl) string {
+func getAllPlanners(r *handle2.PlannerControl) string {
 	planners, err := r.ListPlanners()
 	conf.LogAndExitOnError(err, "Failed to list planners: %v")
 	plannerJson, err := json.Marshal(planners)
@@ -26,7 +26,7 @@ func getAllPlanners(r *handle.PlannerControl) string {
 	return string(plannerJson)
 }
 
-func getAllGoals(r *handle.GoalControl) string {
+func getAllGoals(r *handle2.GoalControl) string {
 	goals, err := r.ListGoals()
 	conf.LogAndExitOnError(err, "Failed to list goals: %v")
 	goalJson, err := json.Marshal(goals)
@@ -35,7 +35,7 @@ func getAllGoals(r *handle.GoalControl) string {
 	return string(goalJson)
 }
 
-func getAllPlans(r *handle.PlanControl) string {
+func getAllPlans(r *handle2.PlanControl) string {
 	plans, err := r.ListPlans()
 	conf.LogAndExitOnError(err, "Failed to list plans: %v")
 	planJson, err := json.Marshal(plans)

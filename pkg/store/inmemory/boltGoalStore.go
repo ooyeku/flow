@@ -3,7 +3,7 @@ package inmemory
 import (
 	"github.com/asdine/storm"
 	"github.com/google/uuid"
-	"goworkflow/models"
+	"goworkflow/pkg/models"
 )
 
 // BoltGoalStore represents a goal store implementation that uses BoltDB as the underlying database.

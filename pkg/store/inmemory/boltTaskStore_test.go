@@ -2,7 +2,7 @@ package inmemory
 
 import (
 	"github.com/asdine/storm"
-	"goworkflow/handle"
+	"goworkflow/pkg/handle"
 	"goworkflow/services"
 	"log"
 	"testing"

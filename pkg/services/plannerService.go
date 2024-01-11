@@ -1,18 +1,18 @@
 package services
 
 import (
-	"goworkflow/models"
-	"goworkflow/store"
+	"goworkflow/pkg/models"
+	store2 "goworkflow/pkg/store"
 )
 
 // PlannerService is a type that provides operations for managing planners.
 type PlannerService struct {
-	store store.PlannerStore
+	store store2.PlannerStore
 }
 
 // NewPlannerService creates a new PlannerService with the given PlannerStore.
 // It returns a pointer to the PlannerService.
-func NewPlannerService(store store.PlannerStore) *PlannerService {
+func NewPlannerService(store store2.PlannerStore) *PlannerService {
 	return &PlannerService{
 		store: store,
 	}
@@ -92,12 +92,12 @@ func (s *PlannerService) ListPlanners() ([]*models.Planner, error) {
 
 // GoalService is a type that provides operations for managing goals.
 type GoalService struct {
-	store store.GoalStore
+	store store2.GoalStore
 }
 
 // NewGoalService creates a new GoalService with the given GoalStore.
 // It returns a pointer to the GoalService.
-func NewGoalService(store store.GoalStore) *GoalService {
+func NewGoalService(store store2.GoalStore) *GoalService {
 	return &GoalService{
 		store: store,
 	}
@@ -182,12 +182,12 @@ func (s *GoalService) ListGoals() ([]*models.Goal, error) {
 
 // PlanService is a type that provides operations for managing plans.
 type PlanService struct {
-	store store.PlanStore
+	store store2.PlanStore
 }
 
 // NewPlanService creates a new PlanService with the given PlanStore.
 // It returns a pointer to the PlanService.
-func NewPlanService(store store.PlanStore) *PlanService {
+func NewPlanService(store store2.PlanStore) *PlanService {
 	return &PlanService{
 		store: store,
 	}

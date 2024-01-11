@@ -2,7 +2,7 @@ package inmemory
 
 import (
 	"github.com/asdine/storm"
-	"goworkflow/models"
+	"goworkflow/pkg/models"
 )
 
 // BoltTaskStore is a type that represents a task store backed by a BoltDB database.

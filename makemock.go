@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/asdine/storm"
-	"goworkflow/handle"
+	handle2 "goworkflow/pkg/handle"
+	inmemory2 "goworkflow/pkg/store/inmemory"
 	"goworkflow/services"
-	"goworkflow/store/inmemory"
 	"log"
 )
 
@@ -22,10 +22,10 @@ func main() {
 	}(db)
 
 	// Create stores
-	plannerStore := inmemory.NewInMemoryPlannerStore(db)
-	goalStore := inmemory.NewInMemoryGoalStore(db)
-	planStore := inmemory.NewInMemoryPlanStore(db)
-	taskStore := inmemory.NewInMemoryTaskStore(db)
+	plannerStore := inmemory2.NewInMemoryPlannerStore(db)
+	goalStore := inmemory2.NewInMemoryGoalStore(db)
+	planStore := inmemory2.NewInMemoryPlanStore(db)
+	taskStore := inmemory2.NewInMemoryTaskStore(db)
 
 	// Create services
 	plannerService := services.NewPlannerService(plannerStore)
@@ -34,13 +34,13 @@ func main() {
 	taskService := services.NewTaskService(taskStore)
 
 	// Create controllers
-	plannerControl := handle.NewPlannerControl(plannerService)
-	goalControl := handle.NewGoalControl(goalService)
-	planControl := handle.NewPlanControl(planService)
-	taskControl := handle.NewTaskControl(taskService)
+	plannerControl := handle2.NewPlannerControl(plannerService)
+	goalControl := handle2.NewGoalControl(goalService)
+	planControl := handle2.NewPlanControl(planService)
+	taskControl := handle2.NewTaskControl(taskService)
 
 	// Create a new planner
-	plannerReq := &handle.CreatePlannerRequest{
+	plannerReq := &handle2.CreatePlannerRequest{
 		UserId: "456", // Replace with a valid user ID
 	}
 	plannerRes, err := plannerControl.CreatePlanner(plannerReq)
@@ -49,7 +49,7 @@ func main() {
 	}
 
 	// Create a new goal
-	goalReq := &handle.CreateGoalRequest{
+	goalReq := &handle2.CreateGoalRequest{
 		PlannerId: plannerRes.ID,
 	}
 	goalRes, err := goalControl.CreateGoal(goalReq)
@@ -58,7 +58,7 @@ func main() {
 	}
 
 	// Create a new plan
-	planReq := &handle.CreatePlanRequest{
+	planReq := &handle2.CreatePlanRequest{
 		GoalId: goalRes.ID,
 	}
 	planRes, err := planControl.CreatePlan(planReq)
@@ -67,7 +67,7 @@ func main() {
 	}
 
 	// Create a new task
-	taskReq := &handle.CreateTaskRequest{
+	taskReq := &handle2.CreateTaskRequest{
 		Title:       "Complete the project",
 		Description: "Complete the project within the deadline",
 		Owner:       "456", // Replace with a valid user ID

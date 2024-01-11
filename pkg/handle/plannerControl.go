@@ -2,8 +2,8 @@ package handle
 
 import (
 	"github.com/google/uuid"
-	"goworkflow/models"
-	"goworkflow/services"
+	"goworkflow/pkg/models"
+	"goworkflow/pkg/services"
 )
 
 // PlannerControl represents a controller that provides methods to manage planners.
