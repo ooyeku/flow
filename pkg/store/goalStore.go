@@ -1,6 +1,6 @@
 package store
 
-import "goworkflow/pkg/models"
+import "goworkflow/internal/models"
 
 // GoalStore is an interface that defines methods for creating, updating, deleting, retrieving, and listing goals.
 // CreateGoal creates a new goal.

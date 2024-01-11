@@ -3,7 +3,7 @@ package handle
 import (
 	_ "encoding/json"
 	"github.com/google/uuid"
-	"goworkflow/pkg/models"
+	"goworkflow/internal/models"
 	"goworkflow/pkg/services"
 	"time"
 )

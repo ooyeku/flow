@@ -1,6 +1,6 @@
 package store
 
-import "goworkflow/pkg/models"
+import "goworkflow/internal/models"
 
 // PlanStore is an interface that defines the methods to interact with plans.
 // CreatePlan creates a new plan.

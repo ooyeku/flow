@@ -2,7 +2,7 @@ package handle
 
 import (
 	"github.com/google/uuid"
-	"goworkflow/pkg/models"
+	"goworkflow/internal/models"
 	"goworkflow/pkg/services"
 )
 

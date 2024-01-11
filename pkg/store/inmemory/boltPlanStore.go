@@ -3,7 +3,7 @@ package inmemory
 import (
 	"github.com/asdine/storm"
 	"github.com/google/uuid"
-	"goworkflow/pkg/models"
+	"goworkflow/internal/models"
 )
 
 // BoltPlanStore represents a store for managing plans using BoltDB.
