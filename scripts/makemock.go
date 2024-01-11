@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/asdine/storm"
+	"goworkflow/internal/inmemory"
 	handle2 "goworkflow/pkg/handle"
 	"goworkflow/pkg/services"
-	inmemory2 "goworkflow/pkg/store/inmemory"
 	"log"
 )
 
@@ -22,10 +22,10 @@ func main() {
 	}(db)
 
 	// Create stores
-	plannerStore := inmemory2.NewInMemoryPlannerStore(db)
-	goalStore := inmemory2.NewInMemoryGoalStore(db)
-	planStore := inmemory2.NewInMemoryPlanStore(db)
-	taskStore := inmemory2.NewInMemoryTaskStore(db)
+	plannerStore := inmemory.NewInMemoryPlannerStore(db)
+	goalStore := inmemory.NewInMemoryGoalStore(db)
+	planStore := inmemory.NewInMemoryPlanStore(db)
+	taskStore := inmemory.NewInMemoryTaskStore(db)
 
 	// Create services
 	plannerService := services.NewPlannerService(plannerStore)

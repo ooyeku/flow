@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/asdine/storm"
+	"goworkflow/internal/inmemory"
 	handle2 "goworkflow/pkg/handle"
 	"goworkflow/pkg/services"
 	store2 "goworkflow/pkg/store"
-	inmemory2 "goworkflow/pkg/store/inmemory"
 	"log"
 	"os"
 )
 
 const (
 	ConfigFileName   = "config.json"
-	InMemoryDatabase = "pkg/store/inmemory/goworkflow.db"
+	InMemoryDatabase = "internal/inmemory/goworkflow.db"
 )
 
 func LogAndExitOnError(err error, msg string) {
@@ -43,7 +43,7 @@ func createInMemoryDB() (*storm.DB, error) {
 func (c *Config) selectTaskDatabase(db *storm.DB) (store2.TaskStore, error) {
 	switch c.DatabaseType {
 	case "bolt":
-		return inmemory2.NewInMemoryTaskStore(db), nil
+		return inmemory.NewInMemoryTaskStore(db), nil
 	}
 	return nil, errors.New("invalid task database type specified in config")
 }
@@ -51,7 +51,7 @@ func (c *Config) selectTaskDatabase(db *storm.DB) (store2.TaskStore, error) {
 func (c *Config) selectPlannerDatabase(db *storm.DB) (store2.PlannerStore, error) {
 	switch c.DatabaseType {
 	case "bolt":
-		return inmemory2.NewInMemoryPlannerStore(db), nil
+		return inmemory.NewInMemoryPlannerStore(db), nil
 	}
 	return nil, errors.New("invalid planner database type specified in config")
 }
@@ -59,7 +59,7 @@ func (c *Config) selectPlannerDatabase(db *storm.DB) (store2.PlannerStore, error
 func (c *Config) selectGoalDatabase(db *storm.DB) (store2.GoalStore, error) {
 	switch c.DatabaseType {
 	case "bolt":
-		return inmemory2.NewInMemoryGoalStore(db), nil
+		return inmemory.NewInMemoryGoalStore(db), nil
 	}
 	return nil, errors.New("invalid database type specified in config")
 }
@@ -67,7 +67,7 @@ func (c *Config) selectGoalDatabase(db *storm.DB) (store2.GoalStore, error) {
 func (c *Config) selectPlanDatabase(db *storm.DB) (store2.PlanStore, error) {
 	switch c.DatabaseType {
 	case "bolt":
-		return inmemory2.NewInMemoryPlanStore(db), nil
+		return inmemory.NewInMemoryPlanStore(db), nil
 	}
 	return nil, errors.New("invalid database type specified in config")
 }

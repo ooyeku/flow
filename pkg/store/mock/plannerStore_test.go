@@ -2,7 +2,7 @@ package mock
 
 import (
 	"github.com/stretchr/testify/assert"
-	"goworkflow/pkg/models"
+	"goworkflow/internal/models"
 	"testing"
 )
 

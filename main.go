@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"goworkflow/pkg/conf"
+	"goworkflow/internal/conf"
 	handle2 "goworkflow/pkg/handle"
 	"log"
 )
