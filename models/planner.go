@@ -17,7 +17,7 @@ type Planner struct {
 }
 
 type Goal struct {
-	Id            string    `json:"id"`
+	Id            string    `json:"id" storm:"id,unique"`
 	Objective     string    `json:"objective"`
 	Plans         []Plan    `json:"plans"`
 	GoalStatus    string    `json:"goal_status"`
@@ -28,7 +28,7 @@ type Goal struct {
 }
 
 type Plan struct {
-	Id              string    `json:"id"`
+	Id              string    `json:"id" storm:"id,unique"`
 	PlanName        string    `json:"plan_name"`
 	PlanDescription string    `json:"plan_description"`
 	PlanDate        time.Time `json:"plan_date"`
