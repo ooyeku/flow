@@ -3,14 +3,14 @@ package main
 import (
 	"github.com/asdine/storm"
 	handle2 "goworkflow/pkg/handle"
+	"goworkflow/pkg/services"
 	inmemory2 "goworkflow/pkg/store/inmemory"
-	"goworkflow/services"
 	"log"
 )
 
 func main() {
 	// Open the Bolt database
-	db, err := storm.Open("store/inmemory/goworkflow.db", storm.BoltOptions(0600, nil))
+	db, err := storm.Open("pkg/store/inmemory/goworkflow.db", storm.BoltOptions(0600, nil))
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
 	}
@@ -68,8 +68,8 @@ func main() {
 
 	// Create a new task
 	taskReq := &handle2.CreateTaskRequest{
-		Title:       "Complete the project",
-		Description: "Complete the project within the deadline",
+		Title:       "Add 3p library to project",
+		Description: "Examples include viper, cobra, testify, validator, etc.",
 		Owner:       "456", // Replace with a valid user ID
 	}
 	taskRes, err := taskControl.CreateTask(*taskReq)
