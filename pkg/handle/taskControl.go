@@ -169,14 +169,14 @@ type ListTasksResponse struct {
 // Returns:
 // - *ListTasksResponse: The list of tasks.
 // - error: An error if the retrieval fails.
-func (c *TaskControl) ListTasks() (*ListTasksResponse, error) {
+func (c *TaskControl) ListTasks() ([]GetTaskResponse, error) {
 	tasks, err := c.service.ListTasks()
 	if err != nil {
 		return nil, err
 	}
-	var taskResponses []*GetTaskResponse
+	var taskResponses []GetTaskResponse
 	for _, task := range tasks {
-		taskResponses = append(taskResponses, &GetTaskResponse{
+		taskResponses = append(taskResponses, GetTaskResponse{
 			ID:          task.ID,
 			Title:       task.Title,
 			Description: task.Description,
@@ -187,9 +187,7 @@ func (c *TaskControl) ListTasks() (*ListTasksResponse, error) {
 			UpdatedAt:   task.UpdatedAt,
 		})
 	}
-	return &ListTasksResponse{
-		Tasks: taskResponses,
-	}, nil
+	return taskResponses, nil
 }
 
 // generateUUID generates a new UUID (Universally Unique Identifier).
