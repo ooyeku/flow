@@ -10,7 +10,7 @@ import (
 
 func main() {
 	// Open the Bolt database
-	db, err := storm.Open("pkg/store/inmemory/goworkflow.db", storm.BoltOptions(0600, nil))
+	db, err := storm.Open("internal/inmemory/goworkflow.db", storm.BoltOptions(0600, nil))
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
 	}
@@ -68,8 +68,8 @@ func main() {
 
 	// Create a new task
 	taskReq := &handle2.CreateTaskRequest{
-		Title:       "Add 3p library to project",
-		Description: "Examples include viper, cobra, testify, validator, etc.",
+		Title:       "This is an automated makemock task",
+		Description: "Useful for testing/debugging",
 		Owner:       "456", // Replace with a valid user ID
 	}
 	taskRes, err := taskControl.CreateTask(*taskReq)

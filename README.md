@@ -15,7 +15,7 @@ The project is structured as follows:
 * `store/` - Data storage
 
 ## Roadmap
-Current Version: 0.0.2
+Current Version: **0.0.3** as of **01-11-2024**
 
 *[ ] Version 1.0.0*
   - [x] Task service creation

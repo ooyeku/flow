@@ -14,26 +14,27 @@ type TaskControl struct {
 }
 
 // NewTaskControl creates a new instance of TaskControl.
-// It takes a pointer to a `TaskService` as input and returns a pointer to a `TaskControl` struct.
-// The `TaskControl` struct has methods to create, update, delete, get, and list tasks.
-// To create a new `TaskControl`, pass a pointer to a `TaskService` to the `NewTaskControl` function.
+// It takes in a pointer to a TaskService and returns a pointer to TaskControl.
+// TaskControl is a struct that provides control functions for tasks, such as creating, updating, deleting, getting, and listing tasks.
 // Usage example:
+//
+//	taskService := &services.TaskService{
+//	    Store: &store.TaskStore{}, // replace with your TaskStore implementation
+//	}
+//	taskControl := NewTaskControl(taskService)
+//	// Use taskControl to perform task operations
 func NewTaskControl(service *services.TaskService) *TaskControl {
 	return &TaskControl{
 		service: service,
 	}
 }
 
-// CreateTaskResponse represents the response model for the CreateTask method in the TaskControl type.
-// ID represents the unique identifier of the newly created task.
+// CreateTaskResponse represents the response object for creating a task.
 type CreateTaskResponse struct {
 	ID string `json:"id"`
 }
 
-// CreateTaskRequest represents the request payload for creating a task. It contains the following fields:
-// - Title: The title of the task
-// - Description: The description of the task
-// - Owner: The owner of the task
+// CreateTaskRequest represents a request to create a new task.
 type CreateTaskRequest struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
@@ -67,7 +68,8 @@ func (c *TaskControl) CreateTask(req CreateTaskRequest) (*CreateTaskResponse, er
 	}, nil
 }
 
-// UpdateTaskRequest represents the request to update a task with the specified ID.
+// UpdateTaskRequest represents a request to update a task.
+// It contains the ID of the task to be updated, as well as the updated values for title, description, owner, started, and completed.
 type UpdateTaskRequest struct {
 	ID          string `json:"id"`
 	Title       string `json:"title"`
@@ -77,10 +79,7 @@ type UpdateTaskRequest struct {
 	Completed   bool   `json:"completed"`
 }
 
-// UpdateTask updates a task with the specified request parameters.
-// It retrieves the task using the provided ID, updates its properties with the values from the request,
-// and calls the UpdateTask method on the TaskService's Store to persist the changes.
-// If any error occurs during the process, it will be returned.
+// UpdateTask updates an existing task with the provided request. It retrieves the task from the service using req.ID, and updates its properties with the values from the request. Finally
 func (c *TaskControl) UpdateTask(req *UpdateTaskRequest) error {
 	task, err := c.service.GetTask(req.ID)
 	if err != nil {
@@ -98,12 +97,12 @@ func (c *TaskControl) UpdateTask(req *UpdateTaskRequest) error {
 	return nil
 }
 
-// DeleteTaskRequest represents the request to delete a task.
+// DeleteTaskRequest represents a request to delete a task.
 type DeleteTaskRequest struct {
 	ID string `json:"id"`
 }
 
-// DeleteTask deletes a task from the task store.
+// DeleteTask deletes a task with the provided ID from the store. It returns an error if the task deletion fails.
 func (c *TaskControl) DeleteTask(req *DeleteTaskRequest) error {
 	if err := c.service.Store.DeleteTask(req.ID); err != nil {
 		return err
@@ -111,20 +110,20 @@ func (c *TaskControl) DeleteTask(req *DeleteTaskRequest) error {
 	return nil
 }
 
-// GetTaskRequest represents a request to get a task.
+// GetTaskRequest represents a request to get a task by its ID.
 type GetTaskRequest struct {
 	ID string `json:"id"`
 }
 
-// GetTaskResponse represents the response structure for the GetTask API.
-// Field ID represents the ID of the task.
-// Field Title represents the title of the task.
-// Field Description represents the description of the task.
-// Field Owner represents the owner of the task.
-// Field Started represents whether the task has been started.
-// Field Completed represents whether the task has been completed.
-// Field CreatedAt represents the creation time of the task.
-// Field UpdatedAt represents the last update time of the task.
+// GetTaskResponse represents the response data structure for retrieving a task.
+// ID represents the unique identifier of the task.
+// Title represents the title of the task.
+// Description represents the description of the task.
+// Owner represents the owner of the task.
+// Started indicates whether the task has been started or not.
+// Completed indicates whether the task has been completed or not.
+// CreatedAt represents the timestamp when the task was created.
+// UpdatedAt represents the timestamp when the task was last updated.
 type GetTaskResponse struct {
 	ID          string    `json:"id"`
 	Title       string    `json:"title"`
@@ -136,7 +135,7 @@ type GetTaskResponse struct {
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
-// GetTask retrieves a task from the task service based on the provided task ID. It returns the task information in the form of a GetTaskResponse struct or an error if the task is not
+// GetTask retrieves information about a task based on the provided request ID. It calls the service's GetTask method and returns a GetTaskResponse with the task details. If an error
 func (c *TaskControl) GetTask(req *GetTaskRequest) (*GetTaskResponse, error) {
 	task, err := c.service.GetTask(req.ID)
 	if err != nil {
@@ -154,21 +153,16 @@ func (c *TaskControl) GetTask(req *GetTaskRequest) (*GetTaskResponse, error) {
 	}, nil
 }
 
-// ListTasksResponse represents the response structure for a list of tasks.
-// It contains an array of GetTaskResponse, which represents the individual tasks.
+// ListTasksResponse is a struct that represents the response for listing tasks. It contains an array of GetTaskResponse objects, named Tasks, which are the tasks retrieved.
+// The JSON field tag for the Tasks array is "tasks", indicating how it should be serialized and deserialized when encoding and decoding JSON data.
 type ListTasksResponse struct {
 	Tasks []*GetTaskResponse `json:"tasks"`
 }
 
-// ListTasks returns a list of tasks.
-//
-// The method retrieves all tasks using the ListTasks method of the TaskService.
-// It then maps the tasks to GetTaskResponse objects and returns a ListTasksResponse
-// containing the list of mapped tasks.
-//
-// Returns:
-// - *ListTasksResponse: The list of tasks.
-// - error: An error if the retrieval fails.
+// ListTasks returns a list of task responses by calling the `ListTasks` method of the `c.service` service.
+// It transforms each task into a `GetTaskResponse` and appends it to the `taskResponses` slice.
+// It returns the `taskResponses` slice and nil error if successful.
+// If there is an error while listing tasks, it returns nil and the error encountered.
 func (c *TaskControl) ListTasks() ([]GetTaskResponse, error) {
 	tasks, err := c.service.ListTasks()
 	if err != nil {
@@ -190,8 +184,8 @@ func (c *TaskControl) ListTasks() ([]GetTaskResponse, error) {
 	return taskResponses, nil
 }
 
-// generateUUID generates a new UUID (Universally Unique Identifier).
-// It returns the UUID as a string and any error encountered.
+// generateTaskUUID generates a unique task UUID using the uuid.NewRandom() function.
+// It returns the generated UUID as a string and any error encountered during the process.
 func generateTaskUUID() (string, error) {
 	id, err := uuid.NewRandom()
 	if err != nil {

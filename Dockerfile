@@ -27,7 +27,7 @@ EXPOSE 8080
 
 # Command to run the executable
 ENTRYPOINT ["/app/main"]
-CMD ["cli"]
+CMD ["server"]
 
 # For CLI build:
 # docker build -t workflow-cli-build .
