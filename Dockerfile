@@ -19,10 +19,20 @@ COPY . .
 # Build the Go app
 RUN go build -o main .
 
+# Install flow cli
+RUN go install .
+
 # Expose port 8080 to the outside world
-#EXPOSE 8080
+EXPOSE 8080
 
 # Command to run the executable
-CMD ["./main"]
+ENTRYPOINT ["/app/main"]
+CMD ["cli"]
 
+# For CLI build:
+# docker build -t workflow-cli-build .
+# docker run -it --name workflow-cli workflow-cli-build
 
+# For server build:
+# docker build -t workflow-server-build .
+# docker run --name workflow-server -p 8080:8080 workflow-server-build
