@@ -19,7 +19,7 @@ var (
 		Long:  `run workflow in cli mode`,
 		Run: func(cmd *cobra.Command, args []string) {
 			// run cli loop
-			cli := exec.Command("go", "run", "cmd/cli/main.go")
+			cli := exec.Command("go", "run", "cmd/cli/cliapp.go")
 			// pass stdin, stdout, and stderr to child process
 			cli.Stdin = os.Stdin
 			cli.Stdout = os.Stdout
