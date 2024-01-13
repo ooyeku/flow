@@ -43,29 +43,7 @@ func (s *TaskService) GetTask(id string) (*models.Task, error) {
 	return s.Store.GetTask(id)
 }
 
-// ListTasks retrieves a list of tasks from the TaskService.
-//
-// It invokes the ListTasks method of the TaskService's Store to fetch the tasks.
-//
-// The method returns a slice of Task pointers and an error.
-// The slice holds the Task objects retrieved from the Store.
-// If there are no tasks, the returned slice will be empty.
-// If an error occurs during the retrieval process, it will be returned in the error parameter.
-//
-// Example usage:
-// tasks, err := taskService.ListTasks()
-//
-//	if err != nil {
-//	  // handle error
-//	}
-//
-//	for _, task := range tasks {
-//	  // do something with task
-//	}
-//
-// For more information about the Task struct, see the models.Task declaration.
-//
-// For more information about the TaskService struct and the TaskStore interface, see their respective declarations.
+// ListTasks retrieves all tasks from the store.
 func (s *TaskService) ListTasks() ([]*models.Task, error) {
 	return s.Store.ListTasks()
 }
