@@ -207,7 +207,6 @@ func deleteTask(t *handle.TaskControl) {
 // It fetches all tasks using the ListTasks() method and prints the task ID, title, and description for each task.
 // If there is an error in fetching the tasks, it prints the error message.
 func listTasks(t *handle.TaskControl) {
-	// Call your function to list all tasks here
 	fmt.Println("Listing tasks...")
 	tasks, err := t.ListTasks()
 	if err != nil {
