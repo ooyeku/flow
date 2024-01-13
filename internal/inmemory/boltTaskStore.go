@@ -3,6 +3,7 @@ package inmemory
 import (
 	"github.com/asdine/storm"
 	"goworkflow/internal/models"
+	"log"
 )
 
 // BoltTaskStore is a type that represents a task store backed by a BoltDB database.
@@ -113,7 +114,9 @@ func (s *BoltTaskStore) GetTask(id string) (*models.Task, error) {
 // GetTaskByTitle retrieves a task from the BoltTaskStore based on the given title.
 func (s *BoltTaskStore) GetTaskByTitle(title string) (*models.Task, error) {
 	task := new(models.Task)
-	if err := s.db.One("Title", title, task); err != nil {
+	err := s.db.One("Title", title, task)
+	if err != nil {
+		log.Printf("Failed to get task by title: %v", err)
 		return nil, err
 	}
 	return task, nil
@@ -122,7 +125,9 @@ func (s *BoltTaskStore) GetTaskByTitle(title string) (*models.Task, error) {
 // GetTaskByOwner retrieves a task from the BoltTaskStore based on the given owner.
 func (s *BoltTaskStore) GetTaskByOwner(owner string) (*models.Task, error) {
 	task := new(models.Task)
-	if err := s.db.One("Owner", owner, task); err != nil {
+	err := s.db.One("Owner", owner, task)
+	if err != nil {
+		log.Printf("Failed to get task by owner: %v", err)
 		return nil, err
 	}
 	return task, nil

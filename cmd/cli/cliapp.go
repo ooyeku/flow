@@ -18,7 +18,7 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Welcome to your CLI app!")
 	for {
-		fmt.Print("Enter command: ")
+		fmt.Println("Enter command: ")
 		cmdString, err := reader.ReadString('\n')
 		if err != nil {
 			_, err := fmt.Fprintln(os.Stderr, err)
@@ -77,13 +77,22 @@ func createTask(t *handle.TaskControl) {
 	fmt.Println("Task router in cliapp.go: ", t)
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Enter task title: ")
-	title, _ := reader.ReadString('\n')
+	title, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
 	title = strings.TrimSpace(title)
 	fmt.Println("Enter task description: ")
-	description, _ := reader.ReadString('\n')
+	description, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
 	description = strings.TrimSpace(description)
 	fmt.Println("Enter task owner: ")
-	owner, _ := reader.ReadString('\n')
+	owner, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
 	owner = strings.TrimSpace(owner)
 	req := handle.CreateTaskRequest{
 		Title:       title,
@@ -104,7 +113,10 @@ func getTask(t *handle.TaskControl) {
 	fmt.Println("Getting task...")
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Enter task id: ")
-	id, _ := reader.ReadString('\n')
+	id, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
 	id = strings.TrimSpace(id)
 	req := handle.GetTaskRequest{
 		ID: id,
@@ -121,14 +133,18 @@ func getTaskByTitle(t *handle.TaskControl) {
 	fmt.Println("Getting task...")
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Enter task title: ")
-	title, _ := reader.ReadString('\n')
+	title, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
 	title = strings.TrimSpace(title)
 	req := handle.GetTaskByTitleRequest{
 		Title: title,
 	}
 	task, err := t.GetTaskByTitle(&req)
 	if err != nil {
-		fmt.Printf("Error getting task with title %s: %s", title, err)
+		// error message is logged in GetTaskByTitle
+		return
 	}
 	fmt.Println("Got task: ", task.Title)
 	fmt.Println("Description: ", task.Description)
@@ -138,14 +154,17 @@ func getTaskByOwner(t *handle.TaskControl) {
 	fmt.Println("Getting task...")
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Enter task owner: ")
-	owner, _ := reader.ReadString('\n')
+	owner, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
 	owner = strings.TrimSpace(owner)
 	req := handle.GetTaskByOwnerRequest{
 		Owner: owner,
 	}
 	task, err := t.GetTaskByOwner(&req)
 	if err != nil {
-		fmt.Printf("Error getting task with owner %s: %s", owner, err)
+		return
 	}
 	fmt.Println("Got task: ", task.Title)
 	fmt.Println("Description: ", task.Description)
@@ -163,7 +182,10 @@ func updateTasks(t *handle.TaskControl) {
 	reader := bufio.NewReader(os.Stdin)
 	// Call your function to update a task here
 	fmt.Println("Enter task id: ")
-	id, _ := reader.ReadString('\n')
+	id, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
 	id = strings.TrimSpace(id)
 
 	req := handle.GetTaskRequest{
@@ -176,15 +198,24 @@ func updateTasks(t *handle.TaskControl) {
 	fmt.Println("Got task: ", task.Title)
 	fmt.Println("Description: ", task.Description)
 	fmt.Println("Enter New task title: ")
-	title, _ := reader.ReadString('\n')
+	title, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
 	title = strings.TrimSpace(title)
 
 	fmt.Println("Enter New task description: ")
-	description, _ := reader.ReadString('\n')
+	description, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
 	description = strings.TrimSpace(description)
 
 	fmt.Println("Enter New task owner: ")
-	owner, _ := reader.ReadString('\n')
+	owner, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
 	owner = strings.TrimSpace(owner)
 
 	update := handle.UpdateTaskRequest{
@@ -206,7 +237,10 @@ func updateTasks(t *handle.TaskControl) {
 func deleteTask(t *handle.TaskControl) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Enter task id of task to be deleted: ")
-	id, _ := reader.ReadString('\n')
+	id, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
 	id = strings.TrimSpace(id)
 	// Get task first to show user what task is being deleted
 	req := handle.GetTaskRequest{
@@ -218,7 +252,10 @@ func deleteTask(t *handle.TaskControl) {
 	}
 	fmt.Println("Got task: ", task.Title)
 	fmt.Println("are you sure you want to delete this task? (y/n)")
-	confirm, _ := reader.ReadString('\n')
+	confirm, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
 	confirm = strings.TrimSpace(confirm)
 	if confirm == "n" {
 		fmt.Println("Task not deleted")
