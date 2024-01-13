@@ -110,6 +110,24 @@ func (s *BoltTaskStore) GetTask(id string) (*models.Task, error) {
 	return task, nil
 }
 
+// GetTaskByTitle retrieves a task from the BoltTaskStore based on the given title.
+func (s *BoltTaskStore) GetTaskByTitle(title string) (*models.Task, error) {
+	task := new(models.Task)
+	if err := s.db.One("Title", title, task); err != nil {
+		return nil, err
+	}
+	return task, nil
+}
+
+// GetTaskByOwner retrieves a task from the BoltTaskStore based on the given owner.
+func (s *BoltTaskStore) GetTaskByOwner(owner string) (*models.Task, error) {
+	task := new(models.Task)
+	if err := s.db.One("Owner", owner, task); err != nil {
+		return nil, err
+	}
+	return task, nil
+}
+
 // ListTasks retrieves a list of tasks from the BoltTaskStore.
 func (s *BoltTaskStore) ListTasks() ([]*models.Task, error) {
 	var tasks []*models.Task

@@ -108,13 +108,42 @@ func (c *TaskControl) DeleteTask(req *DeleteTaskRequest) error {
 	return nil
 }
 
+// TaskRequest is the interface that wraps the GetID method so that it can
+// be used by GetTaskRequest, GetTaskByTitleRequest, and GetTaskByOwnerRequest.
+type TaskRequest interface {
+	GetID() string
+}
+
 // GetTaskRequest represents a request to get a task by its ID.
 type GetTaskRequest struct {
 	ID string `json:"id"`
 }
 
-// TODO: implement GetTaskRequest by title
-// TODO: implement GetTaskRequest by owner
+// GetID implements the TaskRequest interface for GetTaskRequest.
+func (req *GetTaskRequest) GetID() string {
+	return req.ID
+}
+
+// GetTaskByTitleRequest represents a request to get a task by its title.
+type GetTaskByTitleRequest struct {
+	Title string `json:"title"`
+}
+
+// GetID implements the TaskRequest interface for GetTaskByTitleRequest.
+func (req *GetTaskByTitleRequest) GetID() string {
+	return req.Title
+}
+
+// GetTaskByOwnerRequest represents a request to get a task by its owner.
+type GetTaskByOwnerRequest struct {
+	Owner string `json:"owner"`
+}
+
+// GetID implements the TaskRequest interface for GetTaskByOwnerRequest.
+func (req *GetTaskByOwnerRequest) GetID() string {
+	// gets the id of the task by its owner
+	return req.Owner
+}
 
 // GetTaskResponse represents the response data structure for retrieving a task.
 // ID represents the unique identifier of the task.
@@ -139,6 +168,40 @@ type GetTaskResponse struct {
 // GetTask retrieves information about a task based on the provided request ID. It calls the service's GetTask method and returns a GetTaskResponse with the task details. If an error
 func (c *TaskControl) GetTask(req *GetTaskRequest) (*GetTaskResponse, error) {
 	task, err := c.service.GetTask(req.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &GetTaskResponse{
+		ID:          task.ID,
+		Title:       task.Title,
+		Description: task.Description,
+		Owner:       task.Owner,
+		Started:     task.Started,
+		Completed:   task.Completed,
+		CreatedAt:   task.CreatedAt,
+		UpdatedAt:   task.UpdatedAt,
+	}, nil
+}
+
+func (c *TaskControl) GetTaskByTitle(req *GetTaskByTitleRequest) (*GetTaskResponse, error) {
+	task, err := c.service.GetTaskByTitle(req.Title)
+	if err != nil {
+		return nil, err
+	}
+	return &GetTaskResponse{
+		ID:          task.ID,
+		Title:       task.Title,
+		Description: task.Description,
+		Owner:       task.Owner,
+		Started:     task.Started,
+		Completed:   task.Completed,
+		CreatedAt:   task.CreatedAt,
+		UpdatedAt:   task.UpdatedAt,
+	}, nil
+}
+
+func (c *TaskControl) GetTaskByOwner(req *GetTaskByOwnerRequest) (*GetTaskResponse, error) {
+	task, err := c.service.GetTaskByOwner(req.Owner)
 	if err != nil {
 		return nil, err
 	}

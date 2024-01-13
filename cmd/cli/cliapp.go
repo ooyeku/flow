@@ -117,6 +117,40 @@ func getTask(t *handle.TaskControl) {
 	fmt.Println("Description: ", task.Description)
 }
 
+func getTaskByTitle(t *handle.TaskControl) {
+	fmt.Println("Getting task...")
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Enter task title: ")
+	title, _ := reader.ReadString('\n')
+	title = strings.TrimSpace(title)
+	req := handle.GetTaskByTitleRequest{
+		Title: title,
+	}
+	task, err := t.GetTaskByTitle(&req)
+	if err != nil {
+		fmt.Printf("Error getting task with title %s: %s", title, err)
+	}
+	fmt.Println("Got task: ", task.Title)
+	fmt.Println("Description: ", task.Description)
+}
+
+func getTaskByOwner(t *handle.TaskControl) {
+	fmt.Println("Getting task...")
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Enter task owner: ")
+	owner, _ := reader.ReadString('\n')
+	owner = strings.TrimSpace(owner)
+	req := handle.GetTaskByOwnerRequest{
+		Owner: owner,
+	}
+	task, err := t.GetTaskByOwner(&req)
+	if err != nil {
+		fmt.Printf("Error getting task with owner %s: %s", owner, err)
+	}
+	fmt.Println("Got task: ", task.Title)
+	fmt.Println("Description: ", task.Description)
+}
+
 // updateTasks prompts the user to enter a task ID, then retrieves the task with the specified ID using the GetTask function from the provided TaskControl object.
 // It then prompts the user to enter a new task title, description, and owner.
 // After that, it constructs an UpdateTaskRequest object with the provided ID, new title, description, owner, and default values for started and completed.
@@ -238,6 +272,12 @@ func runCommand(commandStr string) error {
 
 	case "get-task":
 		getTask(taskRouter)
+
+	case "get-task-by-title":
+		getTaskByTitle(taskRouter)
+
+	case "get-task-by-owner":
+		getTaskByOwner(taskRouter)
 
 	case "update-task":
 		updateTasks(taskRouter)

@@ -69,3 +69,11 @@ func (s *TaskService) GetTask(id string) (*models.Task, error) {
 func (s *TaskService) ListTasks() ([]*models.Task, error) {
 	return s.Store.ListTasks()
 }
+
+func (s *TaskService) GetTaskByTitle(title string) (*models.Task, error) {
+	return s.Store.GetTaskByTitle(title)
+}
+
+func (s *TaskService) GetTaskByOwner(owner string) (*models.Task, error) {
+	return s.Store.GetTaskByOwner(owner)
+}

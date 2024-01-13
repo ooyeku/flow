@@ -12,4 +12,6 @@ type TaskStore interface {
 	DeleteTask(id string) error
 	GetTask(id string) (*models.Task, error)
 	ListTasks() ([]*models.Task, error)
+	GetTaskByTitle(title string) (*models.Task, error)
+	GetTaskByOwner(owner string) (*models.Task, error)
 }
