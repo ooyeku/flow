@@ -1,6 +1,8 @@
 package store
 
-import "goworkflow/internal/models"
+import (
+	"goworkflow/internal/models"
+)
 
 // TaskStore represents an interface for managing tasks
 // Implementations of this interface should provide methods to create, update, delete, get, and list tasks

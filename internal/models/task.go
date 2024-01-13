@@ -13,3 +13,20 @@ type Task struct {
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
+
+func (t *Task) GenerateTaskInstance(id, title, description, owner string) *Task {
+	return &Task{
+		ID:          id,
+		Title:       title,
+		Description: description,
+		Owner:       owner,
+		Started:     false,
+		Completed:   false,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+}
+
+//func(t *Task) IsStarted() bool {
+//	return t.Started
+//}

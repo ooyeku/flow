@@ -49,16 +49,8 @@ func (c *TaskControl) CreateTask(req CreateTaskRequest) (*CreateTaskResponse, er
 	if err != nil {
 		return nil, err
 	}
-	task := &models.Task{
-		ID:          id,
-		Title:       req.Title,
-		Description: req.Description,
-		Owner:       req.Owner,
-		Started:     false,
-		Completed:   false,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
-	}
+	m := &models.Task{}
+	task := m.GenerateTaskInstance(id, req.Title, req.Description, req.Owner)
 	err = c.service.CreateTask(task)
 	if err != nil {
 		return nil, err
@@ -85,13 +77,19 @@ func (c *TaskControl) UpdateTask(req *UpdateTaskRequest) error {
 	if err != nil {
 		return err
 	}
-	task.Title = req.Title
-	task.Description = req.Description
-	task.Owner = req.Owner
+
+	m := &models.Task{}
+	task = m.GenerateTaskInstance(req.ID, req.Title, req.Description, req.Owner)
+	if err != nil {
+		return err
+	}
+
+	// these fields are not updated by GenerateTaskInstance
 	task.Started = req.Started
 	task.Completed = req.Completed
 	task.UpdatedAt = time.Now()
-	if err := c.service.Store.UpdateTask(req.ID, task); err != nil {
+
+	if err := c.service.UpdateTask(req.ID, task); err != nil {
 		return err
 	}
 	return nil
@@ -114,6 +112,9 @@ func (c *TaskControl) DeleteTask(req *DeleteTaskRequest) error {
 type GetTaskRequest struct {
 	ID string `json:"id"`
 }
+
+// TODO: implement GetTaskRequest by title
+// TODO: implement GetTaskRequest by owner
 
 // GetTaskResponse represents the response data structure for retrieving a task.
 // ID represents the unique identifier of the task.
