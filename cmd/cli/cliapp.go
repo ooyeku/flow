@@ -16,7 +16,7 @@ import (
 func main() {
 
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Welcome to your CLI app!")
+	fmt.Println("Welcome to your CLI app! 😼")
 	for {
 		fmt.Println("Enter command: ")
 		cmdString, err := reader.ReadString('\n')
@@ -52,6 +52,15 @@ func cliSetup() (*handle.TaskControl, *storm.DB) {
 	return taskRouter, db
 }
 
+func promptUser(reader *bufio.Reader, prompt string) (string, error) {
+	fmt.Println(prompt)
+	response, err := reader.ReadString('\n')
+	if err != nil {
+		return "", fmt.Errorf("could not read from stdin: %s", err)
+	}
+	return strings.TrimSpace(response), nil
+}
+
 // createTask is a function that prompts the user to enter the details of a task,
 // creates the task using the provided TaskControl instance, and prints the ID of the created task.
 //
@@ -74,26 +83,20 @@ func cliSetup() (*handle.TaskControl, *storm.DB) {
 // 7. Printing the ID of the created task.
 func createTask(t *handle.TaskControl) {
 	fmt.Println("Creating task...")
-	fmt.Println("Task router in cliapp.go: ", t)
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Enter task title: ")
-	title, err := reader.ReadString('\n')
+	title, err := promptUser(reader, "Enter task title: ")
 	if err != nil {
 		log.Fatalf("Could not read from stdin: %s", err)
 	}
-	title = strings.TrimSpace(title)
-	fmt.Println("Enter task description: ")
-	description, err := reader.ReadString('\n')
+	description, err := promptUser(reader, "Enter task description: ")
 	if err != nil {
 		log.Fatalf("Could not read from stdin: %s", err)
 	}
-	description = strings.TrimSpace(description)
-	fmt.Println("Enter task owner: ")
-	owner, err := reader.ReadString('\n')
+
+	owner, err := promptUser(reader, "Enter task owner: ")
 	if err != nil {
 		log.Fatalf("Could not read from stdin: %s", err)
 	}
-	owner = strings.TrimSpace(owner)
 	req := handle.CreateTaskRequest{
 		Title:       title,
 		Description: description,
@@ -112,12 +115,10 @@ func createTask(t *handle.TaskControl) {
 func getTask(t *handle.TaskControl) {
 	fmt.Println("Getting task...")
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Enter task id: ")
-	id, err := reader.ReadString('\n')
+	id, err := promptUser(reader, "Enter task id: ")
 	if err != nil {
-		log.Fatalf("Could not read from stdin: %s\n", err)
+		log.Fatalf("Could not read from stdin: %s", err)
 	}
-	id = strings.TrimSpace(id)
 	req := handle.GetTaskRequest{
 		ID: id,
 	}
@@ -133,12 +134,10 @@ func getTask(t *handle.TaskControl) {
 func getTaskByTitle(t *handle.TaskControl) {
 	fmt.Println("Getting task...")
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Enter task title: ")
-	title, err := reader.ReadString('\n')
+	title, err := promptUser(reader, "Enter task title: ")
 	if err != nil {
-		log.Fatalf("Could not read from stdin: %s\n", err)
+		log.Fatalf("Could not read from stdin: %s", err)
 	}
-	title = strings.TrimSpace(title)
 	req := handle.GetTaskByTitleRequest{
 		Title: title,
 	}
@@ -154,12 +153,10 @@ func getTaskByTitle(t *handle.TaskControl) {
 func getTaskByOwner(t *handle.TaskControl) {
 	fmt.Println("Getting task...")
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Enter task owner: ")
-	owner, err := reader.ReadString('\n')
+	owner, err := promptUser(reader, "Enter task owner: ")
 	if err != nil {
-		log.Fatalf("Could not read from stdin: %s\n", err)
+		log.Fatalf("Could not read from stdin: %s", err)
 	}
-	owner = strings.TrimSpace(owner)
 	req := handle.GetTaskByOwnerRequest{
 		Owner: owner,
 	}
@@ -181,14 +178,10 @@ func getTaskByOwner(t *handle.TaskControl) {
 // updateTasks(t)
 func updateTasks(t *handle.TaskControl) {
 	reader := bufio.NewReader(os.Stdin)
-	// Call your function to update a task here
-	fmt.Println("Enter task id: ")
-	id, err := reader.ReadString('\n')
+	id, err := promptUser(reader, "Enter task id of task to be updated: ")
 	if err != nil {
 		log.Fatalf("Could not read from stdin: %s\n", err)
 	}
-	id = strings.TrimSpace(id)
-
 	req := handle.GetTaskRequest{
 		ID: id,
 	}
@@ -200,26 +193,19 @@ func updateTasks(t *handle.TaskControl) {
 	fmt.Println("Got task: ", task.Title)
 	fmt.Println("Description: ", task.Description)
 	fmt.Println("Enter New task title: ")
-	title, err := reader.ReadString('\n')
+
+	title, err := promptUser(reader, "Enter task title: ")
 	if err != nil {
 		log.Fatalf("Could not read from stdin: %s\n", err)
 	}
-	title = strings.TrimSpace(title)
-
-	fmt.Println("Enter New task description: ")
-	description, err := reader.ReadString('\n')
+	description, err := promptUser(reader, "Enter task description: ")
 	if err != nil {
 		log.Fatalf("Could not read from stdin: %s\n", err)
 	}
-	description = strings.TrimSpace(description)
-
-	fmt.Println("Enter New task owner: ")
-	owner, err := reader.ReadString('\n')
+	owner, err := promptUser(reader, "Enter task owner: ")
 	if err != nil {
 		log.Fatalf("Could not read from stdin: %s\n", err)
 	}
-	owner = strings.TrimSpace(owner)
-
 	update := handle.UpdateTaskRequest{
 		ID:          id,
 		Title:       title,
@@ -239,12 +225,10 @@ func updateTasks(t *handle.TaskControl) {
 // It then displays the details of the task to the user and asks for confirmation to delete the task. If the user confirms, it deletes the task using the TaskControl.DeleteTask function
 func deleteTask(t *handle.TaskControl) {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Enter task id of task to be deleted: ")
-	id, err := reader.ReadString('\n')
+	id, err := promptUser(reader, "Enter task id to be deleted: ")
 	if err != nil {
 		log.Fatalf("Could not read from stdin: %s\n", err)
 	}
-	id = strings.TrimSpace(id)
 	// Get task first to show user what task is being deleted
 	req := handle.GetTaskRequest{
 		ID: id,
@@ -295,44 +279,37 @@ func listTasks(t *handle.TaskControl) {
 	}
 }
 
+var handlerMap = map[string]func(*handle.TaskControl){
+	"create-task":       createTask,
+	"get-task":          getTask,
+	"get-task-by-title": getTaskByTitle,
+	"get-task-by-owner": getTaskByOwner,
+	"update-task":       updateTasks,
+	"delete-task":       deleteTask,
+	"list-tasks":        listTasks,
+}
+
 func runCommand(commandStr string) error {
 	taskRouter, db := cliSetup()
-	defer func(db *storm.DB) {
-		err := db.Close()
-		if err != nil {
+	defer func() {
+		if err := db.Close(); err != nil {
 			log.Fatalf("error closing db: %s", err)
 		}
-	}(db)
+	}()
 
 	commandStr = strings.TrimSuffix(commandStr, "\n")
 	arrCommandStr := strings.Fields(commandStr)
-	switch arrCommandStr[0] {
-	case "exit":
+	commandName := arrCommandStr[0]
+
+	if commandName == "exit" {
 		os.Exit(0)
-
-	case "create-task":
-		createTask(taskRouter)
-
-	case "get-task":
-		getTask(taskRouter)
-
-	case "get-task-by-title":
-		getTaskByTitle(taskRouter)
-
-	case "get-task-by-owner":
-		getTaskByOwner(taskRouter)
-
-	case "update-task":
-		updateTasks(taskRouter)
-
-	case "delete-task":
-		deleteTask(taskRouter)
-
-	case "list-tasks":
-		listTasks(taskRouter)
-	default:
-		return fmt.Errorf("unknown command: %s", commandStr)
 	}
 
+	// Check if the handler exists for the given command name
+	if handler, exists := handlerMap[commandName]; exists {
+		handler(taskRouter)
+	} else {
+		return fmt.Errorf("unknown command: %s", commandStr)
+	}
 	return nil
 }
