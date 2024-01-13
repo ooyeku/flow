@@ -115,7 +115,7 @@ func getTask(t *handle.TaskControl) {
 	fmt.Println("Enter task id: ")
 	id, err := reader.ReadString('\n')
 	if err != nil {
-		log.Fatalf("Could not read from stdin: %s", err)
+		log.Fatalf("Could not read from stdin: %s\n", err)
 	}
 	id = strings.TrimSpace(id)
 	req := handle.GetTaskRequest{
@@ -123,7 +123,8 @@ func getTask(t *handle.TaskControl) {
 	}
 	task, err := t.GetTask(&req)
 	if err != nil {
-		fmt.Printf("Error getting task with id %s: %s", id, err)
+		fmt.Printf("Error getting task with id %s: %s\n", id, err)
+		return
 	}
 	fmt.Println("Got task: ", task.Title)
 	fmt.Println("Description: ", task.Description)
@@ -135,7 +136,7 @@ func getTaskByTitle(t *handle.TaskControl) {
 	fmt.Println("Enter task title: ")
 	title, err := reader.ReadString('\n')
 	if err != nil {
-		log.Fatalf("Could not read from stdin: %s", err)
+		log.Fatalf("Could not read from stdin: %s\n", err)
 	}
 	title = strings.TrimSpace(title)
 	req := handle.GetTaskByTitleRequest{
@@ -156,7 +157,7 @@ func getTaskByOwner(t *handle.TaskControl) {
 	fmt.Println("Enter task owner: ")
 	owner, err := reader.ReadString('\n')
 	if err != nil {
-		log.Fatalf("Could not read from stdin: %s", err)
+		log.Fatalf("Could not read from stdin: %s\n", err)
 	}
 	owner = strings.TrimSpace(owner)
 	req := handle.GetTaskByOwnerRequest{
@@ -184,7 +185,7 @@ func updateTasks(t *handle.TaskControl) {
 	fmt.Println("Enter task id: ")
 	id, err := reader.ReadString('\n')
 	if err != nil {
-		log.Fatalf("Could not read from stdin: %s", err)
+		log.Fatalf("Could not read from stdin: %s\n", err)
 	}
 	id = strings.TrimSpace(id)
 
@@ -193,28 +194,29 @@ func updateTasks(t *handle.TaskControl) {
 	}
 	task, err := t.GetTask(&req)
 	if err != nil {
-		fmt.Printf("Error getting task with id %s: %s", id, err)
+		fmt.Printf("Error getting task with id %s: %s\n", id, err)
+		return
 	}
 	fmt.Println("Got task: ", task.Title)
 	fmt.Println("Description: ", task.Description)
 	fmt.Println("Enter New task title: ")
 	title, err := reader.ReadString('\n')
 	if err != nil {
-		log.Fatalf("Could not read from stdin: %s", err)
+		log.Fatalf("Could not read from stdin: %s\n", err)
 	}
 	title = strings.TrimSpace(title)
 
 	fmt.Println("Enter New task description: ")
 	description, err := reader.ReadString('\n')
 	if err != nil {
-		log.Fatalf("Could not read from stdin: %s", err)
+		log.Fatalf("Could not read from stdin: %s\n", err)
 	}
 	description = strings.TrimSpace(description)
 
 	fmt.Println("Enter New task owner: ")
 	owner, err := reader.ReadString('\n')
 	if err != nil {
-		log.Fatalf("Could not read from stdin: %s", err)
+		log.Fatalf("Could not read from stdin: %s\n", err)
 	}
 	owner = strings.TrimSpace(owner)
 
@@ -227,7 +229,8 @@ func updateTasks(t *handle.TaskControl) {
 	fmt.Println("Updating task...")
 	err = t.UpdateTask(&update)
 	if err != nil {
-		fmt.Printf("Error updating task with id %s: %s", id, err)
+		fmt.Printf("Error updating task with id %s: %s\n", id, err)
+		return
 	}
 	fmt.Println("Updated task with id: ", task.ID)
 }
@@ -239,7 +242,7 @@ func deleteTask(t *handle.TaskControl) {
 	fmt.Println("Enter task id of task to be deleted: ")
 	id, err := reader.ReadString('\n')
 	if err != nil {
-		log.Fatalf("Could not read from stdin: %s", err)
+		log.Fatalf("Could not read from stdin: %s\n", err)
 	}
 	id = strings.TrimSpace(id)
 	// Get task first to show user what task is being deleted
@@ -248,13 +251,14 @@ func deleteTask(t *handle.TaskControl) {
 	}
 	task, err := t.GetTask(&req)
 	if err != nil {
-		fmt.Printf("Error getting task with id %s: %s", id, err)
+		fmt.Printf("Error getting task with id %s: %s\n", id, err)
+		return
 	}
 	fmt.Println("Got task: ", task.Title)
 	fmt.Println("are you sure you want to delete this task? (y/n)")
 	confirm, err := reader.ReadString('\n')
 	if err != nil {
-		log.Fatalf("Could not read from stdin: %s", err)
+		log.Fatalf("Could not read from stdin: %s\n", err)
 	}
 	confirm = strings.TrimSpace(confirm)
 	if confirm == "n" {
@@ -266,7 +270,8 @@ func deleteTask(t *handle.TaskControl) {
 		}
 		err = t.DeleteTask(&req)
 		if err != nil {
-			fmt.Printf("Error deleting task with id %s: %s", id, err)
+			fmt.Printf("Error deleting task with id %s: %s\n", id, err)
+			return
 		}
 		fmt.Println("Deleted task with id: ", task.ID)
 	} else {
@@ -282,6 +287,7 @@ func listTasks(t *handle.TaskControl) {
 	tasks, err := t.ListTasks()
 	if err != nil {
 		fmt.Println("Error listing tasks: ", err)
+		return
 	}
 	// get task id and title of each task
 	for _, task := range tasks {
