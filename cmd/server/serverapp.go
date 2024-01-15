@@ -2,22 +2,66 @@ package main
 
 import (
 	"fmt"
+	"github.com/asdine/storm"
+	"github.com/gorilla/mux"
+	"goworkflow/api"
+	"goworkflow/internal/conf"
+	"goworkflow/internal/inmemory"
+	"goworkflow/pkg/handle"
+	"goworkflow/pkg/services"
 	"log"
 	"net/http"
+	"time"
 )
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	_, err := fmt.Fprintf(w, "Hello, you've requested: %s\n", r.URL.Path)
+func cliSetup() (*handle.TaskControl, *storm.DB, error) {
+	dbPath := conf.GetDBPath()
+	db, err := storm.Open(dbPath, storm.BoltOptions(0600, nil))
 	if err != nil {
-		log.Fatalf("error writing response: %s", err)
+		return nil, nil, fmt.Errorf("error opening db: %s", err)
 	}
+	// Intialize router, service and inmemory store
+	taskStore := inmemory.NewInMemoryTaskStore(db)
+	taskService := services.NewTaskService(taskStore)
+	taskRouter := handle.NewTaskControl(taskService)
+	return taskRouter, db, nil
+}
+
+// loggingMiddleware logs the request method, URL, and the time it took to process the request
+func loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		next.ServeHTTP(w, r)
+		log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
+	})
 }
 
 func main() {
-	http.HandleFunc("/", handler)
-	fmt.Println("Starting server at localhost:8080")
-	err := http.ListenAndServe(":8080", nil)
+	r := mux.NewRouter()
+	taskRouter, db, err := cliSetup()
 	if err != nil {
-		log.Fatalf("error starting server: %s", err)
+		log.Fatalf("error setting up cli: %s", err)
+	}
+
+	defer func(db *storm.DB) {
+		_ = db.Close()
+	}(db)
+
+	// Initialize TaskHandler
+	taskHandler := &api.TaskHandler{
+		Control: taskRouter,
+	}
+	// Register handlers
+	r.HandleFunc("/task/new", taskHandler.CreateTask).Methods("POST")
+	r.HandleFunc("/task/{id}", taskHandler.GetTask).Methods("GET")
+	r.HandleFunc("/list", taskHandler.ListTasks).Methods("GET")
+
+	// Apply the middleware to the router
+	r.Use(loggingMiddleware)
+
+	log.Println("Listening on port 8080")
+	err = http.ListenAndServe(":8080", r)
+	if err != nil {
+		log.Fatalf("error serving: %s", err)
 	}
 }

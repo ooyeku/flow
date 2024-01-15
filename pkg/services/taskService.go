@@ -3,6 +3,7 @@ package services
 import (
 	"goworkflow/internal/models"
 	"goworkflow/pkg/store"
+	"log"
 )
 
 // TaskService represents a service for managing tasks.
@@ -45,7 +46,12 @@ func (s *TaskService) GetTask(id string) (*models.Task, error) {
 
 // ListTasks retrieves all tasks from the store.
 func (s *TaskService) ListTasks() ([]*models.Task, error) {
-	return s.Store.ListTasks()
+	tasks, err := s.Store.ListTasks()
+	if err != nil {
+		log.Printf("Error in TaskService.ListTasks: %s", err)
+		return nil, err
+	}
+	return tasks, nil
 }
 
 func (s *TaskService) GetTaskByTitle(title string) (*models.Task, error) {
