@@ -52,9 +52,11 @@ func main() {
 		Control: taskRouter,
 	}
 	// Register handlers
+	r.HandleFunc("/list", taskHandler.ListTasks).Methods("GET")
 	r.HandleFunc("/task/new", taskHandler.CreateTask).Methods("POST")
 	r.HandleFunc("/task/{id}", taskHandler.GetTask).Methods("GET")
-	r.HandleFunc("/list", taskHandler.ListTasks).Methods("GET")
+	r.HandleFunc("/task/{id}", taskHandler.UpdateTask).Methods("PUT")
+	r.HandleFunc("/task/{id}", taskHandler.DeleteTask).Methods("DELETE")
 
 	// Apply the middleware to the router
 	r.Use(loggingMiddleware)

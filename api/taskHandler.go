@@ -45,3 +45,28 @@ func (h *TaskHandler) ListTasks(w http.ResponseWriter, r *http.Request) {
 	err = json.NewEncoder(w).Encode(res)
 	handleError(w, err, http.StatusInternalServerError)
 }
+
+func (h *TaskHandler) UpdateTask(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var req handle.UpdateTaskRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	handleError(w, err, http.StatusBadRequest)
+
+	req.ID = id // Ensure the ID from the URL is used
+
+	err = h.Control.UpdateTask(&req)
+	handleError(w, err, http.StatusInternalServerError)
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func (h *TaskHandler) DeleteTask(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	req := handle.DeleteTaskRequest{ID: id}
+	err := h.Control.DeleteTask(&req)
+	handleError(w, err, http.StatusInternalServerError)
+	w.WriteHeader(http.StatusOK)
+}
