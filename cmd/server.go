@@ -9,6 +9,12 @@ func init() {
 	rootCmd.AddCommand(serverCommand)
 }
 
+/*
+Right now if the server is running, cli command will work but not connect to db.  If the cli
+is running, the server command will not work.  Need to figure out how to run both at the same time, regardless
+of which one is started first.
+*/
+
 func executeServer(cmd *cobra.Command) {
 	// run server at cmd/server/serverapp.go
 	server := exec.Command("go", "run", "cmd/server/serverapp.go")
