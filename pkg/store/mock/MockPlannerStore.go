@@ -2,7 +2,7 @@ package mock
 
 import (
 	"errors"
-	"goworkflow/internal/models"
+	"flow/internal/models"
 	"sync"
 )
 

@@ -2,9 +2,9 @@ package handle
 
 import (
 	_ "encoding/json"
+	"flow/internal/models"
+	"flow/pkg/services"
 	"github.com/google/uuid"
-	"goworkflow/internal/models"
-	"goworkflow/pkg/services"
 	"time"
 )
 

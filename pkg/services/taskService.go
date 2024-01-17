@@ -1,8 +1,8 @@
 package services
 
 import (
-	"goworkflow/internal/models"
-	"goworkflow/pkg/store"
+	"flow/internal/models"
+	"flow/pkg/store"
 	"log"
 )
 

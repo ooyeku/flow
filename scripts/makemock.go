@@ -1,10 +1,10 @@
 package main
 
 import (
+	"flow/internal/inmemory"
+	handle2 "flow/pkg/handle"
+	"flow/pkg/services"
 	"github.com/asdine/storm"
-	"goworkflow/internal/inmemory"
-	handle2 "goworkflow/pkg/handle"
-	"goworkflow/pkg/services"
 	"log"
 	"time"
 )

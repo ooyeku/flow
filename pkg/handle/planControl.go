@@ -1,9 +1,9 @@
 package handle
 
 import (
+	"flow/internal/models"
+	"flow/pkg/services"
 	"github.com/google/uuid"
-	"goworkflow/internal/models"
-	"goworkflow/pkg/services"
 )
 
 // PlanControl is a type that provides control operations for managing plans.

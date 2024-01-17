@@ -1,8 +1,8 @@
 package services
 
 import (
-	"goworkflow/internal/models"
-	store2 "goworkflow/pkg/store"
+	"flow/internal/models"
+	store2 "flow/pkg/store"
 )
 
 // PlannerService is a type that provides operations for managing planners.

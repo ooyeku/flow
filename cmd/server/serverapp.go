@@ -1,14 +1,14 @@
 package main
 
 import (
+	"flow/api"
+	"flow/internal/conf"
+	"flow/internal/inmemory"
+	"flow/pkg/handle"
+	"flow/pkg/services"
 	"fmt"
 	"github.com/asdine/storm"
 	"github.com/gorilla/mux"
-	"goworkflow/api"
-	"goworkflow/internal/conf"
-	"goworkflow/internal/inmemory"
-	"goworkflow/pkg/handle"
-	"goworkflow/pkg/services"
 	"log"
 	"net/http"
 	"time"

@@ -2,12 +2,12 @@ package main
 
 import (
 	"bufio"
+	"flow/internal/conf"
+	"flow/internal/inmemory"
+	"flow/pkg/handle"
+	"flow/pkg/services"
 	"fmt"
 	"github.com/asdine/storm"
-	"goworkflow/internal/conf"
-	"goworkflow/internal/inmemory"
-	"goworkflow/pkg/handle"
-	"goworkflow/pkg/services"
 	"log"
 	"os"
 	"strings"

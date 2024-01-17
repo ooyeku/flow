@@ -1,10 +1,10 @@
 package handle
 
 import (
+	"flow/internal/models"
+	"flow/pkg/services"
 	"fmt"
 	"github.com/google/uuid"
-	"goworkflow/internal/models"
-	"goworkflow/pkg/services"
 	"time"
 )
 

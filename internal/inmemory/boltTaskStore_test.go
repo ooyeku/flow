@@ -1,9 +1,9 @@
 package inmemory
 
 import (
+	"flow/pkg/handle"
+	"flow/pkg/services"
 	"github.com/asdine/storm"
-	"goworkflow/pkg/handle"
-	"goworkflow/pkg/services"
 	"log"
 	"testing"
 )

@@ -1,8 +1,8 @@
 package mock
 
 import (
+	"flow/internal/models"
 	"github.com/stretchr/testify/assert"
-	"goworkflow/internal/models"
 	"testing"
 )
 

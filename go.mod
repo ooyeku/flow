@@ -1,4 +1,4 @@
-module goworkflow
+module flow
 
 go 1.21
 
