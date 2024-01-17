@@ -6,6 +6,7 @@ import (
 	handle2 "goworkflow/pkg/handle"
 	"goworkflow/pkg/services"
 	"log"
+	"time"
 )
 
 func main() {
@@ -50,7 +51,9 @@ func main() {
 
 	// Create a new goal
 	goalReq := &handle2.CreateGoalRequest{
-		PlannerId: plannerRes.ID,
+		Objective: "This is an automated makemock goal",
+		Deadline:  time.Now().AddDate(0, 0, 7),
+		PlannerId: "000",
 	}
 	goalRes, err := goalControl.CreateGoal(goalReq)
 	if err != nil {
