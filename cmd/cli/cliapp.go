@@ -61,6 +61,46 @@ func promptUser(reader *bufio.Reader, prompt string) (string, error) {
 	return strings.TrimSpace(response), nil
 }
 
+var taskCommands = map[string]func(*handle.TaskControl){
+	"create-task":       createTask,
+	"get-task":          getTask,
+	"get-task-by-title": getTaskByTitle,
+	"get-task-by-owner": getTaskByOwner,
+	"update-task":       updateTasks,
+	"delete-task":       deleteTask,
+	"list-tasks":        listTasks,
+}
+
+var goalCommands = map[string]func(*handle.GoalControl){
+	"create-goal":       createGoal,
+	"get-goal":          getGoal,
+	"get-goal-by-title": getGoalByTitle,
+	"get-goal-by-owner": getGoalByOwner,
+	"update-goal":       updateGoals,
+	"delete-goal":       deleteGoal,
+	"list-goals":        listGoals,
+}
+
+var planCommands = map[string]func(*handle.PlanControl){
+	"create-plan":       createPlan,
+	"get-plan":          getPlan,
+	"get-plan-by-title": getPlanByTitle,
+	"get-plan-by-owner": getPlanByOwner,
+	"update-plan":       updatePlans,
+	"delete-plan":       deletePlan,
+	"list-plans":        listPlans,
+}
+
+var plannerCommands = map[string]func(*handle.PlannerControl){
+	"create-planner":       createPlanner,
+	"get-planner":          getPlanner,
+	"get-planner-by-title": getPlannerByTitle,
+	"get-planner-by-owner": getPlannerByOwner,
+	"update-planner":       updatePlanners,
+	"delete-planner":       deletePlanner,
+	"list-planners":        listPlanners,
+}
+
 // createTask is a function that prompts the user to enter the details of a task,
 // creates the task using the provided TaskControl instance, and prints the ID of the created task.
 //
@@ -279,15 +319,29 @@ func listTasks(t *handle.TaskControl) {
 	}
 }
 
-var handlerMap = map[string]func(*handle.TaskControl){
-	"create-task":       createTask,
-	"get-task":          getTask,
-	"get-task-by-title": getTaskByTitle,
-	"get-task-by-owner": getTaskByOwner,
-	"update-task":       updateTasks,
-	"delete-task":       deleteTask,
-	"list-tasks":        listTasks,
-}
+func createGoal(g *handle.GoalControl)     {}
+func getGoal(g *handle.GoalControl)        {}
+func getGoalByTitle(g *handle.GoalControl) {}
+func getGoalByOwner(g *handle.GoalControl) {}
+func updateGoals(g *handle.GoalControl)    {}
+func deleteGoal(g *handle.GoalControl)     {}
+func listGoals(g *handle.GoalControl)      {}
+
+func createPlan(p *handle.PlanControl)     {}
+func getPlan(p *handle.PlanControl)        {}
+func getPlanByTitle(p *handle.PlanControl) {}
+func getPlanByOwner(p *handle.PlanControl) {}
+func updatePlans(p *handle.PlanControl)    {}
+func deletePlan(p *handle.PlanControl)     {}
+func listPlans(p *handle.PlanControl)      {}
+
+func createPlanner(p *handle.PlannerControl)     {}
+func getPlanner(p *handle.PlannerControl)        {}
+func getPlannerByTitle(p *handle.PlannerControl) {}
+func getPlannerByOwner(p *handle.PlannerControl) {}
+func updatePlanners(p *handle.PlannerControl)    {}
+func deletePlanner(p *handle.PlannerControl)     {}
+func listPlanners(p *handle.PlannerControl)      {}
 
 func runCommand(commandStr string) error {
 	taskRouter, db := cliSetup()
@@ -306,7 +360,7 @@ func runCommand(commandStr string) error {
 	}
 
 	// Check if the handler exists for the given command name
-	if handler, exists := handlerMap[commandName]; exists {
+	if handler, exists := taskCommands[commandName]; exists {
 		handler(taskRouter)
 	} else {
 		return fmt.Errorf("unknown command: %s", commandStr)
