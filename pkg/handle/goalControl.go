@@ -1,9 +1,11 @@
 package handle
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"goworkflow/internal/models"
 	"goworkflow/pkg/services"
+	"time"
 )
 
 // GoalControl represents a controller that provides methods to manage goals.
@@ -22,7 +24,9 @@ func NewGoalControl(service *services.GoalService) *GoalControl {
 // CreateGoalRequest represents a request to create a goal.
 // PlannerId is the ID of the planner for which the goal is being created.
 type CreateGoalRequest struct {
-	PlannerId string `json:"planner_id"`
+	Objective string    `json:"objective"`
+	Deadline  time.Time `json:"deadline"`
+	PlannerId string    `json:"planner_id"`
 }
 
 // CreateGoalResponse represents the response for creating a goal.
@@ -37,8 +41,15 @@ func (c *GoalControl) CreateGoal(req *CreateGoalRequest) (*CreateGoalResponse, e
 	if err != nil {
 		return nil, err
 	}
+	// convert deadline to time.Time
+	deadline, err := time.Parse("2006-01-02", req.Deadline.Format("2006-01-02"))
+	if err != nil {
+		return nil, fmt.Errorf("invalid deadline format: %v", err)
+	}
 	goal := &models.Goal{
 		Id:        id,
+		Objective: req.Objective,
+		Deadline:  deadline,
 		PlannerId: req.PlannerId,
 	}
 	err = c.Service.CreateGoal(goal)
@@ -55,13 +66,26 @@ func (c *GoalControl) CreateGoal(req *CreateGoalRequest) (*CreateGoalResponse, e
 // The PlannerId field represents the new planner ID to be assigned to the goal after the update.
 type UpdateGoalRequest struct {
 	Id        string `json:"id"`
+	Objective string `json:"objective"`
+	Deadline  string `json:"deadline"`
 	PlannerId string `json:"planner_id"`
+}
+
+type UpdateGoalResponse struct {
+	ID string `json:"id"`
 }
 
 // UpdateGoal updates a goal based on the provided request.
 func (c *GoalControl) UpdateGoal(req *UpdateGoalRequest) error {
+	// convert deadline to time.Time
+	deadline, err := time.Parse("2006-01-02", req.Deadline)
+	if err != nil {
+		return err
+	}
 	goal := &models.Goal{
 		Id:        req.Id,
+		Objective: req.Objective,
+		Deadline:  deadline,
 		PlannerId: req.PlannerId,
 	}
 	return c.Service.UpdateGoal(goal)
@@ -98,6 +122,42 @@ func (c *GoalControl) GetGoal(req *GetGoalRequest) (*GetGoalResponse, error) {
 	}
 	return &GetGoalResponse{
 		Goal: goal,
+	}, nil
+}
+
+type GetGoalByObjectiveRequest struct {
+	Objective string `json:"objective"`
+}
+
+type GetGoalByObjectiveResponse struct {
+	Goal *models.Goal `json:"goal"`
+}
+
+func (c *GoalControl) GetGoalByObjective(req *GetGoalByObjectiveRequest) (*GetGoalByObjectiveResponse, error) {
+	goal, err := c.Service.GetGoalByObjective(req.Objective)
+	if err != nil {
+		return nil, err
+	}
+	return &GetGoalByObjectiveResponse{
+		Goal: goal,
+	}, nil
+}
+
+type GetGoalsByPlannerIdRequest struct {
+	PlannerId string `json:"planner_id"`
+}
+
+type GetGoalsByPlannerIdResponse struct {
+	Goals []*models.Goal `json:"goals"`
+}
+
+func (c *GoalControl) GetGoalsByPlannerId(req *GetGoalsByPlannerIdRequest) (*GetGoalsByPlannerIdResponse, error) {
+	goals, err := c.Service.GetGoalsByPlannerId(req.PlannerId)
+	if err != nil {
+		return nil, err
+	}
+	return &GetGoalsByPlannerIdResponse{
+		Goals: goals,
 	}, nil
 }
 

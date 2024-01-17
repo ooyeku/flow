@@ -62,10 +62,27 @@ func (s *BoltGoalStore) DeleteGoal(id string) error {
 // - error: An error if the goal could not be retrieved.
 func (s *BoltGoalStore) GetGoal(id string) (*models.Goal, error) {
 	goal := new(models.Goal)
-	if err := s.db.One("ID", id, goal); err != nil {
+	if err := s.db.One("Id", id, goal); err != nil {
 		return nil, err
 	}
 	return goal, nil
+}
+
+func (s *BoltGoalStore) GetGoalByObjective(objective string) (*models.Goal, error) {
+	goal := new(models.Goal)
+	if err := s.db.One("Objective", objective, goal); err != nil {
+		return nil, err
+	}
+	return goal, nil
+}
+
+// GetGoalByPlannerId retrieves a goal from the BoltGoalStore based on its PlannerId.
+func (s *BoltGoalStore) GetGoalsByPlannerId(plannerId string) ([]*models.Goal, error) {
+	var goals []*models.Goal
+	if err := s.db.Find("PlannerId", plannerId, &goals); err != nil {
+		return nil, err
+	}
+	return goals, nil
 }
 
 // ListGoals returns a list of all goals stored in BoltGoalStore.

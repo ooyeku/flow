@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -37,7 +38,7 @@ func main() {
 }
 
 // cliSetup initializes the router, service, and in-memory store. It opens the database using the dbPath obtained from conf.GetDBPath(). If there is an error opening the database, it
-func cliSetup() (*handle.TaskControl, *storm.DB) {
+func cliSetup() (*handle.TaskControl, *handle.GoalControl, *storm.DB) {
 	dbPath := conf.GetDBPath()
 	db, err := storm.Open(dbPath, storm.BoltOptions(0600, nil))
 	if err != nil {
@@ -49,7 +50,11 @@ func cliSetup() (*handle.TaskControl, *storm.DB) {
 	taskService := services.NewTaskService(taskStore)
 	taskRouter := handle.NewTaskControl(taskService)
 
-	return taskRouter, db
+	goalStore := inmemory.NewInMemoryGoalStore(db)
+	goalService := services.NewGoalService(goalStore)
+	goalRouter := handle.NewGoalControl(goalService)
+
+	return taskRouter, goalRouter, db
 }
 
 func promptUser(reader *bufio.Reader, prompt string) (string, error) {
@@ -59,6 +64,46 @@ func promptUser(reader *bufio.Reader, prompt string) (string, error) {
 		return "", fmt.Errorf("could not read from stdin: %s", err)
 	}
 	return strings.TrimSpace(response), nil
+}
+
+var taskCommands = map[string]func(*handle.TaskControl){
+	"create-task":       createTask,
+	"get-task":          getTask,
+	"get-task-by-title": getTaskByTitle,
+	"get-task-by-owner": getTaskByOwner,
+	"update-task":       updateTasks,
+	"delete-task":       deleteTask,
+	"list-tasks":        listTasks,
+}
+
+var goalCommands = map[string]func(*handle.GoalControl){
+	"create-goal":       createGoal,
+	"get-goal":          getGoal,
+	"get-goal-by-title": getGoalByObjective,
+	"get-goal-by-owner": getGoalsByPlannerId,
+	"update-goal":       updateGoals,
+	"delete-goal":       deleteGoal,
+	"list-goals":        listGoals,
+}
+
+var planCommands = map[string]func(*handle.PlanControl){
+	"create-plan":       createPlan,
+	"get-plan":          getPlan,
+	"get-plan-by-title": getPlanByTitle,
+	"get-plan-by-owner": getPlanByOwner,
+	"update-plan":       updatePlans,
+	"delete-plan":       deletePlan,
+	"list-plans":        listPlans,
+}
+
+var plannerCommands = map[string]func(*handle.PlannerControl){
+	"create-planner":       createPlanner,
+	"get-planner":          getPlanner,
+	"get-planner-by-title": getPlannerByTitle,
+	"get-planner-by-owner": getPlannerByOwner,
+	"update-planner":       updatePlanners,
+	"delete-planner":       deletePlanner,
+	"list-planners":        listPlanners,
 }
 
 // createTask is a function that prompts the user to enter the details of a task,
@@ -279,18 +324,207 @@ func listTasks(t *handle.TaskControl) {
 	}
 }
 
-var handlerMap = map[string]func(*handle.TaskControl){
-	"create-task":       createTask,
-	"get-task":          getTask,
-	"get-task-by-title": getTaskByTitle,
-	"get-task-by-owner": getTaskByOwner,
-	"update-task":       updateTasks,
-	"delete-task":       deleteTask,
-	"list-tasks":        listTasks,
+func createGoal(g *handle.GoalControl) {
+	fmt.Println("Creating goal...")
+	reader := bufio.NewReader(os.Stdin)
+	objective, err := promptUser(reader, "Enter goal objective: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
+	deadline, err := promptUser(reader, "Enter goal deadline in YYYY-MM-DD format: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
+	plannerid, err := promptUser(reader, "Enter goal plannerid: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
+	// convert deadline to time.Time
+	tdeadline, err := time.Parse("2006-01-02", deadline)
+	if err != nil {
+		log.Fatalf("invalid deadline format: %v", err)
+	}
+	req := handle.CreateGoalRequest{
+		Objective: objective,
+		Deadline:  tdeadline,
+		PlannerId: plannerid,
+	}
+	res, err := g.CreateGoal(&req)
+	if err != nil {
+		fmt.Println("Error creating goal: ", err)
+	}
+	fmt.Println("Created goal with id: ", res.ID)
+}
+func getGoal(g *handle.GoalControl) {
+	fmt.Println("Getting goal...")
+	reader := bufio.NewReader(os.Stdin)
+	id, err := promptUser(reader, "Enter goal id: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
+	req := handle.GetGoalRequest{
+		Id: id,
+	}
+	goal, err := g.GetGoal(&req)
+	if err != nil {
+		fmt.Printf("Error getting goal with id %s: %s\n", id, err)
+		return
+	}
+	fmt.Println("Got goal: ", goal.Goal.Objective)
+	fmt.Println("Deadline: ", goal.Goal.Deadline)
+}
+func getGoalByObjective(g *handle.GoalControl) {
+	fmt.Println("Getting goal...")
+	reader := bufio.NewReader(os.Stdin)
+	objective, err := promptUser(reader, "Enter goal objective: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
+	req := handle.GetGoalByObjectiveRequest{
+		Objective: objective,
+	}
+	goal, err := g.GetGoalByObjective(&req)
+	if err != nil {
+		// error message is logged in GetGoalByObjective
+		return
+	}
+	fmt.Println("Got goal: ", goal.Goal.Objective)
+	fmt.Println("Deadline: ", goal.Goal.Deadline)
+}
+func getGoalsByPlannerId(g *handle.GoalControl) {
+	fmt.Println("Getting goal...")
+	reader := bufio.NewReader(os.Stdin)
+	plannerid, err := promptUser(reader, "Enter goal plannerid: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
+	req := handle.GetGoalsByPlannerIdRequest{
+		PlannerId: plannerid,
+	}
+	goals, err := g.GetGoalsByPlannerId(&req)
+	if err != nil {
+		// error message is logged in GetGoalByObjective
+		return
+	}
+	for _, goal := range goals.Goals {
+		fmt.Println("Got goal: ", goal.Objective)
+		fmt.Println("Deadline: ", goal.Deadline)
+	}
+}
+func updateGoals(g *handle.GoalControl) {
+	reader := bufio.NewReader(os.Stdin)
+	id, err := promptUser(reader, "Enter goal id of goal to be updated: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s\n", err)
+	}
+	req := handle.GetGoalRequest{
+		Id: id,
+	}
+	goal, err := g.GetGoal(&req)
+	if err != nil {
+		fmt.Printf("Error getting goal with id %s: %s\n", id, err)
+		return
+	}
+	fmt.Println("Got goal: ", goal.Goal.Objective)
+	fmt.Println("Deadline: ", goal.Goal.Deadline)
+	fmt.Println("Enter New goal objective: ")
+
+	objective, err := promptUser(reader, "Enter goal objective: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s\n", err)
+	}
+	deadline, err := promptUser(reader, "Enter goal deadline in YYYY-MM-DD format: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s\n", err)
+	}
+	plannerid, err := promptUser(reader, "Enter goal plannerid: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s\n", err)
+	}
+	update := handle.UpdateGoalRequest{
+		Id:        id,
+		Objective: objective,
+		Deadline:  deadline,
+		PlannerId: plannerid,
+	}
+	fmt.Println("Updating goal...")
+	err = g.UpdateGoal(&update)
+	if err != nil {
+		fmt.Printf("Error updating goal with id %s: %s\n", id, err)
+		return
+	}
+	fmt.Println("Updated goal with id: ", goal.Goal.Id)
+}
+func deleteGoal(g *handle.GoalControl) {
+	reader := bufio.NewReader(os.Stdin)
+	id, err := promptUser(reader, "Enter goal id to be deleted: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s\n", err)
+	}
+	// Get goal first to show user what goal is being deleted
+	req := handle.GetGoalRequest{
+		Id: id,
+	}
+	goal, err := g.GetGoal(&req)
+	if err != nil {
+		fmt.Printf("Error getting goal with id %s: %s\n", id, err)
+		return
+	}
+	fmt.Println("Got goal: ", goal.Goal.Objective)
+	fmt.Println("are you sure you want to delete this goal? (y/n)")
+	confirm, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s\n", err)
+	}
+	confirm = strings.TrimSpace(confirm)
+	if confirm == "n" {
+		fmt.Println("Goal not deleted")
+	} else if confirm == "y" {
+		fmt.Println("Deleting goal...")
+		req := handle.DeleteGoalRequest{
+			Id: id,
+		}
+		err = g.DeleteGoal(&req)
+		if err != nil {
+			fmt.Printf("Error deleting goal with id %s: %s\n", id, err)
+			return
+		}
+		fmt.Println("Deleted goal with id: ", goal.Goal.Id)
+	} else {
+		fmt.Println("Invalid input")
+	}
+}
+func listGoals(g *handle.GoalControl) {
+	fmt.Println("Listing goals...")
+	goals, err := g.ListGoals()
+	if err != nil {
+		fmt.Println("Error listing goals: ", err)
+		return
+	}
+	// get goal id and objective of each goal
+	for _, goal := range goals.Goals {
+		fmt.Printf("Goal id: %s, Objective: %s, Deadline %s\n", goal.Id, goal.Objective, goal.Deadline)
+	}
 }
 
+func createPlan(p *handle.PlanControl)     {}
+func getPlan(p *handle.PlanControl)        {}
+func getPlanByTitle(p *handle.PlanControl) {}
+func getPlanByOwner(p *handle.PlanControl) {}
+func updatePlans(p *handle.PlanControl)    {}
+func deletePlan(p *handle.PlanControl)     {}
+func listPlans(p *handle.PlanControl)      {}
+
+func createPlanner(p *handle.PlannerControl)     {}
+func getPlanner(p *handle.PlannerControl)        {}
+func getPlannerByTitle(p *handle.PlannerControl) {}
+func getPlannerByOwner(p *handle.PlannerControl) {}
+func updatePlanners(p *handle.PlannerControl)    {}
+func deletePlanner(p *handle.PlannerControl)     {}
+func listPlanners(p *handle.PlannerControl)      {}
+
 func runCommand(commandStr string) error {
-	taskRouter, db := cliSetup()
+	taskRouter, goalRouter, db := cliSetup()
 	defer func() {
 		if err := db.Close(); err != nil {
 			log.Fatalf("error closing db: %s", err)
@@ -305,11 +539,15 @@ func runCommand(commandStr string) error {
 		os.Exit(0)
 	}
 
-	// Check if the handler exists for the given command name
-	if handler, exists := handlerMap[commandName]; exists {
-		handler(taskRouter)
+	// if command is in taskCommands, run the command
+	// else if command is in goalCommands, run the command
+
+	if command, ok := taskCommands[commandName]; ok {
+		command(taskRouter)
+	} else if command, ok := goalCommands[commandName]; ok {
+		command(goalRouter)
 	} else {
-		return fmt.Errorf("unknown command: %s", commandStr)
+		fmt.Println("Command not found")
 	}
 	return nil
 }

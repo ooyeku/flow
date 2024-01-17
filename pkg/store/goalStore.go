@@ -10,4 +10,6 @@ type GoalStore interface {
 	DeleteGoal(id string) error
 	GetGoal(id string) (*models.Goal, error)
 	ListGoals() ([]*models.Goal, error)
+	GetGoalByObjective(objective string) (*models.Goal, error)
+	GetGoalsByPlannerId(id string) ([]*models.Goal, error)
 }
