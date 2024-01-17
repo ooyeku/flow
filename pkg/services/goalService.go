@@ -94,3 +94,11 @@ func (s *GoalService) GetGoal(id string) (*models.Goal, error) {
 func (s *GoalService) ListGoals() ([]*models.Goal, error) {
 	return s.store.ListGoals()
 }
+
+func (s *GoalService) GetGoalByObjective(objective string) (*models.Goal, error) {
+	return s.store.GetGoalByObjective(objective)
+}
+
+func (s *GoalService) GetGoalsByPlannerId(plannerId string) ([]*models.Goal, error) {
+	return s.store.GetGoalsByPlannerId(plannerId)
+}
