@@ -12,54 +12,51 @@ type BoltGoalStore struct {
 	db *storm.DB
 }
 
-// NewInMemoryGoalStore creates a new instance of BoltGoalStore with the given storm.DB instance as its dependency.
-// It returns a pointer to the BoltGoalStore.
+// NewInMemoryGoalStore is a function that returns a new instance of BoltGoalStore
+// initialized with the given storm.DB.
+// It takes a pointer to a storm.DB as a parameter.
+// It returns a pointer to BoltGoalStore.
 func NewInMemoryGoalStore(db *storm.DB) *BoltGoalStore {
 	return &BoltGoalStore{
 		db: db,
 	}
 }
 
-// CreateGoal takes a Goal object and saves it to the database.
-// An error is returned if the save operation fails.
+// CreateGoal creates a new goal in the BoltGoalStore.
+// It takes a Goal object as a parameter and saves it to the database.
+// The Goal object should have the following fields:
+// - Id             : string
+// - Objective      : string
+// - Plans          : []Plan
+// - GoalStatus     : string
+// - GoalCreatedAt  : time.Time
+// - GoalUpdatedAt  : time.Time
+// - Deadline       : time.Time
+// - PlannerId      : string
+// Returns an error if the save operation fails.
 func (s *BoltGoalStore) CreateGoal(goal *models.Goal) error {
 	return s.db.Save(goal)
 }
 
-// UpdateGoal updates the specified Goal in the BoltGoalStore.
-// It takes a Goal object as a parameter and updates the corresponding record in the database.
-// The Goal object should have the following fields:
-// - Id         : string
-// - Objective  : string
-// - Plans      : []Plan
-// - GoalStatus : string
-// - GoalCreatedAt : time.Time
-// - GoalUpdatedAt : time.Time
-// - Deadline   : time.Time
-// - PlannerId  : string
-// Returns an error if the update operation fails.
+// UpdateGoal takes a Goal object and updates it in the database.
+// An error is returned if the update operation fails.
 func (s *BoltGoalStore) UpdateGoal(goal *models.Goal) error {
 	return s.db.Update(goal)
 }
 
-// DeleteGoal deletes a goal with the specified ID from the BoltGoalStore.
-// It creates a new Goal instance with the given ID, and calls the DeleteStruct
-// method of the BoltDB client to delete the goal from the database.
-// If successful, it returns nil. Otherwise, an error is returned.
+// DeleteGoal takes an ID string and deletes the goal with that ID from the database.
+// It creates a new instance of models.Goal with the given ID, sets it as the ID of the goal to be deleted,
+// and then calls the DeleteStruct method of the s.db (storm.DB) object to delete the goal from the database.
+// An error is returned if the delete operation fails.
 func (s *BoltGoalStore) DeleteGoal(id string) error {
 	goal := new(models.Goal)
 	goal.Id = id
 	return s.db.DeleteStruct(goal)
 }
 
-// GetGoal retrieves a goal from the BoltGoalStore based on its ID.
-//
-// Parameters:
-// - id: The ID of the goal to retrieve.
-//
-// Returns:
-// - *models.Goal: The goal object that matches the given ID.
-// - error: An error if the goal could not be retrieved.
+// GetGoal takes an id string and returns the goal with that id from the database.
+// If the goal is not found, it returns nil and an error.
+// If an error occurs during the database query, it returns nil and the error.
 func (s *BoltGoalStore) GetGoal(id string) (*models.Goal, error) {
 	goal := new(models.Goal)
 	if err := s.db.One("Id", id, goal); err != nil {
@@ -68,6 +65,9 @@ func (s *BoltGoalStore) GetGoal(id string) (*models.Goal, error) {
 	return goal, nil
 }
 
+// GetGoalByObjective takes an objective string and retrieves the corresponding goal from the database.
+// If the goal is found, it is returned along with nil error.
+// If the goal is not found or an error occurs during the retrieval, nil goal and the error are returned.
 func (s *BoltGoalStore) GetGoalByObjective(objective string) (*models.Goal, error) {
 	goal := new(models.Goal)
 	if err := s.db.One("Objective", objective, goal); err != nil {
@@ -76,7 +76,11 @@ func (s *BoltGoalStore) GetGoalByObjective(objective string) (*models.Goal, erro
 	return goal, nil
 }
 
-// GetGoalsByPlannerId GetGoalByPlannerId retrieves a goal from the BoltGoalStore based on its PlannerId.
+// GetGoalsByPlannerId takes a plannerId string as input and retrieves
+// all goals associated with the specified plannerId from the database.
+// It returns a slice of Goal objects and an error. If the database
+// retrieval fails, it returns nil and the error. If the retrieval
+// is successful, it returns the slice of Goal objects and nil error.
 func (s *BoltGoalStore) GetGoalsByPlannerId(plannerId string) ([]*models.Goal, error) {
 	var goals []*models.Goal
 	if err := s.db.Find("PlannerId", plannerId, &goals); err != nil {
@@ -85,9 +89,7 @@ func (s *BoltGoalStore) GetGoalsByPlannerId(plannerId string) ([]*models.Goal, e
 	return goals, nil
 }
 
-// ListGoals returns a list of all goals stored in BoltGoalStore.
-// It retrieves the goals from the BoltDB database and returns them as a slice of Goal pointers.
-// If an error occurs during the retrieval process, it returns an empty slice and the error.
+// handle error
 func (s *BoltGoalStore) ListGoals() ([]*models.Goal, error) {
 	var goals []*models.Goal
 	if err := s.db.All(&goals); err != nil {
@@ -96,9 +98,9 @@ func (s *BoltGoalStore) ListGoals() ([]*models.Goal, error) {
 	return goals, nil
 }
 
-// generateGoalUUID is a function that generates a new UUID for a goal.
-// It returns a string representation of the generated UUID and an error, if any.
-// The function uses the uuid package to generate the UUID.
+// generateGoalUUID generates a new unique UUID for a goal.
+// It uses the uuid.New().String() function from the "github.com/google/uuid" package to generate the UUID.
+// It returns the generated UUID as a string and returns nil error.
 func generateGoalUUID() (string, error) {
 	return uuid.New().String(), nil
 }

@@ -14,27 +14,21 @@ type TaskControl struct {
 }
 
 // NewTaskControl creates a new instance of TaskControl.
-// It takes in a pointer to a TaskService and returns a pointer to TaskControl.
-// TaskControl is a struct that provides control functions for tasks, such as creating, updating, deleting, getting, and listing tasks.
-// Usage example:
-//
-//	taskService := &services.TaskService{
-//	    Store: &store.TaskStore{}, // replace with your TaskStore implementation
-//	}
-//	taskControl := NewTaskControl(taskService)
-//	// Use taskControl to perform task operations
+// It takes a pointer to a TaskService as a parameter and returns a pointer to TaskControl.
+// TaskControl is a struct that contains a reference to a TaskService.
 func NewTaskControl(service *services.TaskService) *TaskControl {
 	return &TaskControl{
 		service: service,
 	}
 }
 
-// CreateTaskResponse represents the response object for creating a task.
+// CreateTaskResponse represents the response object when creating a task.
 type CreateTaskResponse struct {
 	ID string `json:"id"`
 }
 
 // CreateTaskRequest represents a request to create a new task.
+// It contains the title, description, and owner of the task.
 type CreateTaskRequest struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
@@ -100,7 +94,7 @@ type DeleteTaskRequest struct {
 	ID string `json:"id"`
 }
 
-// DeleteTask deletes a task with the provided ID from the store. It returns an error if the task deletion fails.
+// DeleteTask deletes a task based on the provided request ID. It calls the Store's DeleteTask method.
 func (c *TaskControl) DeleteTask(req *DeleteTaskRequest) error {
 	if err := c.service.Store.DeleteTask(req.ID); err != nil {
 		return err
@@ -108,33 +102,33 @@ func (c *TaskControl) DeleteTask(req *DeleteTaskRequest) error {
 	return nil
 }
 
-// TaskRequest is the interface that wraps the GetID method so that it can
-// be used by GetTaskRequest, GetTaskByTitleRequest, and GetTaskByOwnerRequest.
+// TaskRequest represents an interface for retrieving the ID of a task.
 type TaskRequest interface {
 	GetID() string
 }
 
-// GetTaskRequest represents a request to get a task by its ID.
+// GetTaskRequest represents a request to get a task.
 type GetTaskRequest struct {
 	ID string `json:"id"`
 }
 
-// GetID implements the TaskRequest interface for GetTaskRequest.
+// GetID returns the ID of the GetTaskRequest.
 func (req *GetTaskRequest) GetID() string {
 	return req.ID
 }
 
 // GetTaskByTitleRequest represents a request to get a task by its title.
+// The title field is used to specify the title of the task to retrieve.
 type GetTaskByTitleRequest struct {
 	Title string `json:"title"`
 }
 
-// GetID implements the TaskRequest interface for GetTaskByTitleRequest.
+// GetID returns the title of the task as the unique identifier.
 func (req *GetTaskByTitleRequest) GetID() string {
 	return req.Title
 }
 
-// GetTaskByOwnerRequest represents a request to get a task by its owner.
+// GetTaskByOwnerRequest represents a request to get tasks owned by a specific owner.
 type GetTaskByOwnerRequest struct {
 	Owner string `json:"owner"`
 }
@@ -145,15 +139,8 @@ func (req *GetTaskByOwnerRequest) GetID() string {
 	return req.Owner
 }
 
-// GetTaskResponse represents the response data structure for retrieving a task.
-// ID represents the unique identifier of the task.
-// Title represents the title of the task.
-// Description represents the description of the task.
-// Owner represents the owner of the task.
-// Started indicates whether the task has been started or not.
-// Completed indicates whether the task has been completed or not.
-// CreatedAt represents the timestamp when the task was created.
-// UpdatedAt represents the timestamp when the task was last updated.
+// GetTaskResponse represents the response structure for getting a task.
+// It contains the ID, title, description, owner, started status, completed status, creation timestamp, and update timestamp of the task.
 type GetTaskResponse struct {
 	ID          string    `json:"id"`
 	Title       string    `json:"title"`
@@ -165,7 +152,7 @@ type GetTaskResponse struct {
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
-// GetTask retrieves information about a task based on the provided request ID. It calls the service's GetTask method and returns a GetTaskResponse with the task details. If an error
+// GetTask retrieves the task with the specified ID from the service. It returns the task details in the response.
 func (c *TaskControl) GetTask(req *GetTaskRequest) (*GetTaskResponse, error) {
 	task, err := c.service.GetTask(req.ID)
 	if err != nil {
@@ -183,6 +170,7 @@ func (c *TaskControl) GetTask(req *GetTaskRequest) (*GetTaskResponse, error) {
 	}, nil
 }
 
+// GetTaskByTitle returns a task with the specified title. It retrieves the task from the service by calling GetTaskByTitle. If the task is found, it is returned in the GetTaskResponse
 func (c *TaskControl) GetTaskByTitle(req *GetTaskByTitleRequest) (*GetTaskResponse, error) {
 	task, err := c.service.GetTaskByTitle(req.Title)
 	if err != nil {
@@ -200,6 +188,7 @@ func (c *TaskControl) GetTaskByTitle(req *GetTaskByTitleRequest) (*GetTaskRespon
 	}, nil
 }
 
+// GetTaskByOwner retrieves a task based on the provided owner. It calls the service's GetTaskByOwner method, passing the owner as a parameter. If an error occurs, it returns nil and
 func (c *TaskControl) GetTaskByOwner(req *GetTaskByOwnerRequest) (*GetTaskResponse, error) {
 	task, err := c.service.GetTaskByOwner(req.Owner)
 	if err != nil {
@@ -217,8 +206,9 @@ func (c *TaskControl) GetTaskByOwner(req *GetTaskByOwnerRequest) (*GetTaskRespon
 	}, nil
 }
 
-// ListTasksResponse is a struct that represents the response for listing tasks. It contains an array of GetTaskResponse objects, named Tasks, which are the tasks retrieved.
-// The JSON field tag for the Tasks array is "tasks", indicating how it should be serialized and deserialized when encoding and decoding JSON data.
+// ListTasksResponse represents a response containing a list of tasks.
+// It contains an array of GetTaskResponse objects.
+// Each GetTaskResponse object represents a single task with its details.
 type ListTasksResponse struct {
 	Tasks []*GetTaskResponse `json:"tasks"`
 }
@@ -249,7 +239,9 @@ func (c *TaskControl) ListTasks() ([]GetTaskResponse, error) {
 }
 
 // generateTaskUUID generates a unique task UUID using the uuid.NewRandom() function.
-// It returns the generated UUID as a string and any error encountered during the process.
+// It returns the generated UUID as a string and an error if any.
+// Example usage:
+// id, err := generateTaskUUID()
 func generateTaskUUID() (string, error) {
 	id, err := uuid.NewRandom()
 	if err != nil {

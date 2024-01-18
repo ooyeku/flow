@@ -11,6 +11,9 @@ type BoltPlanStore struct {
 	db *storm.DB
 }
 
+// GetPlanByName retrieves a plan by its name.
+// It takes a string parameter 'name' representing the plan name.
+// It returns a pointer to a Plan object and an error. If there was an issue while retrieving the plan from the database, an error is returned. Otherwise, the plan is returned.
 func (s *BoltPlanStore) GetPlanByName(name string) (*models.Plan, error) {
 	plan := new(models.Plan)
 	if err := s.db.One("Name", name, plan); err != nil {
@@ -19,6 +22,9 @@ func (s *BoltPlanStore) GetPlanByName(name string) (*models.Plan, error) {
 	return plan, nil
 }
 
+// GetPlansByGoal retrieves plans associated with a specific goal ID.
+// It takes a string parameter 'id' representing the goal ID.
+// It returns a slice of pointers to Plan objects and an error. If there was an issue while retrieving the plans from the database, an error is returned. Otherwise, the slice of plans
 func (s *BoltPlanStore) GetPlansByGoal(id string) ([]*models.Plan, error) {
 	var plans []*models.Plan
 	if err := s.db.Find("GoalId", id, &plans); err != nil {
@@ -27,26 +33,24 @@ func (s *BoltPlanStore) GetPlansByGoal(id string) ([]*models.Plan, error) {
 	return plans, nil
 }
 
-// NewInMemoryPlanStore is a function that creates a new instance of BoltPlanStore
-// with the provided Storm database connection.
-// It returns a pointer to the newly created BoltPlanStore.
+// NewInMemoryPlanStore creates a new instance of BoltPlanStore by initializing it with the provided DB instance.
 func NewInMemoryPlanStore(db *storm.DB) *BoltPlanStore {
 	return &BoltPlanStore{
 		db: db,
 	}
 }
 
-// CreatePlan creates a new plan in the BoltPlanStore.
-// It takes a pointer to a Plan object representing the plan to be created.
-// It returns an error if there was an issue while saving the plan to the database.
+// CreatePlan inserts a new plan into the BoltDB database.
+// It takes a pointer to a models.Plan as an argument and returns an error.
+// The function calls the Save method of the underlying BoltDB connection,
+// passing the plan as the argument to save it as a new record in the database.
 func (s *BoltPlanStore) CreatePlan(plan *models.Plan) error {
 	return s.db.Save(plan)
 }
 
-// UpdatePlan updates the given plan in the BoltDB database.
-// It takes a pointer to a models.Plan as an argument and returns an error.
-// The function calls the Update method of the underlying BoltDB connection,
-// passing the plan as the argument to update the corresponding record in the database.
+// UpdatePlan updates an existing plan in the BoltPlanStore.
+// It takes a pointer to a Plan object representing the plan to be updated.
+// It returns an error if there was an issue while updating the plan in the database.
 func (s *BoltPlanStore) UpdatePlan(plan *models.Plan) error {
 	return s.db.Update(plan)
 }
@@ -72,17 +76,24 @@ func (s *BoltPlanStore) DeletePlan(id string) error {
 	return s.db.DeleteStruct(plan)
 }
 
-// GetPlan retrieves a specific plan from the BoltPlanStore based on its ID.
-// The plan is returned as a pointer to models.Plan object.
-// If the plan is not found, an error is returned.
+// GetPlan retrieves a plan from the BoltPlanStore based on the specified ID.
+// It takes a string parameter "id" representing the ID of the plan to be retrieved.
+// Returns a pointer to a models.Plan object and an error.
+// If there was an issue retrieving the plan from the database, an error is returned.
+//
 // Example usage:
 //
 //	plan, err := store.GetPlan("123")
 //	if err != nil {
-//	  log.Println("Error:", err)
-//	} else {
-//	  log.Println("Plan:", plan)
+//	    log.Println("Failed to get plan:", err)
 //	}
+//	fmt.Println(plan)
+//
+// Note: This method is part of the BoltPlanStore struct that provides methods for managing plans.
+// The BoltPlanStore struct uses the storm.DB instance for database operations.
+// To access other methods in the BoltPlanStore, create an instance of the struct and call the desired method.
+//
+// See also: BoltPlanStore, models.Plan
 func (s *BoltPlanStore) GetPlan(id string) (*models.Plan, error) {
 	plan := new(models.Plan)
 	if err := s.db.One("ID", id, plan); err != nil {
@@ -91,9 +102,9 @@ func (s *BoltPlanStore) GetPlan(id string) (*models.Plan, error) {
 	return plan, nil
 }
 
-// ListPlans returns a list of all plans stored in the BoltPlanStore.
-// It retrieves all plans from the underlying BoltDB database and returns them as a slice of pointers to models.Plan.
-// If an error occurs during the retrieval process, it returns nil and the corresponding error.
+// ListPlans retrieves all plans from the BoltPlanStore.
+// It returns a slice of pointers to Plan objects representing the plans,
+// and an error if there was an issue while retrieving the plans from the database.
 func (s *BoltPlanStore) ListPlans() ([]*models.Plan, error) {
 	var plans []*models.Plan
 	if err := s.db.All(&plans); err != nil {
@@ -102,7 +113,20 @@ func (s *BoltPlanStore) ListPlans() ([]*models.Plan, error) {
 	return plans, nil
 }
 
-// generatePlanUUID generates a new UUID string for a plan.
+// generatePlanUUID is a function that generates a new UUID for a plan.
+// It uses the uuid.New() function from the "github.com/google/uuid" package
+// to generate a new UUID. The generated UUID is then converted to a string
+// using the String() method. The function returns the generated UUID as a string
+// and a nil error if the generation process is successful.
+// Example usage:
+// uuid, err := generatePlanUUID()
+//
+//	if err != nil {
+//	    log.Fatal(err)
+//	}
+//
+// fmt.Println(uuid)
+// Output: f47ac10b-58cc-4372-a567-0e02b2c3d479
 func generatePlanUUID() (string, error) {
 	return uuid.New().String(), nil
 }
