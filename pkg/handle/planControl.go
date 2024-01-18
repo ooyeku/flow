@@ -20,7 +20,10 @@ func NewPlanControl(service *services.PlanService) *PlanControl {
 
 // CreatePlanRequest represents the request body for creating a plan.
 type CreatePlanRequest struct {
-	GoalId string `json:"goal_id"`
+	PlanName        string `json:"plan_name"`
+	PlanDescription string `json:"plan_description"`
+	PlanDate        string `json:"plan_date"`
+	PlanTime        string `json:"plan_time"`
 }
 
 // CreatePlanResponse represents the response object for creating a plan.
@@ -34,10 +37,18 @@ func (c *PlanControl) CreatePlan(req *CreatePlanRequest) (*CreatePlanResponse, e
 	if err != nil {
 		return nil, err
 	}
-	plan := &models.Plan{
-		Id:     id,
-		GoalId: req.GoalId,
+	m := &models.Plan{}
+	// convert planDate to time.Time
+	planDate, err := m.ConvertPlanDate(req.PlanDate)
+	if err != nil {
+		return nil, err
 	}
+	// convert planTime to time.Time
+	planTime, err := m.ConvertPlanTime(req.PlanTime)
+	if err != nil {
+		return nil, err
+	}
+	plan := m.GeneratePlanInstance(id, req.PlanName, req.PlanDescription, planDate, planTime)
 	err = c.Service.CreatePlan(plan)
 	if err != nil {
 		return nil, err
@@ -49,8 +60,14 @@ func (c *PlanControl) CreatePlan(req *CreatePlanRequest) (*CreatePlanResponse, e
 
 // UpdatePlanRequest represents a request to update a plan with new data.
 type UpdatePlanRequest struct {
-	Id     string `json:"id"`
-	GoalId string `json:"goal_id"`
+	// updateplanrequest only updates the fields below.
+	// updates to status and tasks are handled by other endpoints.
+	Id              string `json:"id"`
+	PlanName        string `json:"plan_name"`
+	PlanDescription string `json:"plan_description"`
+	PlanDate        string `json:"plan_date"`
+	PlanTime        string `json:"plan_time"`
+	GoalId          string `json:"goal_id"`
 }
 
 // UpdatePlan updates a plan with the provided request. It creates a new `models.Plan` struct
@@ -58,10 +75,19 @@ type UpdatePlanRequest struct {
 // the `PlanService` stored in the `PlanControl` struct, passing the newly created plan as the argument.
 // It returns an error if there was a problem updating the plan.
 func (c *PlanControl) UpdatePlan(req *UpdatePlanRequest) error {
-	plan := &models.Plan{
-		Id:     req.Id,
-		GoalId: req.GoalId,
+	m := &models.Plan{}
+	// convert planDate to time.Time
+	planDate, err := m.ConvertPlanDate(req.PlanDate)
+	if err != nil {
+		return err
 	}
+	// convert planTime to time.Time
+	planTime, err := m.ConvertPlanTime(req.PlanTime)
+	if err != nil {
+		return err
+	}
+	plan := m.GeneratePlanInstance(req.Id, req.PlanName, req.PlanDescription, planDate, planTime)
+	plan.GoalId = req.GoalId
 	return c.Service.UpdatePlan(plan)
 }
 

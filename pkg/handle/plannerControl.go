@@ -37,10 +37,8 @@ func (c *PlannerControl) CreatePlanner(req *CreatePlannerRequest) (*CreatePlanne
 	if err != nil {
 		return nil, err
 	}
-	planner := &models.Planner{
-		Id:     id,
-		UserId: req.UserId,
-	}
+	m := &models.Planner{}
+	planner := m.GeneratePlannerInstance(id, req.UserId)
 	err = c.Service.CreatePlanner(planner)
 	if err != nil {
 		return nil, err

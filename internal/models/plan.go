@@ -23,7 +23,17 @@ func (p *Plan) GeneratePlanInstance(id, planName, planDescription string, planDa
 		PlanDate:        planDate,
 		PlanTime:        planTime,
 		PlanStatus:      NotStarted,
+		Tasks:           []Task{},
 		PlanCreatedAt:   time.Now(),
 		PlanUpdatedAt:   time.Now(),
+		GoalId:          "",
 	}
+}
+
+func (p *Plan) ConvertPlanDate(date string) (time.Time, error) {
+	return time.Parse("2006-01-02", date)
+}
+
+func (p *Plan) ConvertPlanTime(planTime string) (time.Time, error) {
+	return time.Parse("15:04", planTime)
 }

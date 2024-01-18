@@ -46,12 +46,8 @@ func (c *GoalControl) CreateGoal(req *CreateGoalRequest) (*CreateGoalResponse, e
 	if err != nil {
 		return nil, fmt.Errorf("invalid deadline format: %v", err)
 	}
-	goal := &models.Goal{
-		Id:        id,
-		Objective: req.Objective,
-		Deadline:  deadline,
-		PlannerId: req.PlannerId,
-	}
+	m := &models.Goal{}
+	goal := m.GenerateGoalInstance(id, req.Objective, deadline)
 	err = c.Service.CreateGoal(goal)
 	if err != nil {
 		return nil, err
@@ -82,13 +78,16 @@ func (c *GoalControl) UpdateGoal(req *UpdateGoalRequest) error {
 	if err != nil {
 		return err
 	}
-	goal := &models.Goal{
-		Id:        req.Id,
-		Objective: req.Objective,
-		Deadline:  deadline,
-		PlannerId: req.PlannerId,
+	m := &models.Goal{}
+	goal := m.GenerateGoalInstance(req.Id, req.Objective, deadline)
+
+	// for now, updategoal sets the createdat and updatedat fields to the current time
+	// this is because the frontend does not have a way to set these fields
+	err = c.Service.UpdateGoal(goal)
+	if err != nil {
+		return err
 	}
-	return c.Service.UpdateGoal(goal)
+	return nil
 }
 
 // DeleteGoalRequest represents a request to delete a goal.
