@@ -10,4 +10,6 @@ type PlannerStore interface {
 	DeletePlanner(id string) error
 	GetPlanner(id string) (*models.Planner, error)
 	ListPlanners() ([]*models.Planner, error)
+	GetPlannerByTitle(title string) (*models.Planner, error)
+	GetPlannerByOwner(id string) ([]*models.Planner, error)
 }

@@ -89,3 +89,11 @@ func (s *PlannerService) GetPlanner(id string) (*models.Planner, error) {
 func (s *PlannerService) ListPlanners() ([]*models.Planner, error) {
 	return s.store.ListPlanners()
 }
+
+func (s *PlannerService) GetPlannerByTitle(title string) (*models.Planner, error) {
+	return s.store.GetPlannerByTitle(title)
+}
+
+func (s *PlannerService) GetPlannerByOwner(id string) ([]*models.Planner, error) {
+	return s.store.GetPlannerByOwner(id)
+}

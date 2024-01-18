@@ -9,6 +9,22 @@ type BoltPlannerStore struct {
 	db *storm.DB
 }
 
+func (s *BoltPlannerStore) GetPlannerByTitle(title string) (*models.Planner, error) {
+	planner := new(models.Planner)
+	if err := s.db.One("Title", title, planner); err != nil {
+		return nil, err
+	}
+	return planner, nil
+}
+
+func (s *BoltPlannerStore) GetPlannerByOwner(id string) ([]*models.Planner, error) {
+	var planners []*models.Planner
+	if err := s.db.Find("UserId", id, &planners); err != nil {
+		return nil, err
+	}
+	return planners, nil
+}
+
 func NewInMemoryPlannerStore(db *storm.DB) *BoltPlannerStore {
 	return &BoltPlannerStore{
 		db: db,

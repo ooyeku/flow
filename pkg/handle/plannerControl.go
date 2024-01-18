@@ -22,6 +22,7 @@ func NewPlannerControl(service *services.PlannerService) *PlannerControl {
 // CreatePlannerRequest represents a request to create a planner.
 // UserId is the ID of the user for whom the planner is being created.
 type CreatePlannerRequest struct {
+	Title  string `json:"title"`
 	UserId string `json:"user_id"`
 }
 
@@ -38,7 +39,7 @@ func (c *PlannerControl) CreatePlanner(req *CreatePlannerRequest) (*CreatePlanne
 		return nil, err
 	}
 	m := &models.Planner{}
-	planner := m.GeneratePlannerInstance(id, req.UserId)
+	planner := m.GeneratePlannerInstance(id, req.Title, req.UserId)
 	err = c.Service.CreatePlanner(planner)
 	if err != nil {
 		return nil, err
@@ -53,6 +54,7 @@ func (c *PlannerControl) CreatePlanner(req *CreatePlannerRequest) (*CreatePlanne
 // The UserId field represents the new user ID to be assigned to the planner after the update.
 type UpdatePlannerRequest struct {
 	Id     string `json:"id"`
+	Title  string `json:"title"`
 	UserId string `json:"user_id"`
 }
 
@@ -66,6 +68,7 @@ func (c *PlannerControl) UpdatePlanner(req *UpdatePlannerRequest) error {
 		return err
 	}
 	planner.UserId = req.UserId
+	planner.Title = req.Title
 	if err := c.Service.UpdatePlanner(planner); err != nil {
 		return err
 	}
@@ -94,6 +97,7 @@ type GetPlannerRequest struct {
 // GetPlannerResponse is a struct that represents the response object for retrieving a planner.
 type GetPlannerResponse struct {
 	Id     string `json:"id"`
+	Title  string `json:"title"`
 	UserId string `json:"user_id"`
 }
 
@@ -108,6 +112,64 @@ func (c *PlannerControl) GetPlanner(req *GetPlannerRequest) (*GetPlannerResponse
 	return &GetPlannerResponse{
 		Id:     planner.Id,
 		UserId: planner.UserId,
+	}, nil
+}
+
+type GetPlannerByTitleRequest struct {
+	Title string `json:"title"`
+}
+
+// GetPlannerByTitleResponse is a struct that represents the response object for retrieving a planner.
+type GetPlannerByTitleResponse struct {
+	Id     string `json:"id"`
+	Title  string `json:"title"`
+	UserId string `json:"user_id"`
+}
+
+// GetPlannerByTitle retrieves a planner with the specified title from the planner service.
+// It takes a GetPlannerByTitleRequest as input, which contains the title of the planner to retrieve.
+// It returns a GetPlannerByTitleResponse, containing the ID and user ID of the retrieved planner, or an error if the retrieval fails.
+func (c *PlannerControl) GetPlannerByTitle(req *GetPlannerByTitleRequest) (*GetPlannerByTitleResponse, error) {
+	planner, err := c.Service.GetPlannerByTitle(req.Title)
+	if err != nil {
+		return nil, err
+	}
+	return &GetPlannerByTitleResponse{
+		Id:     planner.Id,
+		UserId: planner.UserId,
+	}, nil
+}
+
+type GetPlannerByOwnerRequest struct {
+	UserId string `json:"user_id"`
+}
+
+// GetPlannerByOwnerResponse is a struct that represents the response object for retrieving a planner.
+type GetPlannerByOwnerResponse struct {
+	Id     string `json:"id"`
+	Title  string `json:"title"`
+	UserId string `json:"user_id"`
+}
+
+// GetPlannerByOwner retrieves a planner with the specified owner from the planner service.
+// It takes a GetPlannerByOwnerRequest as input, which contains the owner of the planner to retrieve.
+// It returns a GetPlannerByOwnerResponse, containing the ID and user ID of the retrieved planner, or an error if the retrieval fails.
+func (c *PlannerControl) GetPlannerByOwner(req *GetPlannerByOwnerRequest) (*GetPlannerByOwnerResponse, error) {
+	planners, err := c.Service.GetPlannerByOwner(req.UserId)
+	if err != nil {
+		return nil, err
+	}
+	// get all planner from planners
+	var plannerResponses []*GetPlannerByOwnerResponse
+	for _, planner := range planners {
+		plannerResponses = append(plannerResponses, &GetPlannerByOwnerResponse{
+			Id:     planner.Id,
+			UserId: planner.UserId,
+		})
+	}
+	return &GetPlannerByOwnerResponse{
+		Id:     plannerResponses[0].Id,
+		UserId: plannerResponses[0].UserId,
 	}, nil
 }
 

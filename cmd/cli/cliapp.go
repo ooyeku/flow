@@ -37,7 +37,7 @@ func main() {
 }
 
 // cliSetup initializes the router, service, and in-memory store. It opens the database using the dbPath obtained from conf.GetDBPath(). If there is an error opening the database, it
-func cliSetup() (*handle.TaskControl, *handle.GoalControl, *handle.PlanControl, *storm.DB) {
+func cliSetup() (*handle.TaskControl, *handle.GoalControl, *handle.PlanControl, *handle.PlannerControl, *storm.DB) {
 	dbPath := conf.GetDBPath()
 	db, err := storm.Open(dbPath, storm.BoltOptions(0600, nil))
 	if err != nil {
@@ -57,7 +57,11 @@ func cliSetup() (*handle.TaskControl, *handle.GoalControl, *handle.PlanControl, 
 	planService := services.NewPlanService(planStore)
 	planRouter := handle.NewPlanControl(planService)
 
-	return taskRouter, goalRouter, planRouter, db
+	plannerStore := inmemory.NewInMemoryPlannerStore(db)
+	plannerService := services.NewPlannerService(plannerStore)
+	plannerRouter := handle.NewPlannerControl(plannerService)
+
+	return taskRouter, goalRouter, planRouter, plannerRouter, db
 }
 
 func promptUser(reader *bufio.Reader, prompt string) (string, error) {
@@ -102,7 +106,7 @@ var planCommands = map[string]func(*handle.PlanControl){
 var plannerCommands = map[string]func(*handle.PlannerControl){
 	"create-planner":       createPlanner,
 	"get-planner":          getPlanner,
-	"get-planner-by-title": getPlannerByTitle,
+	"get-planner-by-title": getPlannerByGoal,
 	"get-planner-by-owner": getPlannerByOwner,
 	"update-planner":       updatePlanners,
 	"delete-planner":       deletePlanner,
@@ -701,16 +705,181 @@ func listPlans(p *handle.PlanControl) {
 	}
 }
 
-func createPlanner(p *handle.PlannerControl)     {}
-func getPlanner(p *handle.PlannerControl)        {}
-func getPlannerByTitle(p *handle.PlannerControl) {}
-func getPlannerByOwner(p *handle.PlannerControl) {}
-func updatePlanners(p *handle.PlannerControl)    {}
-func deletePlanner(p *handle.PlannerControl)     {}
-func listPlanners(p *handle.PlannerControl)      {}
+func createPlanner(p *handle.PlannerControl) {
+	fmt.Println("Creating planner...")
+	reader := bufio.NewReader(os.Stdin)
+	title, err := promptUser(reader, "Enter planner title: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
+	userid, err := promptUser(reader, "Enter planner userid: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
+
+	req := handle.CreatePlannerRequest{
+		Title:  title,
+		UserId: userid,
+	}
+	res, err := p.CreatePlanner(&req)
+	if err != nil {
+		fmt.Println("Error creating planner: ", err)
+	}
+	fmt.Println("Created planner with id: ", res.ID)
+}
+
+func getPlanner(p *handle.PlannerControl) {
+	fmt.Println("Getting planner...")
+	reader := bufio.NewReader(os.Stdin)
+	id, err := promptUser(reader, "Enter planner id: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
+	req := handle.GetPlannerRequest{
+		Id: id,
+	}
+	planner, err := p.GetPlanner(&req)
+	if err != nil {
+		fmt.Printf("Error getting planner with id %s: %s\n", id, err)
+		return
+	}
+	fmt.Println("Got planner: ", planner.Title)
+	fmt.Println("User ID: ", planner.UserId)
+}
+
+func getPlannerByGoal(p *handle.PlannerControl) {
+	fmt.Println("Getting planner...")
+	reader := bufio.NewReader(os.Stdin)
+	title, err := promptUser(reader, "Enter planner title: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
+	req := handle.GetPlannerByTitleRequest{
+		Title: title,
+	}
+	planner, err := p.GetPlannerByTitle(&req)
+	if err != nil {
+		// error message is logged in GetPlannerByTitle
+		return
+	}
+	fmt.Println("Got planner: ", planner.Title)
+	fmt.Println("User ID: ", planner.UserId)
+}
+
+func getPlannerByOwner(p *handle.PlannerControl) {
+	fmt.Println("Getting planner...")
+	reader := bufio.NewReader(os.Stdin)
+	userid, err := promptUser(reader, "Enter planner userid: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
+	req := handle.GetPlannerByOwnerRequest{
+		UserId: userid,
+	}
+	planner, err := p.GetPlannerByOwner(&req)
+	if err != nil {
+		// error message is logged in GetPlannerByTitle
+		return
+	}
+	fmt.Println("Got planner: ", planner.Title)
+	fmt.Println("User ID: ", planner.UserId)
+}
+
+func updatePlanners(p *handle.PlannerControl) {
+	reader := bufio.NewReader(os.Stdin)
+	id, err := promptUser(reader, "Enter planner id of planner to be updated: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s\n", err)
+	}
+	req := handle.GetPlannerRequest{
+		Id: id,
+	}
+	planner, err := p.GetPlanner(&req)
+	if err != nil {
+		fmt.Printf("Error getting planner with id %s: %s\n", id, err)
+		return
+	}
+	fmt.Println("Got planner: ", planner.Title)
+	fmt.Println("User ID: ", planner.UserId)
+	fmt.Println("Enter New planner title: ")
+
+	title, err := promptUser(reader, "Enter planner title: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s\n", err)
+	}
+	userid, err := promptUser(reader, "Enter planner userid: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s\n", err)
+	}
+	update := handle.UpdatePlannerRequest{
+		Id:     id,
+		Title:  title,
+		UserId: userid,
+	}
+	fmt.Println("Updating planner...")
+	err = p.UpdatePlanner(&update)
+	if err != nil {
+		fmt.Printf("Error updating planner with id %s: %s\n", id, err)
+		return
+	}
+	fmt.Println("Updated planner with id: ", planner.Id)
+}
+
+func deletePlanner(p *handle.PlannerControl) {
+	reader := bufio.NewReader(os.Stdin)
+	id, err := promptUser(reader, "Enter planner id to be deleted: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s\n", err)
+	}
+	// Get planner first to show user what planner is being deleted
+	req := handle.GetPlannerRequest{
+		Id: id,
+	}
+	planner, err := p.GetPlanner(&req)
+	if err != nil {
+		fmt.Printf("Error getting planner with id %s: %s\n", id, err)
+		return
+	}
+	fmt.Println("Got planner: ", planner.Title)
+	fmt.Println("are you sure you want to delete this planner? (y/n)")
+	confirm, err := reader.ReadString('\n')
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s\n", err)
+	}
+	confirm = strings.TrimSpace(confirm)
+	if confirm == "n" {
+		fmt.Println("Planner not deleted")
+	} else if confirm == "y" {
+		fmt.Println("Deleting planner...")
+		req := handle.DeletePlannerRequest{
+			Id: id,
+		}
+		err = p.DeletePlanner(&req)
+		if err != nil {
+			fmt.Printf("Error deleting planner with id %s: %s\n", id, err)
+			return
+		}
+		fmt.Println("Deleted planner with id: ", planner.Id)
+	} else {
+		fmt.Println("Invalid input")
+	}
+}
+
+func listPlanners(p *handle.PlannerControl) {
+	fmt.Println("Listing planners...")
+	planners, err := p.ListPlanners()
+	if err != nil {
+		fmt.Println("Error listing planners: ", err)
+		return
+	}
+	// get planner id and title of each planner
+	for _, planner := range planners.Planners {
+		fmt.Printf("Planner id: %s, Title: %s, User ID %s\n", planner.Id, planner.Title, planner.UserId)
+	}
+}
 
 func runCommand(commandStr string) error {
-	taskRouter, goalRouter, planRouter, db := cliSetup()
+	taskRouter, goalRouter, planRouter, plannerRouter, db := cliSetup()
 	defer func() {
 		if err := db.Close(); err != nil {
 			log.Fatalf("error closing db: %s", err)
@@ -734,6 +903,8 @@ func runCommand(commandStr string) error {
 		command(goalRouter)
 	} else if command, ok := planCommands[commandName]; ok {
 		command(planRouter)
+	} else if command, ok := plannerCommands[commandName]; ok {
+		command(plannerRouter)
 	} else {
 		fmt.Println("Command not found")
 	}
