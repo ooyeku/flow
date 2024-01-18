@@ -76,7 +76,7 @@ func (s *BoltGoalStore) GetGoalByObjective(objective string) (*models.Goal, erro
 	return goal, nil
 }
 
-// GetGoalByPlannerId retrieves a goal from the BoltGoalStore based on its PlannerId.
+// GetGoalsByPlannerId GetGoalByPlannerId retrieves a goal from the BoltGoalStore based on its PlannerId.
 func (s *BoltGoalStore) GetGoalsByPlannerId(plannerId string) ([]*models.Goal, error) {
 	var goals []*models.Goal
 	if err := s.db.Find("PlannerId", plannerId, &goals); err != nil {

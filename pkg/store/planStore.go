@@ -10,4 +10,6 @@ type PlanStore interface {
 	DeletePlan(id string) error
 	GetPlan(id string) (*models.Plan, error)
 	ListPlans() ([]*models.Plan, error)
+	GetPlanByName(name string) (*models.Plan, error)
+	GetPlansByGoal(id string) ([]*models.Plan, error)
 }

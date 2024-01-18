@@ -127,6 +127,46 @@ func (c *PlanControl) GetPlan(req *GetPlanRequest) (*GetPlanResponse, error) {
 	}, nil
 }
 
+type GetPlanByNameRequest struct {
+	PlanName string `json:"plan_name"`
+}
+
+// GetPlanByNameResponse GetPlanByNamesResponse represents the response structure for the GetPlanByNames API endpoint.
+type GetPlanByNameResponse struct {
+	Plan *models.Plan `json:"plan"`
+}
+
+// GetPlanByName retrieves a specific plan based on the provided request name.
+// It returns a GetPlanByNameResponse object that contains the requested plan,
+// or an error if the plan could not be retrieved.
+func (c *PlanControl) GetPlanByName(req *GetPlanByNameRequest) (*GetPlanByNameResponse, error) {
+	plan, err := c.Service.GetPlanByName(req.PlanName)
+	if err != nil {
+		return nil, err
+	}
+	return &GetPlanByNameResponse{
+		Plan: plan,
+	}, nil
+}
+
+type GetPlansByGoalRequest struct {
+	GoalId string `json:"goal_id"`
+}
+
+type GetPlansByGoalResponse struct {
+	Plans []*models.Plan `json:"plans"`
+}
+
+func (c *PlanControl) GetPlansByGoal(req *GetPlansByGoalRequest) (*GetPlansByGoalResponse, error) {
+	plans, err := c.Service.GetPlansByGoal(req.GoalId)
+	if err != nil {
+		return nil, err
+	}
+	return &GetPlansByGoalResponse{
+		Plans: plans,
+	}, nil
+}
+
 // ListPlansResponse represents the response structure for listing plans.
 type ListPlansResponse struct {
 	Plans []*models.Plan `json:"plans"`

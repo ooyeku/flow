@@ -11,6 +11,22 @@ type BoltPlanStore struct {
 	db *storm.DB
 }
 
+func (s *BoltPlanStore) GetPlanByName(name string) (*models.Plan, error) {
+	plan := new(models.Plan)
+	if err := s.db.One("Name", name, plan); err != nil {
+		return nil, err
+	}
+	return plan, nil
+}
+
+func (s *BoltPlanStore) GetPlansByGoal(id string) ([]*models.Plan, error) {
+	var plans []*models.Plan
+	if err := s.db.Find("GoalId", id, &plans); err != nil {
+		return nil, err
+	}
+	return plans, nil
+}
+
 // NewInMemoryPlanStore is a function that creates a new instance of BoltPlanStore
 // with the provided Storm database connection.
 // It returns a pointer to the newly created BoltPlanStore.

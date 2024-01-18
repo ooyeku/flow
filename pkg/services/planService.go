@@ -97,3 +97,11 @@ func (s *PlanService) GetPlan(id string) (*models.Plan, error) {
 func (s *PlanService) ListPlans() ([]*models.Plan, error) {
 	return s.store.ListPlans()
 }
+
+func (s *PlanService) GetPlanByName(name string) (*models.Plan, error) {
+	return s.store.GetPlanByName(name)
+}
+
+func (s *PlanService) GetPlansByGoal(id string) ([]*models.Plan, error) {
+	return s.store.GetPlansByGoal(id)
+}
