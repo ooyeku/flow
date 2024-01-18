@@ -23,3 +23,7 @@ func (g *Goal) GenerateGoalInstance(id, objective string, deadline time.Time) *G
 		Deadline:      deadline,
 	}
 }
+
+func (g *Goal) ConvertDeadline(date string) (time.Time, error) {
+	return time.Parse("2006-01-02", date)
+}

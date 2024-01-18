@@ -3,9 +3,7 @@ package handle
 import (
 	"flow/internal/models"
 	"flow/pkg/services"
-	"fmt"
 	"github.com/google/uuid"
-	"time"
 )
 
 // GoalControl represents a controller that provides methods to manage goals.
@@ -24,9 +22,9 @@ func NewGoalControl(service *services.GoalService) *GoalControl {
 // CreateGoalRequest represents a request to create a goal.
 // PlannerId is the ID of the planner for which the goal is being created.
 type CreateGoalRequest struct {
-	Objective string    `json:"objective"`
-	Deadline  time.Time `json:"deadline"`
-	PlannerId string    `json:"planner_id"`
+	Objective string `json:"objective"`
+	Deadline  string `json:"deadline"`
+	PlannerId string `json:"planner_id"`
 }
 
 // CreateGoalResponse represents the response for creating a goal.
@@ -41,12 +39,9 @@ func (c *GoalControl) CreateGoal(req *CreateGoalRequest) (*CreateGoalResponse, e
 	if err != nil {
 		return nil, err
 	}
-	// convert deadline to time.Time
-	deadline, err := time.Parse("2006-01-02", req.Deadline.Format("2006-01-02"))
-	if err != nil {
-		return nil, fmt.Errorf("invalid deadline format: %v", err)
-	}
 	m := &models.Goal{}
+	// convert deadline to time.Time
+	deadline, err := m.ConvertDeadline(req.Deadline)
 	goal := m.GenerateGoalInstance(id, req.Objective, deadline)
 	err = c.Service.CreateGoal(goal)
 	if err != nil {
@@ -73,12 +68,9 @@ type UpdateGoalResponse struct {
 
 // UpdateGoal updates a goal based on the provided request.
 func (c *GoalControl) UpdateGoal(req *UpdateGoalRequest) error {
-	// convert deadline to time.Time
-	deadline, err := time.Parse("2006-01-02", req.Deadline)
-	if err != nil {
-		return err
-	}
 	m := &models.Goal{}
+	// convert deadline to time.Time
+	deadline, err := m.ConvertDeadline(req.Deadline)
 	goal := m.GenerateGoalInstance(req.Id, req.Objective, deadline)
 
 	// for now, updategoal sets the createdat and updatedat fields to the current time

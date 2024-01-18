@@ -6,7 +6,6 @@ import (
 	"flow/pkg/services"
 	"github.com/asdine/storm"
 	"log"
-	"time"
 )
 
 func main() {
@@ -52,7 +51,7 @@ func main() {
 	// Create a new goal
 	goalReq := &handle2.CreateGoalRequest{
 		Objective: "This is an automated makemock goal",
-		Deadline:  time.Now().AddDate(0, 0, 7),
+		Deadline:  "2001-12-2",
 		PlannerId: "000",
 	}
 	goalRes, err := goalControl.CreateGoal(goalReq)
@@ -62,7 +61,10 @@ func main() {
 
 	// Create a new plan
 	planReq := &handle2.CreatePlanRequest{
-		GoalId: goalRes.ID,
+		PlanName:        "This is an automated makemock plan",
+		PlanDescription: "Useful for testing/debugging",
+		PlanDate:        "2001-12-02",
+		PlanTime:        "12:00",
 	}
 	planRes, err := planControl.CreatePlan(planReq)
 	if err != nil {

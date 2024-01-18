@@ -27,6 +27,14 @@ func (t *Task) GenerateTaskInstance(id, title, description, owner string) *Task 
 	}
 }
 
-//func(t *Task) IsStarted() bool {
-//	return t.Started
-//}
+func (t *Task) IsStarted() bool {
+	return t.Started
+}
+
+func (t *Task) IsCompleted() bool {
+	return t.Completed
+}
+
+func (t *Task) Start() {
+	t.Started = true
+}
