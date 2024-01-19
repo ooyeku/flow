@@ -39,6 +39,26 @@ func (h *TaskHandler) GetTask(w http.ResponseWriter, r *http.Request) {
 	handleError(w, err, http.StatusInternalServerError)
 }
 
+func (h *TaskHandler) GetTaskByTitle(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	title := vars["title"]
+	req := handle.GetTaskByTitleRequest{Title: title}
+	res, err := h.Control.GetTaskByTitle(&req)
+	handleError(w, err, http.StatusInternalServerError)
+	err = json.NewEncoder(w).Encode(res)
+	handleError(w, err, http.StatusInternalServerError)
+}
+
+func (h *TaskHandler) GetTaskByOwner(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	owner := vars["owner"]
+	req := handle.GetTaskByOwnerRequest{Owner: owner}
+	res, err := h.Control.GetTaskByOwner(&req)
+	handleError(w, err, http.StatusInternalServerError)
+	err = json.NewEncoder(w).Encode(res)
+	handleError(w, err, http.StatusInternalServerError)
+}
+
 func (h *TaskHandler) ListTasks(w http.ResponseWriter, r *http.Request) {
 	res, err := h.Control.ListTasks()
 	handleError(w, err, http.StatusInternalServerError)
