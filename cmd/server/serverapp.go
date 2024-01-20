@@ -47,11 +47,14 @@ func main() {
 		_ = db.Close()
 	}(db)
 
-	// Initialize TaskHandler
+	// Initialize handlers
 	taskHandler := &api.TaskHandler{
 		Control: taskRouter,
 	}
-	// Register handlers
+	goalHandler := &api.GoalHandler{
+		Control: handle.NewGoalControl(services.NewGoalService(inmemory.NewInMemoryGoalStore(db))),
+	}
+	// Register handlers and routes
 	r.HandleFunc("/list", taskHandler.ListTasks).Methods("GET")
 	r.HandleFunc("/task/new", taskHandler.CreateTask).Methods("POST")
 	r.HandleFunc("/task/{id}", taskHandler.GetTask).Methods("GET")
@@ -60,6 +63,11 @@ func main() {
 	r.HandleFunc("/task/{id}", taskHandler.UpdateTask).Methods("PUT")
 	r.HandleFunc("/task/{id}", taskHandler.DeleteTask).Methods("DELETE")
 
+	r.HandleFunc("/goal/new", goalHandler.CreateGoal).Methods("POST")
+	r.HandleFunc("/goal/{id}", goalHandler.GetGoal).Methods("GET")
+	r.HandleFunc("/goal/{id}", goalHandler.UpdateGoal).Methods("PUT")
+	r.HandleFunc("/goal/{id}", goalHandler.DeleteGoal).Methods("DELETE")
+	r.HandleFunc("/listgoals", goalHandler.ListGoals).Methods("GET")
 	// Apply the middleware to the router
 	r.Use(loggingMiddleware)
 
