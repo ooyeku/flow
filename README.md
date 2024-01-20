@@ -21,17 +21,24 @@ The project is structured as follows:
 ## Roadmap
 Current Version: **0.0.4** as of **01-19-2024**
 
-*[ ] Version 1.0.0*
+- [ ] *Version 1.0.0*
   - [x] Task service creation
   - [x] Planning service creation
   - [x] Goal service creation
-  - [x] Plan service creation
+  - [x] Plan service~~ creation
+  - [X] Basic CLI
+    - [X] MVP
+    - [ ] Testing
+  - [X] Basic Rest API
+    - [X] MVP
+    - [ ] Testing
   - [ ] Simple reporting service
   - [ ] Bulk Upload and management
-  - [X] Basic CLI
-  - [X] Basic Rest API
+  - [ ] Flow Modules (pre-defined "flows")
+    - [ ] Project Module
+    - [ ] Learning Module
 
-*[ ] Version 2.0.0*
+-[ ] *Version 2.0.0*
     - [ ] Web UI
     - [ ] Advanced reporting service
 
