@@ -57,6 +57,9 @@ func main() {
 	planHandler := &api.PlanHandler{
 		Control: handle.NewPlanControl(services.NewPlanService(inmemory.NewInMemoryPlanStore(db))),
 	}
+	plannerHandler := &api.PlannerHandler{
+		Control: handle.NewPlannerControl(services.NewPlannerService(inmemory.NewInMemoryPlannerStore(db))),
+	}
 	// Register handlers and routes
 	r.HandleFunc("/listtasks", taskHandler.ListTasks).Methods("GET")
 	r.HandleFunc("/task/new", taskHandler.CreateTask).Methods("POST")
@@ -77,6 +80,12 @@ func main() {
 	r.HandleFunc("/plan/{id}", planHandler.UpdatePlan).Methods("PUT")
 	r.HandleFunc("/plan/{id}", planHandler.DeletePlan).Methods("DELETE")
 	r.HandleFunc("/listplans", planHandler.ListPlans).Methods("GET")
+
+	r.HandleFunc("/planner/new", plannerHandler.CreatePlanner).Methods("POST")
+	r.HandleFunc("/planner/{id}", plannerHandler.GetPlanner).Methods("GET")
+	r.HandleFunc("/planner/{id}", plannerHandler.UpdatePlanner).Methods("PUT")
+	r.HandleFunc("/planner/{id}", plannerHandler.DeletePlanner).Methods("DELETE")
+	r.HandleFunc("/listplanners", plannerHandler.ListPlanners).Methods("GET")
 	// Apply the middleware to the router
 	r.Use(loggingMiddleware)
 
