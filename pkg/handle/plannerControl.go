@@ -32,11 +32,12 @@ type CreatePlannerResponse struct {
 }
 
 // CreatePlanner creates a new planner based on the provided request.
-// It generates a unique ID for the planner using the generatePlannerUUID function.
-// Then, it creates a new instance of the Planner struct with the generated ID, request title, and request user ID.
-// Next, it calls the CreatePlanner method of the PlannerService to persist the planner in the database.
-// If any error occurs during the process, it returns nil and the error.
-// Otherwise, it returns a CreatePlannerResponse with the ID of the created planner and nil error.
+// It generates a unique ID for the planner using the generatePlannerUUID function,
+// and then uses the GeneratePlannerInstance method of the models.Planner struct
+// to create a new Planner with the generated ID, title, and user ID.
+// It then calls the CreatePlanner method of the PlannerService struct to store the new planner.
+// If any error occurs during the process, it returns nil for the response and the error.
+// Otherwise, it returns a CreatePlannerResponse with the ID of the created planner and nil for the error.
 func (c *PlannerControl) CreatePlanner(req *CreatePlannerRequest) (*CreatePlannerResponse, error) {
 	id, err := generatePlannerUUID()
 	if err != nil {
@@ -78,14 +79,15 @@ func (c *PlannerControl) UpdatePlanner(req *UpdatePlannerRequest) error {
 }
 
 // DeletePlannerRequest represents a request to delete a planner.
-// It contains the ID of the planner to be deleted.
+// It contains the id of the planner to be deleted.
 type DeletePlannerRequest struct {
 	Id string `json:"id"`
 }
 
-// DeletePlanner removes a planner from the system based on the provided request.
-// It calls the DeletePlanner method of the Service, passing the Id from the request.
-// If an error occurs during the deletion process, it returns the error. Otherwise, it returns nil.
+// DeletePlanner deletes a planner based on the provided request ID.
+// It calls the DeletePlanner method of the PlannerService to delete the planner from the database.
+// If any error occurs during the process, it returns the error.
+// Otherwise, it returns nil.
 func (c *PlannerControl) DeletePlanner(req *DeletePlannerRequest) error {
 	if err := c.Service.DeletePlanner(req.Id); err != nil {
 		return err
@@ -109,9 +111,10 @@ type GetPlannerResponse struct {
 	UserId string `json:"user_id"`
 }
 
-// GetPlanner retrieves a planner based on the provided request ID.
-// It returns a GetPlannerResponse object containing the planner ID, title, and user ID.
-// If an error occurs during the retrieval process, it returns nil and the error message.
+// GetPlanner retrieves a planner based on the provided request.
+// It calls the GetPlanner method of the PlannerService to fetch the planner from the database using the given ID.
+// If any error occurs during the process, it returns nil and the error.
+// Otherwise, it returns a GetPlannerResponse with the ID and UserID of the retrieved planner and nil error.
 func (c *PlannerControl) GetPlanner(req *GetPlannerRequest) (*GetPlannerResponse, error) {
 	planner, err := c.Service.GetPlanner(req.Id)
 	if err != nil {
@@ -124,13 +127,12 @@ func (c *PlannerControl) GetPlanner(req *GetPlannerRequest) (*GetPlannerResponse
 }
 
 // GetPlannerByTitleRequest represents a request to get a planner by its title.
-// It contains the following field:
-// - Title: The title of the planner to get.
 type GetPlannerByTitleRequest struct {
 	Title string `json:"title"`
 }
 
-// GetPlannerByTitleResponse represents the response structure for retrieving a planner by title.
+// GetPlannerByTitleResponse represents the response data structure for the GetPlannerByTitle request.
+// It contains the ID, title, and user ID of a planner retrieved by its title.
 type GetPlannerByTitleResponse struct {
 	Id     string `json:"id"`
 	Title  string `json:"title"`
@@ -152,12 +154,19 @@ func (c *PlannerControl) GetPlannerByTitle(req *GetPlannerByTitleRequest) (*GetP
 	}, nil
 }
 
-// GetPlannerByOwnerRequest represents a request for getting a planner by owner.
+// GetPlannerByOwnerRequest represents a request object used to get a planner by owner.
+//
+// Usage:
+//
+//	req := handle.GetPlannerByOwnerRequest{
+//	    UserId: "user123",
+//	}
 type GetPlannerByOwnerRequest struct {
 	UserId string `json:"user_id"`
 }
 
-// GetPlannerByOwnerResponse represents the response when getting a planner by owner.
+// GetPlannerByOwnerResponse represents the response structure for the GetPlannerByOwner method in the PlannerControl struct.
+// It contains the planner ID, title, and user ID.
 type GetPlannerByOwnerResponse struct {
 	Id     string `json:"id"`
 	Title  string `json:"title"`
@@ -208,8 +217,9 @@ func (c *PlannerControl) GetPlannerByOwner(req *GetPlannerByOwnerRequest) (*GetP
 	}, nil
 }
 
-// ListPlannersResponse represents a response with a list of planners.
-// The Planners field is an array of GetPlannerResponse objects.
+// ListPlannersResponse represents a response containing a list of planners.
+// It has a Planners field which is a slice of GetPlannerResponse structs.
+// The Planners field is tagged as 'planners' in JSON serialization.
 type ListPlannersResponse struct {
 	Planners []*GetPlannerResponse `json:"planners"`
 }
@@ -235,9 +245,9 @@ func (c *PlannerControl) ListPlanners() (*ListPlannersResponse, error) {
 	}, nil
 }
 
-// generatePlannerUUID generates a new UUID (Universally Unique Identifier)
-// using the uuid.NewRandom() function.
-// It returns the generated UUID as a string and any potential error.
+// generatePlannerUUID generates a new UUID (Universally Unique Identifier) using the `uuid.NewRandom()` function.
+// It returns the generated UUID as a string.
+// If there is an error generating the UUID, it returns an empty string and the error.
 func generatePlannerUUID() (string, error) {
 	id, err := uuid.NewRandom()
 	if err != nil {

@@ -14,6 +14,13 @@ import (
 	"time"
 )
 
+// cliSetup initializes and sets up the CLI by performing the following steps:
+// - Retrieves the database path using conf.GetDBPath()
+// - Opens the database using the path obtained above, with specific permissions and options
+// - Creates an in-memory task store using the opened database
+// - Creates a task service using the in-memory task store
+// - Creates a new task control using the task service
+// - Returns the taskRouter, db, and error as the result of the setup process.
 func cliSetup() (*handle.TaskControl, *storm.DB, error) {
 	dbPath := conf.GetDBPath()
 	db, err := storm.Open(dbPath, storm.BoltOptions(0600, nil))
@@ -27,7 +34,15 @@ func cliSetup() (*handle.TaskControl, *storm.DB, error) {
 	return taskRouter, db, nil
 }
 
-// loggingMiddleware logs the request method, URL, and the time it took to process the request
+// loggingMiddleware logs the HTTP request method, URL path, and the time it took to process the request.
+// It takes an http.Handler as input and returns an http.Handler.
+// The input http.Handler is the next handler in the middleware chain.
+// The returned http.Handler is a function that wraps the next handler with logging functionality.
+// It measures the time it takes to execute the next handler and logs the information using log.Printf.
+// Example usage:
+// r := mux.NewRouter()
+// r.Use(loggingMiddleware)
+// err := http.ListenAndServe(":8080", r)
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()

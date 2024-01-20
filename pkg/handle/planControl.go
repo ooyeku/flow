@@ -44,15 +44,29 @@ type PlanControl struct {
 	Service *services.PlanService
 }
 
-// NewPlanControl creates a new instance of PlanControl with the given PlanService.
+// NewPlanControl creates a new instance of PlanControl with the provided PlanService.
 func NewPlanControl(service *services.PlanService) *PlanControl {
 	return &PlanControl{
 		Service: service,
 	}
 }
 
-// CreatePlanRequest is a type that represents a request to create a plan.
-// It includes fields for the plan's name, description, date, and time.
+// CreatePlanRequest is a type that represents the request to create a new plan.
+// The CreatePlanRequest type has the following fields:
+// - PlanName: the name of the plan.
+// - PlanDescription: the description of the plan.
+// - PlanDate: the date of the plan in the format "YYYY-MM-DD".
+// - PlanTime: the time of the plan in the format "HH:MM".
+// Example usage:
+//
+//	req := &CreatePlanRequest{
+//	    PlanName:        "My Plan",
+//	    PlanDescription: "This is a test plan",
+//	    PlanDate:        "2022-01-01",
+//	    PlanTime:        "12:00",
+//	}
+//
+// res, err := planControl.CreatePlan(req)
 type CreatePlanRequest struct {
 	PlanName        string `json:"plan_name"`
 	PlanDescription string `json:"plan_description"`
@@ -60,18 +74,22 @@ type CreatePlanRequest struct {
 	PlanTime        string `json:"plan_time"`
 }
 
-// CreatePlanResponse is a type representing the response of creating a plan.
-// It contains the ID of the created plan.
+// CreatePlanResponse is a type that represents the response when creating a new plan.
+// The CreatePlanResponse type has an ID field of type string, which stores the ID of the created plan.
+// Usage Example:
+//
+//	response := &CreatePlanResponse{
+//	    ID: "abcd1234",
+//	}
 type CreatePlanResponse struct {
 	ID string `json:"id"`
 }
 
-// CreatePlan creates a new plan with the provided request. It generates a new UUID using the generatePlanUUID function.
-// Then it creates a new instance of the models.Plan struct with the ID, PlanName, PlanDescription, PlanDate, and PlanTime values
-// extracted from the request. It converts the PlanDate and PlanTime strings to time.Time values using the ConvertPlanDate and
-// ConvertPlanTime methods of the models.Plan struct. Finally, it calls the CreatePlan method of the PlanService stored in the
-// PlanControl struct, passing the newly created plan as the argument. It returns a CreatePlanResponse containing the ID of the
-// created plan or an error if there was a problem creating the plan.
+// CreatePlan creates a new plan with the provided request. It generates a unique id using the `generatePlanUUID` function.
+// Then it creates a new `models.Plan` struct with the `Id`, `PlanName`, `PlanDescription`, `planDate`, and `planTime` fields
+// from the request. After that, it calls the `CreatePlan` method of the `PlanService` stored in the `PlanControl` struct,
+// passing the newly created plan as the argument. If the creation is successful, it returns a `CreatePlanResponse` with the created plan ID.
+// It returns an error if there was a problem generating the unique id, converting the plan date or time, or creating the plan.
 func (c *PlanControl) CreatePlan(req *CreatePlanRequest) (*CreatePlanResponse, error) {
 	id, err := generatePlanUUID()
 	if err != nil {
@@ -98,7 +116,7 @@ func (c *PlanControl) CreatePlan(req *CreatePlanRequest) (*CreatePlanResponse, e
 	}, nil
 }
 
-// UpdatePlanRequest represents a request object for updating a plan.
+// convert planDate to time.Time
 type UpdatePlanRequest struct {
 	// updateplanrequest only updates the fields below.
 	// updates to status and tasks are handled by other endpoints.
@@ -110,9 +128,12 @@ type UpdatePlanRequest struct {
 	GoalId          string `json:"goal_id"`
 }
 
-// UpdatePlan updates a plan with the provided request. It creates a new `models.Plan` struct
-// with the `Id` and `GoalId` fields from the request. Then it calls the `UpdatePlan` method of
-// the `PlanService` stored in the `PlanControl` struct, passing the newly created plan as the argument.
+// UpdatePlan updates an existing plan with the provided request. It converts the PlanDate and PlanTime strings
+// to time.Time values using the ConvertPlanDate and ConvertPlanTime methods of the models.Plan struct.
+// Then it creates a new instance of the models.Plan struct with the provided ID, PlanName, PlanDescription,
+// GoalId, PlanDate, and PlanTime values.
+// It updates the GoalId field of the plan instance with the GoalId value from the request.
+// Finally, it calls the UpdatePlan method of the PlanService stored in the PlanControl struct, passing the updated plan as the argument.
 // It returns an error if there was a problem updating the plan.
 func (c *PlanControl) UpdatePlan(req *UpdatePlanRequest) error {
 	m := &models.Plan{}
@@ -132,40 +153,56 @@ func (c *PlanControl) UpdatePlan(req *UpdatePlanRequest) error {
 }
 
 // DeletePlanRequest is a type that represents a request to delete a plan.
-// The `Id` field is used to specify the identifier of the plan to be deleted.
+// The DeletePlanRequest type has a field Id of type string, which represents the ID of the plan to be deleted.
+// Usage Example:
+//
+//	req := DeletePlanRequest{
+//	    Id: "example-id",
+//	}
 type DeletePlanRequest struct {
 	Id string `json:"id"`
 }
 
-// DeletePlan deletes a plan with the specified ID by calling the DeletePlan method of the PlanService. It takes a DeletePlanRequest parameter which contains the ID of the plan to be
+// DeletePlan deletes the plan with the specified ID by calling the DeletePlan method of the PlanService stored in the PlanControl struct and passing the ID as the argument.
 func (c *PlanControl) DeletePlan(req *DeletePlanRequest) error {
 	return c.Service.DeletePlan(req.Id)
 }
 
-// GetPlanRequest is a type that represents a request to get a plan by its ID.
-// It contains the following field:
-// - Id: a string that specifies the ID of the plan to get.
-//
-// Example usage:
+// GetPlanRequest is a type used to request the retrieval of a plan based on its ID.
+// Fields:
+// - Id: a string that represents the ID of the plan to be retrieved.
+// Usage Example:
 //
 //	req := handle.GetPlanRequest{
-//		Id: "12345",
+//	  Id: "12345",
 //	}
-//	plan, err := p.GetPlan(&req)
-//	if err != nil {
-//		fmt.Printf("Error getting plan with id %s: %s\n", req.Id, err)
-//		return
-//	}
-//	fmt.Println("Got plan: ", plan.Plan.PlanName)
-//	fmt.Println("Description: ", plan.Plan.PlanDescription)
 //
-// In this example, we create a GetPlanRequest instance with an ID and use it to get a plan by calling the GetPlan method on a PlanControl instance.
+// plan, err := p.GetPlan(&req)
+//
+//	if err != nil {
+//	  fmt.Printf("Error getting plan with id %s: %s\n", req.Id, err)
+//	  return
+//	}
+//
+// fmt.Println("Got plan: ", plan.Plan.PlanName)
+// fmt.Println("Description: ", plan.Plan.PlanDescription)
 type GetPlanRequest struct {
 	Id string `json:"id"`
 }
 
-// GetPlanResponse represents the response data structure for the GetPlan method in the PlanControl type.
-// It contains the retrieved plan information.
+// GetPlanResponse is a type that represents the response of retrieving a plan.
+// GetPlanResponse has a Plan field of type *models.Plan, which contains information about the retrieved plan.
+// Usage Example:
+//
+//	func (c *PlanControl) GetPlan(req *GetPlanRequest) (*GetPlanResponse, error) {
+//	  plan, err := c.Service.GetPlan(req.Id)
+//	  if err != nil {
+//	      return nil, err
+//	  }
+//	  return &GetPlanResponse{
+//	      Plan: plan,
+//	  }, nil
+//	}
 type GetPlanResponse struct {
 	Plan *models.Plan `json:"plan"`
 }
@@ -181,20 +218,22 @@ func (c *PlanControl) GetPlan(req *GetPlanRequest) (*GetPlanResponse, error) {
 	}, nil
 }
 
-// GetPlanByNameRequest is a type that represents a request to get a plan by its name.
-// The request contains the name of the plan.
+// GetPlanByNameRequest is a type that represents a request to retrieve a plan by its name.
+//
+// The GetPlanByNameRequest type has a PlanName field of type string, which specifies the name of the plan to retrieve.
 type GetPlanByNameRequest struct {
 	PlanName string `json:"plan_name"`
 }
 
-// GetPlanByNameResponse is a type that represents the response
-// for getting a plan by name.
-// It contains the plan details.
+// GetPlanByNameResponse is a type that represents the response of retrieving a plan by its name.
+// GetPlanByNameResponse has a Plan field of type *models.Plan, which represents the retrieved plan.
 type GetPlanByNameResponse struct {
 	Plan *models.Plan `json:"plan"`
 }
 
-// GetPlanByName retrieves a plan by its name from the PlanService.
+// GetPlanByName retrieves a plan by its name from the PlanService. It calls the GetPlanByName method of the PlanService
+// stored in the PlanControl struct, passing the PlanName from the request as the argument. It returns a GetPlanByNameResponse
+// containing the retrieved plan or an error if there was a problem getting the plan.
 func (c *PlanControl) GetPlanByName(req *GetPlanByNameRequest) (*GetPlanByNameResponse, error) {
 	plan, err := c.Service.GetPlanByName(req.PlanName)
 	if err != nil {
@@ -205,18 +244,21 @@ func (c *PlanControl) GetPlanByName(req *GetPlanByNameRequest) (*GetPlanByNameRe
 	}, nil
 }
 
-// GetPlansByGoalRequest represents a request to get plans by goal ID.
+// GetPlansByGoalRequest is a type that represents a request to retrieve plans by goal ID.
+//
+// The GetPlansByGoalRequest type has a GoalId field, which is the ID of the goal for which to retrieve plans.
 type GetPlansByGoalRequest struct {
 	GoalId string `json:"goal_id"`
 }
 
-// GetPlansByGoalResponse is a type that represents the response for getting plans by goal.
-// It contains a list of plans.
+// GetPlansByGoalResponse is a type that represents the response for retrieving plans by goal.
+// The GetPlansByGoalResponse type has a Plans field which is a slice of *models.Plan.
 type GetPlansByGoalResponse struct {
 	Plans []*models.Plan `json:"plans"`
 }
 
-// GetPlansByGoal retrieves all plans associated with a goal ID.
+// GetPlansByGoal retrieves plans based on the provided goal ID. It calls the GetPlansByGoal method of the PlanService stored in the PlanControl struct, passing the goal ID as the argument.
+// It returns a GetPlansByGoalResponse containing the retrieved plans or an error if there was a problem retrieving the plans.
 func (c *PlanControl) GetPlansByGoal(req *GetPlansByGoalRequest) (*GetPlansByGoalResponse, error) {
 	plans, err := c.Service.GetPlansByGoal(req.GoalId)
 	if err != nil {
@@ -227,12 +269,27 @@ func (c *PlanControl) GetPlansByGoal(req *GetPlansByGoalRequest) (*GetPlansByGoa
 	}, nil
 }
 
-// ListPlansResponse is a type that represents a response containing a list of plans.
+// ListPlansResponse is a type that represents the response of retrieving all plans.
+// The ListPlansResponse type has a Plans field of type []*models.Plan, which contains the retrieved plans.
+// Usage Example:
+//
+//	func (c *PlanControl) ListPlans() (*ListPlansResponse, error) {
+//	  plans, err := c.Service.ListPlans()
+//	  if err != nil {
+//	    return nil, err
+//	  }
+//	  return &ListPlansResponse{
+//	    Plans: plans,
+//	  }, nil
+//	}
 type ListPlansResponse struct {
 	Plans []*models.Plan `json:"plans"`
 }
 
-// ListPlans retrieves a list of plans by calling the ListPlans method of the PlanService.
+// ListPlans returns a ListPlansResponse containing a list of plans retrieved from the PlanService.
+// It calls the ListPlans method of the PlanService stored in the PlanControl struct.
+// If there is an error retrieving the plans, it returns nil and the error.
+// Otherwise, it returns the ListPlansResponse with the plans.
 func (c *PlanControl) ListPlans() (*ListPlansResponse, error) {
 	plans, err := c.Service.ListPlans()
 	if err != nil {
@@ -243,15 +300,10 @@ func (c *PlanControl) ListPlans() (*ListPlansResponse, error) {
 	}, nil
 }
 
-// generatePlanUUID generates a unique UUID for creating a plan.
-//
-// Example:
-//
-//	  id, err := generatePlanUUID()
-//	  if err != nil {
-//		   return nil, err
-//	  }
-//	  // Use id to create a new plan
+// generatePlanUUID generates a new UUID for a plan.
+// It uses the uuid.NewRandom function from the "github.com/google/uuid" package to generate a random UUID.
+// If an error occurs during the generation of the UUID, the function returns an empty string and the error.
+// Otherwise, it returns the generated UUID as a string and nil error.
 func generatePlanUUID() (string, error) {
 	id, err := uuid.NewRandom()
 	if err != nil {
