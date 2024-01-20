@@ -1,10 +1,10 @@
 package main
 
 import (
+	"flow/internal/inmemory"
+	handle2 "flow/pkg/handle"
+	"flow/pkg/services"
 	"github.com/asdine/storm"
-	"goworkflow/internal/inmemory"
-	handle2 "goworkflow/pkg/handle"
-	"goworkflow/pkg/services"
 	"log"
 )
 
@@ -50,7 +50,9 @@ func main() {
 
 	// Create a new goal
 	goalReq := &handle2.CreateGoalRequest{
-		PlannerId: plannerRes.ID,
+		Objective: "This is an automated makemock goal",
+		Deadline:  "2001-12-2",
+		PlannerId: "000",
 	}
 	goalRes, err := goalControl.CreateGoal(goalReq)
 	if err != nil {
@@ -59,7 +61,10 @@ func main() {
 
 	// Create a new plan
 	planReq := &handle2.CreatePlanRequest{
-		GoalId: goalRes.ID,
+		PlanName:        "This is an automated makemock plan",
+		PlanDescription: "Useful for testing/debugging",
+		PlanDate:        "2001-12-02",
+		PlanTime:        "12:00",
 	}
 	planRes, err := planControl.CreatePlan(planReq)
 	if err != nil {

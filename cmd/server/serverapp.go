@@ -1,14 +1,14 @@
 package main
 
 import (
+	"flow/api"
+	"flow/internal/conf"
+	"flow/internal/inmemory"
+	"flow/pkg/handle"
+	"flow/pkg/services"
 	"fmt"
 	"github.com/asdine/storm"
 	"github.com/gorilla/mux"
-	"goworkflow/api"
-	"goworkflow/internal/conf"
-	"goworkflow/internal/inmemory"
-	"goworkflow/pkg/handle"
-	"goworkflow/pkg/services"
 	"log"
 	"net/http"
 	"time"
@@ -47,17 +47,51 @@ func main() {
 		_ = db.Close()
 	}(db)
 
-	// Initialize TaskHandler
+	// Initialize handlers
 	taskHandler := &api.TaskHandler{
 		Control: taskRouter,
 	}
-	// Register handlers
-	r.HandleFunc("/list", taskHandler.ListTasks).Methods("GET")
+	goalHandler := &api.GoalHandler{
+		Control: handle.NewGoalControl(services.NewGoalService(inmemory.NewInMemoryGoalStore(db))),
+	}
+	planHandler := &api.PlanHandler{
+		Control: handle.NewPlanControl(services.NewPlanService(inmemory.NewInMemoryPlanStore(db))),
+	}
+	plannerHandler := &api.PlannerHandler{
+		Control: handle.NewPlannerControl(services.NewPlannerService(inmemory.NewInMemoryPlannerStore(db))),
+	}
+	// Register handlers and routes
+	r.HandleFunc("/listtasks", taskHandler.ListTasks).Methods("GET")
 	r.HandleFunc("/task/new", taskHandler.CreateTask).Methods("POST")
 	r.HandleFunc("/task/{id}", taskHandler.GetTask).Methods("GET")
+	r.HandleFunc("/task/title/{title}", taskHandler.GetTaskByTitle).Methods("GET")
+	r.HandleFunc("/task/owner/{owner}", taskHandler.GetTaskByOwner).Methods("GET")
 	r.HandleFunc("/task/{id}", taskHandler.UpdateTask).Methods("PUT")
 	r.HandleFunc("/task/{id}", taskHandler.DeleteTask).Methods("DELETE")
 
+	r.HandleFunc("/listgoals", goalHandler.ListGoals).Methods("GET")
+	r.HandleFunc("/goal/new", goalHandler.CreateGoal).Methods("POST")
+	r.HandleFunc("/goal/{id}", goalHandler.GetGoal).Methods("GET")
+	r.HandleFunc("/goal/obj/{objective}", goalHandler.GetGoalByObjective).Methods("GET")
+	r.HandleFunc("/goal/pid/{planner_id}", goalHandler.GetGoalsByPlannerIdRequest).Methods("GET")
+	r.HandleFunc("/goal/{id}", goalHandler.UpdateGoal).Methods("PUT")
+	r.HandleFunc("/goal/{id}", goalHandler.DeleteGoal).Methods("DELETE")
+
+	r.HandleFunc("/listplans", planHandler.ListPlans).Methods("GET")
+	r.HandleFunc("/plan/new", planHandler.CreatePlan).Methods("POST")
+	r.HandleFunc("/plan/{id}", planHandler.GetPlan).Methods("GET")
+	r.HandleFunc("/plan/name/{plan_name}", planHandler.GetPlanByName).Methods("GET")
+	r.HandleFunc("/plan/goal/{goal_id}", planHandler.GetPlansByGoal).Methods("GET")
+	r.HandleFunc("/plan/{id}", planHandler.UpdatePlan).Methods("PUT")
+	r.HandleFunc("/plan/{id}", planHandler.DeletePlan).Methods("DELETE")
+
+	r.HandleFunc("/listplanners", plannerHandler.ListPlanners).Methods("GET")
+	r.HandleFunc("/planner/new", plannerHandler.CreatePlanner).Methods("POST")
+	r.HandleFunc("/planner/{id}", plannerHandler.GetPlanner).Methods("GET")
+	r.HandleFunc("/planner/title/{title}", plannerHandler.GetPlannerByTitle).Methods("GET")
+	r.HandleFunc("/planner/owner/{owner}", plannerHandler.GetPlannerByOwner).Methods("GET")
+	r.HandleFunc("/planner/{id}", plannerHandler.UpdatePlanner).Methods("PUT")
+	r.HandleFunc("/planner/{id}", plannerHandler.DeletePlanner).Methods("DELETE")
 	// Apply the middleware to the router
 	r.Use(loggingMiddleware)
 

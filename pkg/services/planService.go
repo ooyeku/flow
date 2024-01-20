@@ -1,8 +1,8 @@
 package services
 
 import (
-	"goworkflow/internal/models"
-	store2 "goworkflow/pkg/store"
+	"flow/internal/models"
+	store2 "flow/pkg/store"
 )
 
 // PlanService is a type that provides operations for managing plans.
@@ -10,8 +10,7 @@ type PlanService struct {
 	store store2.PlanStore
 }
 
-// NewPlanService creates a new PlanService with the given PlanStore.
-// It returns a pointer to the PlanService.
+// NewPlanService initializes a new instance of the PlanService struct.
 func NewPlanService(store store2.PlanStore) *PlanService {
 	return &PlanService{
 		store: store,
@@ -30,70 +29,55 @@ func NewPlanService(store store2.PlanStore) *PlanService {
 //
 //	id, err := generateUUID()
 
-//	if err != nil {
-//	    return nil, err
-//	}
-//
-//	plan := &models.Plan{
-//	    Id:          id,
-//	    Name:        req.Name,
-//	    Description: req.Description,
-//	}
-//
-// err = c.service.CreatePlan(plan)
-//
-//	if err != nil {
-//	    return nil, err
-//	}
-//
-//	return &CreatePlanResponse{
-//	    ID: plan.Id,
-//	}, nil
+// CreatePlan is a method of the PlanService struct that creates a new plan with the provided data.
+// It takes a pointer to a Plan struct as a parameter and returns an error.
+// The method uses the CreatePlan method of the PlanStore interface to create the plan in the data store.
 func (s *PlanService) CreatePlan(plan *models.Plan) error {
 	return s.store.CreatePlan(plan)
 }
 
-// UpdatePlan is a method of the PlanService struct that updates a plan with the provided data.
-// It takes a pointer to a Plan struct as a parameter and returns an error.
-// The method uses the UpdatePlan method of the PlanStore interface to update the plan in the data store.
+// UpdatePlan updates the details of a plan.
+// Parameters:
+// - plan: a pointer to a Plan object representing the updated plan.
+// Returns:
+// - error: an error, if any.
 func (s *PlanService) UpdatePlan(plan *models.Plan) error {
 	return s.store.UpdatePlan(plan)
 }
 
-// DeletePlan deletes a plan with the specified ID.
+// DeletePlan is a method of the PlanService struct that deletes a plan from the store based on the provided ID.
+// It calls the DeletePlan method of the PlanStore interface using the provided ID as the parameter.
+// The method returns an error if there was a problem deleting the plan.
 func (s *PlanService) DeletePlan(id string) error {
 	return s.store.DeletePlan(id)
 }
 
-// GetPlan retrieves a plan with the given ID from the PlanService.
-// It returns the plan and an error if any occurred.
+// GetPlan returns the plan with the specified ID.
 func (s *PlanService) GetPlan(id string) (*models.Plan, error) {
 	return s.store.GetPlan(id)
 }
 
-// ListPlans is a method of PlanService that retrieves a list of plans and returns them along with any errors encountered.
-// Signature:
-// func (s *PlanService) ListPlans() ([]*models.Plan, error)
-// Usage example:
-// plans, err := c.service.ListPlans()
-//
-//	if err != nil {
-//	    return nil, err
-//	}
-//
-//	var planResponses []*GetPlanResponse
-//
-//	for _, plan := range plans {
-//	    planResponses = append(planResponses, &GetPlanResponse{
-//	        Id:          plan.Id,
-//	        Name:        plan.Name,
-//	        Description: plan.Description,
-//	    })
-//	}
-//
-//	return &ListPlansResponse{
-//	    Plans: planResponses,
-//	}, nil
+// ListPlans returns a list of plans from the PlanStore.
+// It calls the ListPlans method of the store to fetch the list of plans.
+// It returns a slice of Plan pointers and an error.
 func (s *PlanService) ListPlans() ([]*models.Plan, error) {
 	return s.store.ListPlans()
+}
+
+// GetPlanByName retrieves a plan by its name from the plan store.
+// It returns a pointer to the plan and an error if one occurs.
+func (s *PlanService) GetPlanByName(name string) (*models.Plan, error) {
+	return s.store.GetPlanByName(name)
+}
+
+// GetPlansByGoal retrieves a list of plans associated with a specific goal.
+//
+// Parameters:
+// - id: The ID of the goal.
+//
+// Returns:
+// - plans: A list of plans that are associated with the specified goal.
+// - error: Any error that occurred during the retrieval process.
+func (s *PlanService) GetPlansByGoal(id string) ([]*models.Plan, error) {
+	return s.store.GetPlansByGoal(id)
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"goworkflow/cmd"
+	"flow/cmd"
 )
 
 func main() {

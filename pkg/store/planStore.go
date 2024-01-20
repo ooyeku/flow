@@ -1,6 +1,6 @@
 package store
 
-import "goworkflow/internal/models"
+import "flow/internal/models"
 
 // PlanStore is an interface that defines the methods to interact with plans.
 // CreatePlan creates a new plan.
@@ -10,4 +10,6 @@ type PlanStore interface {
 	DeletePlan(id string) error
 	GetPlan(id string) (*models.Plan, error)
 	ListPlans() ([]*models.Plan, error)
+	GetPlanByName(name string) (*models.Plan, error)
+	GetPlansByGoal(id string) ([]*models.Plan, error)
 }
