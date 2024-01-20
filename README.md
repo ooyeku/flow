@@ -8,14 +8,18 @@ cross-platform, and should work on any system that Go supports.
 ## Project Structure
 
 The project is structured as follows:
-* `conf/` - Configuration of controllers, services, and other components
-* `handle/` - Routing and handling of requests
-* `models/` - Data models
-* `services/` - Business logic
-* `store/` - Data storage
+#### Layers:
+- Model
+- Store
+- Service
+- Handle (control)
+- API
+#### Modes
+- CLI
+- Server
 
 ## Roadmap
-Current Version: **0.0.3** as of **01-11-2024**
+Current Version: **0.0.4** as of **01-19-2024**
 
 *[ ] Version 1.0.0*
   - [x] Task service creation
@@ -23,8 +27,9 @@ Current Version: **0.0.3** as of **01-11-2024**
   - [x] Goal service creation
   - [x] Plan service creation
   - [ ] Simple reporting service
-  - [ ] Basic CLI
-  - [ ] Basic Rest API
+  - [ ] Bulk Upload and management
+  - [X] Basic CLI
+  - [X] Basic Rest API
 
 *[ ] Version 2.0.0*
     - [ ] Web UI
