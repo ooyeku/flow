@@ -35,6 +35,32 @@ func (h *PlannerHandler) GetPlanner(w http.ResponseWriter, r *http.Request) {
 	handleError(w, err, http.StatusInternalServerError)
 }
 
+func (h *PlannerHandler) GetPlannerByTitle(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	vars := mux.Vars(r)
+	title := vars["title"]
+	req := &handle.GetPlannerByTitleRequest{
+		Title: title,
+	}
+	res, err := h.Control.GetPlannerByTitle(req)
+	handleError(w, err, http.StatusInternalServerError)
+	err = json.NewEncoder(w).Encode(res)
+	handleError(w, err, http.StatusInternalServerError)
+}
+
+func (h *PlannerHandler) GetPlannerByOwner(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	vars := mux.Vars(r)
+	owner := vars["owner"]
+	req := &handle.GetPlannerByOwnerRequest{
+		UserId: owner,
+	}
+	res, err := h.Control.GetPlannerByOwner(req)
+	handleError(w, err, http.StatusInternalServerError)
+	err = json.NewEncoder(w).Encode(res)
+	handleError(w, err, http.StatusInternalServerError)
+}
+
 func (h *PlannerHandler) UpdatePlanner(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)

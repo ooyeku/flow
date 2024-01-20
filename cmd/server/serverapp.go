@@ -69,23 +69,25 @@ func main() {
 	r.HandleFunc("/task/{id}", taskHandler.UpdateTask).Methods("PUT")
 	r.HandleFunc("/task/{id}", taskHandler.DeleteTask).Methods("DELETE")
 
+	r.HandleFunc("/listgoals", goalHandler.ListGoals).Methods("GET")
 	r.HandleFunc("/goal/new", goalHandler.CreateGoal).Methods("POST")
 	r.HandleFunc("/goal/{id}", goalHandler.GetGoal).Methods("GET")
 	r.HandleFunc("/goal/{id}", goalHandler.UpdateGoal).Methods("PUT")
 	r.HandleFunc("/goal/{id}", goalHandler.DeleteGoal).Methods("DELETE")
-	r.HandleFunc("/listgoals", goalHandler.ListGoals).Methods("GET")
 
+	r.HandleFunc("/listplans", planHandler.ListPlans).Methods("GET")
 	r.HandleFunc("/plan/new", planHandler.CreatePlan).Methods("POST")
 	r.HandleFunc("/plan/{id}", planHandler.GetPlan).Methods("GET")
 	r.HandleFunc("/plan/{id}", planHandler.UpdatePlan).Methods("PUT")
 	r.HandleFunc("/plan/{id}", planHandler.DeletePlan).Methods("DELETE")
-	r.HandleFunc("/listplans", planHandler.ListPlans).Methods("GET")
 
+	r.HandleFunc("/listplanners", plannerHandler.ListPlanners).Methods("GET")
 	r.HandleFunc("/planner/new", plannerHandler.CreatePlanner).Methods("POST")
 	r.HandleFunc("/planner/{id}", plannerHandler.GetPlanner).Methods("GET")
+	r.HandleFunc("/planner/title/{title}", plannerHandler.GetPlannerByTitle).Methods("GET")
+	r.HandleFunc("/planner/owner/{owner}", plannerHandler.GetPlannerByOwner).Methods("GET")
 	r.HandleFunc("/planner/{id}", plannerHandler.UpdatePlanner).Methods("PUT")
 	r.HandleFunc("/planner/{id}", plannerHandler.DeletePlanner).Methods("DELETE")
-	r.HandleFunc("/listplanners", plannerHandler.ListPlanners).Methods("GET")
 	// Apply the middleware to the router
 	r.Use(loggingMiddleware)
 
