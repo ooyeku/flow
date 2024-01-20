@@ -150,6 +150,7 @@ func (c *PlannerControl) GetPlannerByTitle(req *GetPlannerByTitleRequest) (*GetP
 	}
 	return &GetPlannerByTitleResponse{
 		Id:     planner.Id,
+		Title:  planner.Title,
 		UserId: planner.UserId,
 	}, nil
 }
