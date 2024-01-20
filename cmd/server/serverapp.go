@@ -54,8 +54,11 @@ func main() {
 	goalHandler := &api.GoalHandler{
 		Control: handle.NewGoalControl(services.NewGoalService(inmemory.NewInMemoryGoalStore(db))),
 	}
+	planHandler := &api.PlanHandler{
+		Control: handle.NewPlanControl(services.NewPlanService(inmemory.NewInMemoryPlanStore(db))),
+	}
 	// Register handlers and routes
-	r.HandleFunc("/list", taskHandler.ListTasks).Methods("GET")
+	r.HandleFunc("/listtasks", taskHandler.ListTasks).Methods("GET")
 	r.HandleFunc("/task/new", taskHandler.CreateTask).Methods("POST")
 	r.HandleFunc("/task/{id}", taskHandler.GetTask).Methods("GET")
 	r.HandleFunc("/task/title/{title}", taskHandler.GetTaskByTitle).Methods("GET")
@@ -68,6 +71,12 @@ func main() {
 	r.HandleFunc("/goal/{id}", goalHandler.UpdateGoal).Methods("PUT")
 	r.HandleFunc("/goal/{id}", goalHandler.DeleteGoal).Methods("DELETE")
 	r.HandleFunc("/listgoals", goalHandler.ListGoals).Methods("GET")
+
+	r.HandleFunc("/plan/new", planHandler.CreatePlan).Methods("POST")
+	r.HandleFunc("/plan/{id}", planHandler.GetPlan).Methods("GET")
+	r.HandleFunc("/plan/{id}", planHandler.UpdatePlan).Methods("PUT")
+	r.HandleFunc("/plan/{id}", planHandler.DeletePlan).Methods("DELETE")
+	r.HandleFunc("/listplans", planHandler.ListPlans).Methods("GET")
 	// Apply the middleware to the router
 	r.Use(loggingMiddleware)
 
