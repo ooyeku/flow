@@ -208,11 +208,13 @@ func (c *PlannerControl) GetPlannerByOwner(req *GetPlannerByOwnerRequest) (*GetP
 	for _, planner := range planners {
 		plannerResponses = append(plannerResponses, &GetPlannerByOwnerResponse{
 			Id:     planner.Id,
+			Title:  planner.Title,
 			UserId: planner.UserId,
 		})
 	}
 	return &GetPlannerByOwnerResponse{
 		Id:     plannerResponses[0].Id,
+		Title:  plannerResponses[0].Title,
 		UserId: plannerResponses[0].UserId,
 	}, nil
 }
@@ -237,6 +239,7 @@ func (c *PlannerControl) ListPlanners() (*ListPlannersResponse, error) {
 	for _, planner := range planners {
 		plannerResponses = append(plannerResponses, &GetPlannerResponse{
 			Id:     planner.Id,
+			Title:  planner.Title,
 			UserId: planner.UserId,
 		})
 	}

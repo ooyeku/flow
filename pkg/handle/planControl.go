@@ -82,7 +82,8 @@ type CreatePlanRequest struct {
 //	    ID: "abcd1234",
 //	}
 type CreatePlanResponse struct {
-	ID string `json:"id"`
+	ID    string `json:"id"`
+	Title string `json:"title"`
 }
 
 // CreatePlan creates a new plan with the provided request. It generates a unique id using the `generatePlanUUID` function.
