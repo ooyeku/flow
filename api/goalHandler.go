@@ -31,6 +31,26 @@ func (h *GoalHandler) GetGoal(w http.ResponseWriter, r *http.Request) {
 	handleError(w, err, http.StatusInternalServerError)
 }
 
+func (h *GoalHandler) GetGoalByObjective(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	objective := vars["objective"]
+	req := handle.GetGoalByObjectiveRequest{Objective: objective}
+	res, err := h.Control.GetGoalByObjective(&req)
+	handleError(w, err, http.StatusInternalServerError)
+	err = json.NewEncoder(w).Encode(res)
+	handleError(w, err, http.StatusInternalServerError)
+}
+
+func (h *GoalHandler) GetGoalsByPlannerIdRequest(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	plannerId := vars["planner_id"]
+	req := handle.GetGoalsByPlannerIdRequest{PlannerId: plannerId}
+	res, err := h.Control.GetGoalsByPlannerId(&req)
+	handleError(w, err, http.StatusInternalServerError)
+	err = json.NewEncoder(w).Encode(res)
+	handleError(w, err, http.StatusInternalServerError)
+}
+
 func (h *GoalHandler) UpdateGoal(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]

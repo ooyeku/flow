@@ -72,14 +72,16 @@ func main() {
 	r.HandleFunc("/listgoals", goalHandler.ListGoals).Methods("GET")
 	r.HandleFunc("/goal/new", goalHandler.CreateGoal).Methods("POST")
 	r.HandleFunc("/goal/{id}", goalHandler.GetGoal).Methods("GET")
+	r.HandleFunc("/goal/obj/{objective}", goalHandler.GetGoalByObjective).Methods("GET")
+	r.HandleFunc("/goal/pid/{planner_id}", goalHandler.GetGoalsByPlannerIdRequest).Methods("GET")
 	r.HandleFunc("/goal/{id}", goalHandler.UpdateGoal).Methods("PUT")
 	r.HandleFunc("/goal/{id}", goalHandler.DeleteGoal).Methods("DELETE")
 
 	r.HandleFunc("/listplans", planHandler.ListPlans).Methods("GET")
 	r.HandleFunc("/plan/new", planHandler.CreatePlan).Methods("POST")
+	r.HandleFunc("/plan/{id}", planHandler.GetPlan).Methods("GET")
 	r.HandleFunc("/plan/name/{plan_name}", planHandler.GetPlanByName).Methods("GET")
 	r.HandleFunc("/plan/goal/{goal_id}", planHandler.GetPlansByGoal).Methods("GET")
-	r.HandleFunc("/plan/{id}", planHandler.GetPlan).Methods("GET")
 	r.HandleFunc("/plan/{id}", planHandler.UpdatePlan).Methods("PUT")
 	r.HandleFunc("/plan/{id}", planHandler.DeletePlan).Methods("DELETE")
 
