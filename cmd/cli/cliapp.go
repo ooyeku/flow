@@ -789,7 +789,7 @@ func createPlanner(p *handle.PlannerControl) {
 	if err != nil {
 		fmt.Println("Error creating planner: ", err)
 	}
-	fmt.Println("Created planner with id: ", res.ID)
+	fmt.Println("Created planner with id: ", res.Id)
 }
 
 // getPlanner prompts the user to enter a planner ID and retrieves the planner from PlannerControl if it exists.
