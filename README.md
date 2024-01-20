@@ -1,5 +1,4 @@
-# Go Workflow
-
+# Go Flow
 
 This project is a task/workflow manager written in Go. It is designed to be
 simple, easy to use, and easy to extend. It is also designed to be
@@ -20,21 +19,20 @@ The project is structured as follows:
 
 ## Roadmap
 Current Version: **0.0.4** as of **01-19-2024**
-
 - [ ] *Version 1.0.0*
   - [x] Task service creation
   - [x] Planning service creation
   - [x] Goal service creation
   - [x] Plan service~~ creation
-  - [X] Basic CLI
+  - [X] Basic CLI - 0.0.5
     - [X] MVP
     - [ ] Testing
-  - [X] Basic Rest API
+  - [X] Basic Rest API - 0.0.5
     - [X] MVP
     - [ ] Testing
-  - [ ] Simple reporting service
-  - [ ] Bulk Upload and management
-  - [ ] Flow Modules (pre-defined "flows")
+  - [ ] Simple reporting service - 0.0.6
+  - [ ] Bulk Upload and management - 0.0.7
+  - [ ] Flow Modules (pre-defined "flows") - 0.0.8
     - [ ] Project Module
     - [ ] Learning Module
 
