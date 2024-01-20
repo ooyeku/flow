@@ -12,6 +12,7 @@ type PlannerHandler struct {
 }
 
 func (h *PlannerHandler) CreatePlanner(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	var req handle.CreatePlannerRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	handleError(w, err, http.StatusBadRequest)
@@ -22,43 +23,50 @@ func (h *PlannerHandler) CreatePlanner(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PlannerHandler) GetPlanner(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	id := vars["id"]
-	req := handle.GetPlannerRequest{Id: id}
-	res, err := h.Control.GetPlanner(&req)
+	req := &handle.GetPlannerRequest{
+		Id: id,
+	}
+	res, err := h.Control.GetPlanner(req)
 	handleError(w, err, http.StatusInternalServerError)
 	err = json.NewEncoder(w).Encode(res)
 	handleError(w, err, http.StatusInternalServerError)
 }
 
 func (h *PlannerHandler) UpdatePlanner(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	id := vars["id"]
-
-	var req handle.UpdatePlannerRequest
+	req := &handle.UpdatePlannerRequest{
+		Id: id,
+	}
 	err := json.NewDecoder(r.Body).Decode(&req)
 	handleError(w, err, http.StatusBadRequest)
-
-	req.Id = id // Ensure the ID from the URL is used
-
-	err = h.Control.UpdatePlanner(&req)
+	err = h.Control.UpdatePlanner(req)
 	handleError(w, err, http.StatusInternalServerError)
-
 	w.WriteHeader(http.StatusOK)
 }
 
 func (h *PlannerHandler) DeletePlanner(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	id := vars["id"]
-	req := handle.DeletePlannerRequest{Id: id}
-	err := h.Control.DeletePlanner(&req)
+	err := h.Control.DeletePlanner(&handle.DeletePlannerRequest{
+		Id: id,
+	})
 	handleError(w, err, http.StatusInternalServerError)
 	w.WriteHeader(http.StatusOK)
 }
 
 func (h *PlannerHandler) ListPlanners(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	res, err := h.Control.ListPlanners()
-	handleError(w, err, http.StatusInternalServerError)
+	if err != nil {
+		handleError(w, err, http.StatusInternalServerError)
+		return
+	}
 	err = json.NewEncoder(w).Encode(res)
 	handleError(w, err, http.StatusInternalServerError)
 }

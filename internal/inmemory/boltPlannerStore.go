@@ -69,7 +69,7 @@ func (s *BoltPlannerStore) DeletePlanner(id string) error {
 // - error: an error if the planner cannot be retrieved.
 func (s *BoltPlannerStore) GetPlanner(id string) (*models.Planner, error) {
 	planner := new(models.Planner)
-	if err := s.db.One("ID", id, planner); err != nil {
+	if err := s.db.One("Id", id, planner); err != nil {
 		return nil, err
 	}
 	return planner, nil

@@ -28,7 +28,7 @@ type CreatePlannerRequest struct {
 
 // CreatePlannerResponse represents the response structure for creating a planner. It contains the ID of the created planner.
 type CreatePlannerResponse struct {
-	ID string `json:"id"`
+	Id string `json:"id"`
 }
 
 // CreatePlanner creates a new planner based on the provided request.
@@ -49,7 +49,7 @@ func (c *PlannerControl) CreatePlanner(req *CreatePlannerRequest) (*CreatePlanne
 		return nil, err
 	}
 	return &CreatePlannerResponse{
-		ID: planner.Id,
+		Id: planner.Id,
 	}, nil
 }
 
