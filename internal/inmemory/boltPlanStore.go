@@ -16,7 +16,7 @@ type BoltPlanStore struct {
 // It returns a pointer to a Plan object and an error. If there was an issue while retrieving the plan from the database, an error is returned. Otherwise, the plan is returned.
 func (s *BoltPlanStore) GetPlanByName(name string) (*models.Plan, error) {
 	plan := new(models.Plan)
-	if err := s.db.One("Name", name, plan); err != nil {
+	if err := s.db.One("PlanName", name, plan); err != nil {
 		return nil, err
 	}
 	return plan, nil

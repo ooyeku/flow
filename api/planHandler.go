@@ -31,6 +31,26 @@ func (h *PlanHandler) GetPlan(w http.ResponseWriter, r *http.Request) {
 	handleError(w, err, http.StatusInternalServerError)
 }
 
+func (h *PlanHandler) GetPlanByName(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	planName := vars["plan_name"]
+	req := handle.GetPlanByNameRequest{PlanName: planName}
+	res, err := h.Control.GetPlanByName(&req)
+	handleError(w, err, http.StatusInternalServerError)
+	err = json.NewEncoder(w).Encode(res)
+	handleError(w, err, http.StatusInternalServerError)
+}
+
+func (h *PlanHandler) GetPlansByGoal(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	goalId := vars["goal_id"]
+	req := handle.GetPlansByGoalRequest{GoalId: goalId}
+	res, err := h.Control.GetPlansByGoal(&req)
+	handleError(w, err, http.StatusInternalServerError)
+	err = json.NewEncoder(w).Encode(res)
+	handleError(w, err, http.StatusInternalServerError)
+}
+
 func (h *PlanHandler) UpdatePlan(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]

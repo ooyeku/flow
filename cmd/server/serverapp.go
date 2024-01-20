@@ -77,6 +77,8 @@ func main() {
 
 	r.HandleFunc("/listplans", planHandler.ListPlans).Methods("GET")
 	r.HandleFunc("/plan/new", planHandler.CreatePlan).Methods("POST")
+	r.HandleFunc("/plan/name/{plan_name}", planHandler.GetPlanByName).Methods("GET")
+	r.HandleFunc("/plan/goal/{goal_id}", planHandler.GetPlansByGoal).Methods("GET")
 	r.HandleFunc("/plan/{id}", planHandler.GetPlan).Methods("GET")
 	r.HandleFunc("/plan/{id}", planHandler.UpdatePlan).Methods("PUT")
 	r.HandleFunc("/plan/{id}", planHandler.DeletePlan).Methods("DELETE")
