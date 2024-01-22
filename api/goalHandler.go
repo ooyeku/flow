@@ -50,7 +50,7 @@ import (
 //	func (h *GoalHandler) GetGoalsByPlannerIdRequest(w http.ResponseWriter, r *http.Request) {
 //			vars := mux.Vars(r)
 //			plannerId := vars["planner_id"]
-//			req := handle.GetGoalsByPlannerIdRequest{PlannerId: plannerId}
+//			req := handle.GetGoalsByPlannerIdRequest{PlannerID: plannerId}
 //			res, err := h.Control.GetGoalsByPlannerId(&req)
 //			// Handle error
 //			err = json.NewEncoder(w).Encode(res)
@@ -214,7 +214,7 @@ func (h *GoalHandler) GetGoalsByPlannerIdRequest(w http.ResponseWriter, r *http.
 //	    Id:        "goalId",
 //	    Objective: "New objective",
 //	    Deadline:  "2022-01-01",
-//	    PlannerId: "plannerId",
+//	    PlannerID: "plannerId",
 //	}
 //	h.Control.UpdateGoal(&req)
 func (h *GoalHandler) UpdateGoal(w http.ResponseWriter, r *http.Request) {

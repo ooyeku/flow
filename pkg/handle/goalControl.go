@@ -84,7 +84,7 @@ type UpdateGoalResponse struct {
 //		Id:        "123456",
 //		Objective: "New objective",
 //		Deadline:  "2022-12-31",
-//		PlannerId: "654321",
+//		PlannerID: "654321",
 //	}
 //	err := goalControl.UpdateGoal(req)
 //	if err != nil {
@@ -219,7 +219,7 @@ type GetGoalsByPlannerIdResponse struct {
 // Example:
 //
 //	req := &GetGoalsByPlannerIdRequest{
-//		PlannerId: "123456",
+//		PlannerID: "123456",
 //	}
 //	res, err := goalControl.GetGoalsByPlannerId(req)
 //	if err != nil {

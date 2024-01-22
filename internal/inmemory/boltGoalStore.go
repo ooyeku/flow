@@ -32,7 +32,7 @@ func NewInMemoryGoalStore(db *storm.DB) *BoltGoalStore {
 // - GoalCreatedAt  : time.Time
 // - GoalUpdatedAt  : time.Time
 // - Deadline       : time.Time
-// - PlannerId      : string
+// - PlannerID      : string
 // Returns an error if the save operation fails.
 func (s *BoltGoalStore) CreateGoal(goal *models.Goal) error {
 	return s.db.Save(goal)
@@ -83,7 +83,7 @@ func (s *BoltGoalStore) GetGoalByObjective(objective string) (*models.Goal, erro
 // is successful, it returns the slice of Goal objects and nil error.
 func (s *BoltGoalStore) GetGoalsByPlannerId(plannerId string) ([]*models.Goal, error) {
 	var goals []*models.Goal
-	if err := s.db.Find("PlannerId", plannerId, &goals); err != nil {
+	if err := s.db.Find("PlannerID", plannerId, &goals); err != nil {
 		return nil, err
 	}
 	return goals, nil

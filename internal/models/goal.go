@@ -12,7 +12,7 @@ import "time"
 //	    GoalCreatedAt time.Time `json:"goal_created_at"`
 //	    GoalUpdatedAt time.Time `json:"goal_updated_at"`
 //	    Deadline      time.Time `json:"deadline"`
-//	    PlannerId     string    `json:"planner_id"`
+//	    PlannerID     string    `json:"planner_id"`
 //	}
 //
 // The Goal struct has the following fields:
