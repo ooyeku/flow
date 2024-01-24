@@ -60,6 +60,13 @@ func (vc *VersionControl) CreateVersion(vr *CreateVersionRequest) (*CreateVersio
 	}, nil
 }
 
+type UpdateVersionRequest struct {
+	ID    string `json:"id"`
+	Major int    `json:"major"`
+	Minor int    `json:"minor"`
+	Patch int    `json:"patch"`
+}
+
 func (vc *VersionControl) UpdateVersion(id string, version *models.Version) error {
 	return vc.versionService.UpdateVersion(id, version)
 }

@@ -23,7 +23,7 @@ type VersionInfo struct {
 }
 
 type Snapshot struct {
-	Goal  *Goal  `json:"goal"`
-	Plans []Plan `json:"plans"`
-	Tasks []Task `json:"tasks"`
+	Goal  *Goal   `json:"goal"`
+	Plans []*Plan `json:"plans"`
+	Tasks []*Task `json:"tasks"`
 }

@@ -20,6 +20,7 @@ func (service *VersionService) CreateVersion(version *models.Version) error {
 }
 
 func (service *VersionService) UpdateVersion(id string, version *models.Version) error {
+	// create version image
 	return service.versionStore.UpdateVersion(id, version)
 }
 
