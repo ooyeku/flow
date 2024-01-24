@@ -866,13 +866,15 @@ func getPlannerByOwner(p *handle.PlannerControl) {
 	req := handle.GetPlannerByOwnerRequest{
 		UserId: userid,
 	}
-	planner, err := p.GetPlannerByOwner(&req)
+	planners, err := p.GetPlannerByOwner(&req)
 	if err != nil {
 		// error message is logged in GetPlannerByTitle
 		return
 	}
-	fmt.Println("Got planner: ", planner.Title)
-	fmt.Println("User ID: ", planner.UserId)
+	for _, planner := range planners {
+		fmt.Println("Got planner: ", planner.Title)
+		fmt.Println("User ID: ", planner.UserId)
+	}
 }
 
 // updatePlanners takes a PlannerControl pointer as input. It prompts the user to enter the ID of the planner to be updated and retrieves the planner using the GetPlanner method from

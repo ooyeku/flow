@@ -199,7 +199,7 @@ type GetPlannerByOwnerResponse struct {
 //	This will output:
 //	ID: abcdefg
 //	User ID: 123456
-func (c *PlannerControl) GetPlannerByOwner(req *GetPlannerByOwnerRequest) (*GetPlannerByOwnerResponse, error) {
+func (c *PlannerControl) GetPlannerByOwner(req *GetPlannerByOwnerRequest) ([]*GetPlannerByOwnerResponse, error) {
 	planners, err := c.Service.GetPlannerByOwner(req.UserId)
 	if err != nil {
 		return nil, err
@@ -213,11 +213,7 @@ func (c *PlannerControl) GetPlannerByOwner(req *GetPlannerByOwnerRequest) (*GetP
 			UserId: planner.UserId,
 		})
 	}
-	return &GetPlannerByOwnerResponse{
-		Id:     plannerResponses[0].Id,
-		Title:  plannerResponses[0].Title,
-		UserId: plannerResponses[0].UserId,
-	}, nil
+	return plannerResponses, nil
 }
 
 // ListPlannersResponse represents a response containing a list of planners.
