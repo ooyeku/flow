@@ -95,7 +95,7 @@ func (s *GoalService) GetGoalByObjective(objective string) (*models.Goal, error)
 // Example usage:
 //
 //	  req := &GetGoalsByPlannerIdRequest{
-//		   PlannerId: "planner-123",
+//		   PlannerID: "planner-123",
 //	  }
 //	  resp, err := control.GetGoalsByPlannerId(req)
 //	  if err != nil {

@@ -96,7 +96,7 @@ func (s *BoltPlanStore) DeletePlan(id string) error {
 // See also: BoltPlanStore, models.Plan
 func (s *BoltPlanStore) GetPlan(id string) (*models.Plan, error) {
 	plan := new(models.Plan)
-	if err := s.db.One("ID", id, plan); err != nil {
+	if err := s.db.One("Id", id, plan); err != nil {
 		return nil, err
 	}
 	return plan, nil

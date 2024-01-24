@@ -412,6 +412,7 @@ func getGoal(g *handle.GoalControl) {
 	}
 	fmt.Println("Got goal: ", goal.Goal.Objective)
 	fmt.Println("Deadline: ", goal.Goal.Deadline)
+	fmt.Println("PlannerID: ", goal.Goal.PlannerId)
 }
 func getGoalByObjective(g *handle.GoalControl) {
 	fmt.Println("Getting goal...")
@@ -430,6 +431,7 @@ func getGoalByObjective(g *handle.GoalControl) {
 	}
 	fmt.Println("Got goal: ", goal.Goal.Objective)
 	fmt.Println("Deadline: ", goal.Goal.Deadline)
+	fmt.Println("PlannerID: ", goal.Goal.PlannerId)
 }
 func getGoalsByPlannerId(g *handle.GoalControl) {
 	fmt.Println("Getting goal...")
@@ -449,6 +451,7 @@ func getGoalsByPlannerId(g *handle.GoalControl) {
 	for _, goal := range goals.Goals {
 		fmt.Println("Got goal: ", goal.Objective)
 		fmt.Println("Deadline: ", goal.Deadline)
+		fmt.Println("PlannerID: ", goal.PlannerId)
 	}
 }
 
@@ -469,6 +472,7 @@ func updateGoals(g *handle.GoalControl) {
 	}
 	fmt.Println("Got goal: ", goal.Goal.Objective)
 	fmt.Println("Deadline: ", goal.Goal.Deadline)
+	fmt.Println("PlannerID: ", goal.Goal.PlannerId)
 	fmt.Println("Enter New goal objective: ")
 
 	objective, err := promptUser(reader, "Enter goal objective: ")
@@ -566,7 +570,7 @@ func listGoals(g *handle.GoalControl) {
 	}
 	// get goal id and objective of each goal
 	for _, goal := range goals.Goals {
-		fmt.Printf("Goal id: %s, Objective: %s, Deadline %s\n", goal.Id, goal.Objective, goal.Deadline)
+		fmt.Printf("Goal id: %s, Objective: %s, Deadline %s\nPlannerID: %s\nPlans: %v\n", goal.Id, goal.Objective, goal.Deadline, goal.PlannerId, goal.Plans)
 	}
 }
 

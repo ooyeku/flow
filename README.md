@@ -13,10 +13,9 @@ The project is structured as follows:
 - Service
 - Handle (control)
 - API
-#### Modes
+#### Modes:
 - CLI
 - Server
-
 ## Roadmap
 Current Version: **0.0.4** as of **01-19-2024**
 - [ ] *Version 1.0.0*

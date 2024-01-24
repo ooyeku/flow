@@ -2,6 +2,7 @@ package main
 
 import (
 	"flow/internal/inmemory"
+	"flow/internal/models"
 	handle2 "flow/pkg/handle"
 	"flow/pkg/services"
 	"github.com/asdine/storm"
@@ -26,18 +27,21 @@ func main() {
 	goalStore := inmemory.NewInMemoryGoalStore(db)
 	planStore := inmemory.NewInMemoryPlanStore(db)
 	taskStore := inmemory.NewInMemoryTaskStore(db)
+	versionStore := inmemory.NewInMemoryVersionStore(db)
 
 	// Create services
 	plannerService := services.NewPlannerService(plannerStore)
 	goalService := services.NewGoalService(goalStore)
 	planService := services.NewPlanService(planStore)
 	taskService := services.NewTaskService(taskStore)
+	versionService := services.NewVersionService(versionStore)
 
 	// Create controllers
 	plannerControl := handle2.NewPlannerControl(plannerService)
 	goalControl := handle2.NewGoalControl(goalService)
 	planControl := handle2.NewPlanControl(planService)
 	taskControl := handle2.NewTaskControl(taskService)
+	versionControl := handle2.NewVersionControl(versionService)
 
 	// Create a new planner
 	plannerReq := &handle2.CreatePlannerRequest{
@@ -82,9 +86,29 @@ func main() {
 		log.Fatalf("Failed to create task: %v", err)
 	}
 
+	// Create a new version
+	versionReq := &handle2.CreateVersionRequest{
+		GoalID: goalRes.ID,
+		PlanID: planRes.ID,
+		TaskID: taskRes.ID,
+		No: models.VersionInfo{
+			Major: 0,
+			Minor: 0,
+			Patch: 0,
+		},
+		CreatedBy: "456", // Replace with a valid user ID
+	}
+
+	versionRes, err := versionControl.CreateVersion(versionReq)
+
+	if err != nil {
+		log.Fatalf("Failed to create version: %v", err)
+	}
+
 	log.Println("Workflow created successfully")
-	log.Printf("Planner ID: %s\n", plannerRes.ID)
+	log.Printf("Planner ID: %s\n", plannerRes)
 	log.Printf("Goal ID: %s\n", goalRes.ID)
 	log.Printf("Plan ID: %s\n", planRes.ID)
 	log.Printf("Task ID: %s\n", taskRes.ID)
+	log.Printf("Version ID: %s\n", versionRes.ID)
 }
