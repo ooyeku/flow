@@ -49,6 +49,7 @@ func (c *GoalControl) CreateGoal(req *CreateGoalRequest) (*CreateGoalResponse, e
 	// convert deadline to time.Time
 	deadline, err := m.ConvertDeadline(req.Deadline)
 	goal := m.GenerateGoalInstance(id, req.Objective, deadline)
+	goal.PlannerId = req.PlannerId
 	err = c.Service.CreateGoal(goal)
 	if err != nil {
 		return nil, err
@@ -96,6 +97,7 @@ func (c *GoalControl) UpdateGoal(req *UpdateGoalRequest) error {
 	// convert deadline to time.Time
 	deadline, err := m.ConvertDeadline(req.Deadline)
 	goal := m.GenerateGoalInstance(req.Id, req.Objective, deadline)
+	goal.PlannerId = req.PlannerId
 
 	// for now, updategoal sets the createdat and updatedat fields to the current time
 	// this is because the frontend does not have a way to set these fields
