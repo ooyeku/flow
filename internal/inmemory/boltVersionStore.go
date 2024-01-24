@@ -10,7 +10,7 @@ type BoltVersionStore struct {
 	db *storm.DB
 }
 
-func NewBoltVersionStore(db *storm.DB) *BoltVersionStore {
+func NewInMemoryVersionStore(db *storm.DB) *BoltVersionStore {
 	return &BoltVersionStore{
 		db: db,
 	}
