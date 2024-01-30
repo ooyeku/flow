@@ -229,16 +229,20 @@ func getTaskByOwner(t *handle.TaskControl) {
 	owner, err := promptUser(reader, "Enter task owner: ")
 	if err != nil {
 		log.Fatalf("Could not read from stdin: %s", err)
+		return
 	}
 	req := handle.GetTaskByOwnerRequest{
 		Owner: owner,
 	}
-	task, err := t.GetTaskByOwner(&req)
+	tasks, err := t.GetTaskByOwner(&req)
 	if err != nil {
+		// error message is logged in GetTaskByOwner
 		return
 	}
-	fmt.Println("Got task: ", task.Title)
-	fmt.Println("Description: ", task.Description)
+	for _, task := range tasks {
+		fmt.Println("Got task: ", task.Title)
+		fmt.Println("Description: ", task.Description)
+	}
 }
 
 // updateTasks prompts the user to enter a task ID, then retrieves the task with the specified ID using the GetTask function from the provided TaskControl object.
@@ -658,7 +662,7 @@ func getPlanByGoal(p *handle.PlanControl) {
 	plans, err := p.GetPlansByGoal(&req)
 	if err != nil {
 		// error message is logged in GetPlanByTitle
-		return
+		log.Fatalf("Error getting plans by goal: %s", err)
 	}
 	for _, plan := range plans.Plans {
 		fmt.Println("Got plan: ", plan.PlanName)

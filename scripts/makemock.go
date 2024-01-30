@@ -47,6 +47,7 @@ func main() {
 	plannerReq := &handle2.CreatePlannerRequest{
 		UserId: "456", // Replace with a valid user ID
 	}
+
 	plannerRes, err := plannerControl.CreatePlanner(plannerReq)
 	if err != nil {
 		log.Fatalf("Failed to create planner: %v", err)

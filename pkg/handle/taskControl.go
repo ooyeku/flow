@@ -215,23 +215,27 @@ func (c *TaskControl) GetTaskByTitle(req *GetTaskByTitleRequest) (*GetTaskRespon
 	}, nil
 }
 
-// GetTaskByOwner retrieves the task with the given owner from the service's store. It returns the task details in the response.
+// GetTaskByOwner retrieves the tasks with the given owner from the service's store. It returns the task details in the response.
 // If an error occurs during the retrieval process, it is returned as well.
-func (c *TaskControl) GetTaskByOwner(req *GetTaskByOwnerRequest) (*GetTaskResponse, error) {
-	task, err := c.service.GetTaskByOwner(req.Owner)
+func (c *TaskControl) GetTaskByOwner(req *GetTaskByOwnerRequest) ([]*GetTaskResponse, error) {
+	tasks, err := c.service.GetTaskByOwner(req.Owner)
 	if err != nil {
 		return nil, err
 	}
-	return &GetTaskResponse{
-		ID:          task.ID,
-		Title:       task.Title,
-		Description: task.Description,
-		Owner:       task.Owner,
-		Started:     task.Started,
-		Completed:   task.Completed,
-		CreatedAt:   task.CreatedAt,
-		UpdatedAt:   task.UpdatedAt,
-	}, nil
+	var taskResponses []*GetTaskResponse
+	for _, task := range tasks {
+		taskResponses = append(taskResponses, &GetTaskResponse{
+			ID:          task.ID,
+			Title:       task.Title,
+			Description: task.Description,
+			Owner:       task.Owner,
+			Started:     task.Started,
+			Completed:   task.Completed,
+			CreatedAt:   task.CreatedAt,
+			UpdatedAt:   task.UpdatedAt,
+		})
+	}
+	return taskResponses, nil
 }
 
 // ListTasksResponse represents the response structure containing a list of tasks.

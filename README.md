@@ -16,13 +16,14 @@ The project is structured as follows:
 #### Modes:
 - CLI
 - Server
+
 ## Roadmap
 Current Version: **0.0.4** as of **01-19-2024**
 - [ ] *Version 1.0.0*
   - [x] Task service creation
   - [x] Planning service creation
   - [x] Goal service creation
-  - [x] Plan service~~ creation
+  - [x] Plan service creation
   - [X] Basic CLI - 0.0.5
     - [X] MVP
     - [ ] Testing
@@ -31,14 +32,14 @@ Current Version: **0.0.4** as of **01-19-2024**
     - [ ] Testing
   - [ ] Simple reporting service - 0.0.6
   - [ ] Bulk Upload and management - 0.0.7
-  - [ ] Flow Modules (pre-defined "flows") - 0.0.8
-    - [ ] Project Module
-    - [ ] Learning Module
-
+  - [ ] Version Control - 0.0.8
+ 
 -[ ] *Version 2.0.0*
     - [ ] Web UI
     - [ ] Advanced reporting service
-
+  - [ ] Flow Modules (pre-defined "flows")
+    - [ ] Project Module
+    - [ ] Learning Module
 
 ## Planned Usage
 
