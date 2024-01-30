@@ -67,7 +67,7 @@ type Plan struct {
 //	  - ConvertPlanDate
 //	  - ConvertPlanTime
 //	  - NotStarted
-func (p *Plan) GeneratePlanInstance(id, planName, planDescription string, planDate, planTime time.Time) *Plan {
+func (p *Plan) GeneratePlanInstance(id, planName, planDescription string, planDate, planTime time.Time, goalid string) *Plan {
 	return &Plan{
 		Id:              id,
 		PlanName:        planName,
@@ -78,7 +78,7 @@ func (p *Plan) GeneratePlanInstance(id, planName, planDescription string, planDa
 		Tasks:           []Task{},
 		PlanCreatedAt:   time.Now(),
 		PlanUpdatedAt:   time.Now(),
-		GoalId:          "",
+		GoalId:          goalid,
 	}
 }
 

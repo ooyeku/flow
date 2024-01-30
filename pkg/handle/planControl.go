@@ -72,6 +72,7 @@ type CreatePlanRequest struct {
 	PlanDescription string `json:"plan_description"`
 	PlanDate        string `json:"plan_date"`
 	PlanTime        string `json:"plan_time"`
+	GoalId          string
 }
 
 // CreatePlanResponse is a type that represents the response when creating a new plan.
@@ -107,7 +108,7 @@ func (c *PlanControl) CreatePlan(req *CreatePlanRequest) (*CreatePlanResponse, e
 	if err != nil {
 		return nil, err
 	}
-	plan := m.GeneratePlanInstance(id, req.PlanName, req.PlanDescription, planDate, planTime)
+	plan := m.GeneratePlanInstance(id, req.PlanName, req.PlanDescription, planDate, planTime, req.GoalId)
 	err = c.Service.CreatePlan(plan)
 	if err != nil {
 		return nil, err
@@ -148,7 +149,7 @@ func (c *PlanControl) UpdatePlan(req *UpdatePlanRequest) error {
 	if err != nil {
 		return err
 	}
-	plan := m.GeneratePlanInstance(req.Id, req.PlanName, req.PlanDescription, planDate, planTime)
+	plan := m.GeneratePlanInstance(req.Id, req.PlanName, req.PlanDescription, planDate, planTime, req.GoalId)
 	plan.GoalId = req.GoalId
 	return c.Service.UpdatePlan(plan)
 }

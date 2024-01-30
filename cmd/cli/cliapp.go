@@ -585,6 +585,10 @@ func createPlan(p *handle.PlanControl) {
 	if err != nil {
 		log.Fatalf("Could not read from stdin: %s", err)
 	}
+	goalid, err := promptUser(reader, "Enter plan goalid: ")
+	if err != nil {
+		log.Fatalf("Could not read from stdin: %s", err)
+	}
 	description, err := promptUser(reader, "Enter plan description: ")
 	if err != nil {
 		log.Fatalf("Could not read from stdin: %s", err)
@@ -600,6 +604,7 @@ func createPlan(p *handle.PlanControl) {
 
 	req := handle.CreatePlanRequest{
 		PlanName:        name,
+		GoalId:          goalid,
 		PlanDescription: description,
 		PlanDate:        date,
 		PlanTime:        time,
@@ -628,6 +633,7 @@ func getPlan(p *handle.PlanControl) {
 	}
 	fmt.Println("Got plan: ", plan.Plan.PlanName)
 	fmt.Println("Description: ", plan.Plan.PlanDescription)
+	fmt.Println("GoalID: ", plan.Plan.GoalId)
 }
 
 func getPlanByName(p *handle.PlanControl) {
