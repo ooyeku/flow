@@ -88,6 +88,6 @@ func (s *TaskService) GetTaskByTitle(title string) (*models.Task, error) {
 // GetTaskByOwner returns a task owned by the given owner.
 // It takes an owner string as a parameter and returns the task associated with that owner.
 // If there is no task found or an error occurs, it returns nil and an error respectively.
-func (s *TaskService) GetTaskByOwner(owner string) (*models.Task, error) {
+func (s *TaskService) GetTaskByOwner(owner string) ([]*models.Task, error) {
 	return s.Store.GetTaskByOwner(owner)
 }

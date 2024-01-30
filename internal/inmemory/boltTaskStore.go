@@ -123,14 +123,14 @@ func (s *BoltTaskStore) GetTaskByTitle(title string) (*models.Task, error) {
 }
 
 // GetTaskByOwner retrieves a task from the BoltTaskStore based on the given owner.
-func (s *BoltTaskStore) GetTaskByOwner(owner string) (*models.Task, error) {
-	task := new(models.Task)
-	err := s.db.One("Owner", owner, task)
+func (s *BoltTaskStore) GetTaskByOwner(owner string) ([]*models.Task, error) {
+	var tasks []*models.Task
+	err := s.db.Find("Owner", owner, &tasks)
 	if err != nil {
 		log.Printf("Failed to get task by owner: %v", err)
 		return nil, err
 	}
-	return task, nil
+	return tasks, nil
 }
 
 // ListTasks retrieves a list of tasks from the BoltTaskStore.

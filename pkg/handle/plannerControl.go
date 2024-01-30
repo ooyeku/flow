@@ -122,6 +122,7 @@ func (c *PlannerControl) GetPlanner(req *GetPlannerRequest) (*GetPlannerResponse
 	}
 	return &GetPlannerResponse{
 		Id:     planner.Id,
+		Title:  planner.Title,
 		UserId: planner.UserId,
 	}, nil
 }
