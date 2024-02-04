@@ -17,12 +17,6 @@ The project is structured as follows:
 - CLI
 - Server
 
-## Installation
-To install the CLI, run the following command:
-```bash
-go get github.com/ooyeku/workflow/
-```
-
 
 ## Usage
 To build:
