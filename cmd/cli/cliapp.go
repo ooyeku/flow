@@ -13,11 +13,10 @@ import (
 	"strings"
 )
 
-// main function is the entry point of the CLI application.
-// It prompts the user to enter a command, reads the command from standard input,
-// and passes it to the runCommand function for execution.
-// If there is an error reading or executing the command, it prints the error message to standard error.
-// It keeps looping until the user enters the "exit" command to exit the application.
+// main is the entry point function for the CLI application.
+// It displays a welcome message and continuously prompts the user for a command.
+// The entered command string is passed to the runCommand function for execution.
+// Any error that occurs during the process is printed to stderr.
 func main() {
 
 	reader := bufio.NewReader(os.Stdin)
@@ -41,7 +40,23 @@ func main() {
 	}
 }
 
-// cliSetup initializes the router, service, and in-memory store. It opens the database using the dbPath obtained from conf.GetDBPath(). If there is an error opening the database, it
+// cliSetup is a function that initializes the CLI setup by creating instances of different controls and the database.
+// It opens the database using the path obtained from the configuration.
+// It then creates in-memory stores, services, and routers for tasks, goals, plans, and planners using the database.
+// Finally, it returns the taskRouter, goalRouter, planRouter, plannerRouter, and the database instance.
+// The returned taskRouter is of type *handle.TaskControl and has the following methods:
+// - CreateTask: Creates a new task with the provided request and returns the response.
+// - UpdateTask: Updates an existing task using the provided request.
+// - DeleteTask: Deletes a task with the specified ID.
+// - GetTask: Retrieves a task with the specified ID and returns the response.
+// - GetTaskByTitle: Retrieves a task with the specified title and returns the response.
+// - GetTaskByOwner: Retrieves tasks with the specified owner and returns a slice of responses.
+// - ListTasks: Retrieves all tasks and returns a slice of responses.
+// The returned goalRouter is of type *handle.GoalControl and has the following methods:
+// - CreateGoal: Creates a new goal with the provided request and returns the response.
+// - UpdateGoal: Updates an existing goal using the provided request.
+// - DeleteGoal: Deletes a goal with the specified ID.
+// - GetGoal: Retrieves a goal with the specified
 func cliSetup() (*handle.TaskControl, *handle.GoalControl, *handle.PlanControl, *handle.PlannerControl, *storm.DB) {
 	dbPath := conf.GetDBPath()
 	db, err := storm.Open(dbPath, storm.BoltOptions(0600, nil))
@@ -78,7 +93,8 @@ func promptUser(reader *bufio.Reader, prompt string) (string, error) {
 	return strings.TrimSpace(response), nil
 }
 
-// taskCommands is a map that contains various commands related to task operations. The key represents the command name and the value represents the corresponding function to be executed
+// taskCommands is a map that contains various commands related to task operations.
+// The key represents the command name and the value represents the corresponding function to be executed.
 var taskCommands = map[string]func(*handle.TaskControl){
 	"create-task":       createTask,
 	"get-task":          getTask,
@@ -89,14 +105,7 @@ var taskCommands = map[string]func(*handle.TaskControl){
 	"list-tasks":        listTasks,
 }
 
-// goalCommands is a map that maps command names to their corresponding functions in the handle.GoalControl struct.
-// The handle.GoalControl struct is responsible for handling goal-related requests and executing the corresponding actions.
-// The functions listed below are the available commands that can be executed using goalCommands:
-//   - create-goal: This command creates a new goal by reading input from the user and making a request to the CreateGoal function in the GoalControl struct.
-//     It prompts the user to enter the goal objective, deadline, and planner ID.
-//   - get-goal: This command retrieves a goal by its ID by reading input from the user and making a request to the GetGoal function in the GoalControl struct.
-//     It prompts the user to enter the goal ID.
-//   - get-goal-by-title: This command retrieves a goal by its objective by reading input from the user and making a request to the GetGoalByObjective function in the GoalControl struct
+// goalCommands is a map that contains various commands related to goal operations. The key represents the command name and the value represents the corresponding function to be executed.
 var goalCommands = map[string]func(*handle.GoalControl){
 	"create-goal":       createGoal,
 	"get-goal":          getGoal,
@@ -107,7 +116,7 @@ var goalCommands = map[string]func(*handle.GoalControl){
 	"list-goals":        listGoals,
 }
 
-// planCommands is a map that maps command names to their corresponding functions
+// planCommands is a map that contains various commands related to plan operations. The key represents the command name and the value represents the corresponding function to be executed
 var planCommands = map[string]func(*handle.PlanControl){
 	"create-plan":      createPlan,
 	"get-plan":         getPlan,
@@ -118,8 +127,7 @@ var planCommands = map[string]func(*handle.PlanControl){
 	"list-plans":       listPlans,
 }
 
-// plannerCommands is a map that associates string keys with functions that operate on a *handle.PlannerControl object.
-// Each key represents a command, and the associated function performs the corresponding action.
+// plannerCommands is a map that contains various commands related to planner operations. The key represents the command name and the value represents the corresponding function to be executed
 var plannerCommands = map[string]func(*handle.PlannerControl){
 	"create-planner":       createPlanner,
 	"get-planner":          getPlanner,
@@ -130,26 +138,34 @@ var plannerCommands = map[string]func(*handle.PlannerControl){
 	"list-planners":        listPlanners,
 }
 
-// createTask is a function that prompts the user to enter the details of a task,
-// creates the task using the provided TaskControl instance, and prints the ID of the created task.
+// createTask is a function that prompts the user to enter information for a new task,
+// creates a CreateTaskRequest using the entered information, and calls the CreateTask method
+// on the provided *handle.TaskControl instance to create the task.
+// If there is an error creating the task, it prints the error message to the console.
+// Finally, it prints the ID of the created task to the console.
+// The function makes use of the promptUser function to read user input.
+// The promptUser function takes a *bufio.Reader instance and a prompt string as arguments,
+// and returns the trimmed user input or an error.
+// The promptUser function is defined as follows:
 //
-// Parameters:
-// - t: *handle.TaskControl - An instance of TaskControl that provides the CreateTask method for task creation.
+//	func promptUser(reader *bufio.Reader, prompt string) (string, error) {
+//		fmt.Println(prompt)
+//		response, err := reader.ReadString('\n')
+//		if err != nil {
+//			return "", fmt.Errorf("could not read from stdin: %s", err)
+//		}
+//		return strings.TrimSpace(response), nil
+//	}
 //
-// Example usage:
-//
-//	taskRouter, db := cliSetup()
-//	defer db.Close()
-//	createTask(taskRouter)
-//
-// This function utilizes the TaskControl instance to create a task, by:
-// 1. Printing a prompt for the task title and reading the user input.
-// 2. Printing a prompt for the task description and reading the user input.
-// 3. Printing a prompt for the task owner and reading the user input.
-// 4. Creating a CreateTaskRequest instance with the title, description, and owner obtained from user input.
-// 5. Invoking the CreateTask method of the TaskControl instance with the CreateTaskRequest instance.
-// 6. If an error occurs during task creation, printing the error message.
-// 7. Printing the ID of the created task.
+// The createTask function relies on the following types and methods defined in other parts of the codebase:
+// - handle.TaskControl: A user-defined type representing task control. It has a CreateTask method that takes a *handle.CreateTaskRequest and returns a response and an error.
+// - handle.CreateTaskRequest: A user-defined type representing a request to create a task. It has fields for title, description, and owner.
+// - services.TaskService: A user-defined type representing a task service. It exposes methods for creating, updating, deleting, and retrieving tasks.
+// - models.Task: A user-defined type representing a task with fields for ID, title, description, owner, started, completed, createdAt, and updatedAt.
+// - store.TaskStore: A user-defined type representing a task store. It has methods for creating, updating, deleting, and retrieving tasks.
+// Here is an example of how to use the createTask function:
+// t := &handle.TaskControl{service: &services.TaskService{Store: &store.TaskStore{}}} // Instantiate TaskControl
+// createTask(t) // Call createTask function with the TaskControl instance as argument
 func createTask(t *handle.TaskControl) {
 	fmt.Println("Creating task...")
 	reader := bufio.NewReader(os.Stdin)
@@ -178,10 +194,10 @@ func createTask(t *handle.TaskControl) {
 	fmt.Println("Created task with id: ", res.ID)
 }
 
-// getTask retrieves a task with a given ID by calling the GetTask method of the TaskControl struct.
-// It prompts the user to enter the task ID, sends a GetTaskRequest to the TaskControl, and displays the task details if found.
-// Otherwise, it prints an error message if the task is not found or an error occurs.
-// The function uses the promptUser function to read user input from stdin.
+// getTask retrieves a task by its ID.
+// It prompts the user to enter the task ID and retrieves the task from TaskControl service.
+// If there is an error while reading from standard input or retrieving the task, it prints an error message.
+// It prints the task's title and description if the task is retrieved successfully.
 func getTask(t *handle.TaskControl) {
 	fmt.Println("Getting task...")
 	reader := bufio.NewReader(os.Stdin)
@@ -201,9 +217,10 @@ func getTask(t *handle.TaskControl) {
 	fmt.Println("Description: ", task.Description)
 }
 
-// getTaskByTitle prompts the user to enter a task title and retrieves the task with that title using the provided TaskControl instance.
-// It prints the task title and description if the task is found.
-// If there is an error reading from stdin or retrieving the task, an error message is logged and the function returns.
+// getTaskByTitle retrieves a task by its title from a TaskControl instance.
+// It prompts the user to enter the task title, and then calls the GetTaskByTitle function of the TaskControl instance.
+// If the task is found, it prints the task title and description.
+// If there is an error retrieving the task or prompting the user, it logs the error message.
 func getTaskByTitle(t *handle.TaskControl) {
 	fmt.Println("Getting task...")
 	reader := bufio.NewReader(os.Stdin)
@@ -223,6 +240,12 @@ func getTaskByTitle(t *handle.TaskControl) {
 	fmt.Println("Description: ", task.Description)
 }
 
+// getTaskByOwner is a function that retrieves all tasks owned by a given owner.
+// It prompts the user to enter the task owner's name, then sends a request to the TaskControl service
+// to get the tasks owned by that owner. The function then prints the details of each task.
+// If there is an error reading the user's input or retrieving the tasks, an error message is logged.
+// Parameters:
+// - t: a pointer to a handle.TaskControl struct representing the task control service
 func getTaskByOwner(t *handle.TaskControl) {
 	fmt.Println("Getting task...")
 	reader := bufio.NewReader(os.Stdin)
@@ -245,14 +268,16 @@ func getTaskByOwner(t *handle.TaskControl) {
 	}
 }
 
-// updateTasks prompts the user to enter a task ID, then retrieves the task with the specified ID using the GetTask function from the provided TaskControl object.
-// It then prompts the user to enter a new task title, description, and owner.
-// After that, it constructs an UpdateTaskRequest object with the provided ID, new title, description, owner, and default values for started and completed.
-// Finally, it calls the UpdateTask function from the TaskControl object to update the task with the new values.
-// If any error occurs during the process, it prints an error message.
-// Example usage:
-// t := &handle.TaskControl{service: taskService}
-// updateTasks(t)
+// updateTasks is a function that allows the user to update a task in the task control system.
+// It takes a pointer to a TaskControl object as a parameter, which provides access to the task control system.
+// The function prompts the user to enter the ID of the task to be updated.
+// It then retrieves the task from the task control system using the provided ID.
+// If an error occurs during the retrieval, the function prints an error message and returns.
+// The function displays the retrieved task's title and description to the user.
+// The user is prompted to enter a new task title, description, and owner.
+// The function then updates the task with the new values and prints a message indicating that the task is being updated.
+// If an error occurs during the update, the function prints an error message and returns.
+// Finally, the function prints a message indicating that the task has been updated with its ID.
 func updateTasks(t *handle.TaskControl) {
 	reader := bufio.NewReader(os.Stdin)
 	id, err := promptUser(reader, "Enter task id of task to be updated: ")
@@ -298,8 +323,13 @@ func updateTasks(t *handle.TaskControl) {
 	fmt.Println("Updated task with id: ", task.ID)
 }
 
-// deleteTask prompts the user to enter the ID of the task to be deleted. It retrieves the task with the given ID using the TaskControl.GetTask function.
-// It then displays the details of the task to the user and asks for confirmation to delete the task. If the user confirms, it deletes the task using the TaskControl.DeleteTask function
+// deleteTask deletes a task based on user input.
+// It prompts the user to enter the task ID to be deleted.
+// It then retrieves the task using the GetTask method of the TaskControl service to show the user which task is being deleted.
+// The user is then asked to confirm the deletion by entering "y" or "n".
+// If the user confirms the deletion, the task is deleted using the DeleteTask method of the TaskControl service.
+// If the deletion is successful, a message is printed to confirm the deletion.
+// If the user cancels the deletion or provides invalid input, appropriate messages are printed.
 func deleteTask(t *handle.TaskControl) {
 	reader := bufio.NewReader(os.Stdin)
 	id, err := promptUser(reader, "Enter task id to be deleted: ")
@@ -340,9 +370,17 @@ func deleteTask(t *handle.TaskControl) {
 	}
 }
 
-// listTasks lists all tasks using the given TaskControl instance.
-// It fetches all tasks using the ListTasks() method and prints the task ID, title, and description for each task.
-// If there is an error in fetching the tasks, it prints the error message.
+// listTasks is a function that lists all tasks using a TaskControl object.
+// It calls the ListTasks function of the TaskControl object to get a list of tasks,
+// and then prints the ID, title, and description of each task.
+//
+// Parameters:
+// - t: A pointer to a TaskControl object.
+// Returns: None.
+// Example usage:
+//
+//	t := &handle.TaskControl{}
+//	listTasks(t)
 func listTasks(t *handle.TaskControl) {
 	fmt.Println("Listing tasks...")
 	tasks, err := t.ListTasks()
@@ -356,20 +394,7 @@ func listTasks(t *handle.TaskControl) {
 	}
 }
 
-// createGoal prints a prompt to the user, reads input from stdin, and creates a new goal using the provided GoalControl.
-// promptUser reads input from the user with the given prompt message and returns the user input as a string.
-// handle.CreateGoalRequest is a struct that represents the data needed to create a goal. It contains the objective, deadline, and planner ID.
-// handle.GoalControl is a struct that provides methods for creating, updating, deleting, and retrieving goals.
-// services.GoalService is a struct that implements the logic for goal creation, update, deletion, and retrieval.
-// CreateGoalResponse is a struct that contains the ID of the newly created goal.
-// generateGoalUUID generates a new UUID for the goal ID.
-// models.Goal is a struct that represents a goal and provides helper methods for goal instance creation and deadline conversion.
-// Usage example:
-//
-//	g := &handle.GoalControl{
-//	  Service: &services.GoalService{store: store2.GoalStore{}},
-//	}
-//	createGoal(g)
+// Prompt user to enter goal objective
 func createGoal(g *handle.GoalControl) {
 	fmt.Println("Creating goal...")
 	reader := bufio.NewReader(os.Stdin)
@@ -402,7 +427,17 @@ func createGoal(g *handle.GoalControl) {
 	fmt.Println("Created goal with id: ", res.ID)
 }
 
-// getGoal takes a pointer to a GoalControl and prompts the user to enter a goal id. It then calls the GetGoal method on the GoalControl to retrieve the goal information associated with
+// getGoal is a function that retrieves a goal from GoalControl by prompting the user for the goal ID and
+// calling the GetGoal method on GoalControl. It prints the goal's objective, deadline, and planner ID if
+// the goal is successfully retrieved. If there is an error, it displays the corresponding error message.
+//
+// Parameters:
+// - g: A pointer to an instance of the GoalControl struct which provides access to goal-related operations.
+//
+// Example Usage:
+//
+//	g := &handle.GoalControl{Service: &services.GoalService{}}
+//	getGoal(g)
 func getGoal(g *handle.GoalControl) {
 	fmt.Println("Getting goal...")
 	reader := bufio.NewReader(os.Stdin)
@@ -422,6 +457,12 @@ func getGoal(g *handle.GoalControl) {
 	fmt.Println("Deadline: ", goal.Goal.Deadline)
 	fmt.Println("PlannerID: ", goal.Goal.PlannerId)
 }
+
+// getGoalByObjective retrieves a goal by its objective from the GoalControl service.
+// It prompts the user to enter the goal objective, creates a GetGoalByObjectiveRequest,
+// and calls the GetGoalByObjective method of the GoalControl service to fetch the goal.
+// If there is an error fetching the goal, the error message is logged in the GetGoalByObjective method.
+// If the goal is fetched successfully, it prints the goal's objective, deadline, and plannerID to the console.
 func getGoalByObjective(g *handle.GoalControl) {
 	fmt.Println("Getting goal...")
 	reader := bufio.NewReader(os.Stdin)
@@ -441,6 +482,28 @@ func getGoalByObjective(g *handle.GoalControl) {
 	fmt.Println("Deadline: ", goal.Goal.Deadline)
 	fmt.Println("PlannerID: ", goal.Goal.PlannerId)
 }
+
+// getGoalsByPlannerId is a function that retrieves goals by a given planner ID.
+// It prompts the user to enter the goal planner ID and sends a request to the GoalControl service to get the goals.
+// If there is an error retrieving the goals, the error message is logged in the GetGoalByObjective function.
+// The retrieved goals are then printed to the console.
+//
+// Example usage:
+//
+//	goalControl := &handle.GoalControl{
+//	    Service: &services.GoalService{},
+//	}
+//	getGoalsByPlannerId(goalControl)
+//
+// Parameters:
+// - g: a handle.GoalControl instance that provides access to the GoalControl service methods.
+//
+// Dependencies:
+// - bufio.NewReader: used for reading user input from standard input.
+// - promptUser: a function that prompts the user to enter a value and returns the entered value as a string.
+// - handle.GetGoalsByPlannerIdRequest: a struct representing the request to retrieve goals by planner ID.
+//
+// Returns: None
 func getGoalsByPlannerId(g *handle.GoalControl) {
 	fmt.Println("Getting goal...")
 	reader := bufio.NewReader(os.Stdin)
@@ -463,7 +526,15 @@ func getGoalsByPlannerId(g *handle.GoalControl) {
 	}
 }
 
-// updateGoals updates a goal by taking input from the user. It prompts the user for the goal ID, retrieves the goal from the GoalControl using the GetGoal method, and then prompts the
+// updateGoals updates a goal by prompting the user for new goal objective, deadline, and planner ID.
+// It first prompts the user to enter the goal ID of the goal to be updated.
+// Then it retrieves the goal from the GoalControl service using the given ID.
+// If there is an error retrieving the goal, it prints an error message and returns.
+// Otherwise, it prompts the user to enter the new goal objective, deadline, and planner ID.
+// After collecting the new values, it creates an UpdateGoalRequest with the collected values.
+// It then calls the UpdateGoal method of the GoalControl service to update the goal.
+// If there is an error updating the goal, it prints an error message and returns.
+// Otherwise, it prints a success message with the updated goal ID.
 func updateGoals(g *handle.GoalControl) {
 	reader := bufio.NewReader(os.Stdin)
 	id, err := promptUser(reader, "Enter goal id of goal to be updated: ")
@@ -510,13 +581,12 @@ func updateGoals(g *handle.GoalControl) {
 	fmt.Println("Updated goal with id: ", goal.Goal.Id)
 }
 
-// deleteGoal prompts the user for a goal id to delete and then proceeds to delete the goal.
-// It first gets the goal from the provided GoalControl using the GetGoal method.
-// It then asks the user for confirmation to delete the goal and proceeds with deleting it.
-// If the user confirms, it calls the DeleteGoal method of GoalControl to delete the goal.
-// It prints the id of the deleted goal if successful.
-// Parameters:
-// - g: the handle.GoalControl instance used to interact with the goal service
+// deleteGoal deletes a goal based on user input.
+// It prompts the user to enter the ID of the goal to be deleted and then confirms the deletion with the user.
+// It first gets the goal based on the provided ID to show the user what goal is being deleted.
+// If the goal is found, it asks the user for confirmation.
+// If the user confirms the deletion, it calls the DeleteGoal method on the GoalControl service to delete the goal.
+// If there is an error during any step, it prints an error message accordingly.
 func deleteGoal(g *handle.GoalControl) {
 	reader := bufio.NewReader(os.Stdin)
 	id, err := promptUser(reader, "Enter goal id to be deleted: ")
@@ -557,18 +627,23 @@ func deleteGoal(g *handle.GoalControl) {
 	}
 }
 
-// Example usage:
-// g := &handle.GoalControl{}
-// listGoals(g)
-// Output:
-// Listing goals...
-// Goal id: {goalId}, Objective: {objective}, Deadline {deadline}
-// Goal id: {goalId}, Objective: {objective}, Deadline {deadline}
-// ...
+// listGoals is a function that lists all the goals.
 //
-// Goal id represents the unique identifier of the goal
-// Objective represents the objective of the goal
-// Deadline represents the deadline of the goal
+// It calls the ListGoals method of the GoalControl service to retrieve the list of goals.
+// If there is an error retrieving the goals, it prints an error message and returns.
+// It then iterates over the list of goals and prints the goal ID, objective, deadline, and planner ID for each goal.
+// The goal information is printed to standard output.
+//
+// Example usage:
+//
+//	gCtrl := &handle.GoalControl{Service: &services.GoalService{}}
+//	listGoals(gCtrl)
+//
+// Output:
+//
+//	Listing goals...
+//	Goal id: 1, Objective: Finish project, Deadline: 2022-12-31T23:59:00, PlannerID: 12345
+//	Goal id: 2, Objective: Exercise daily, Deadline: 2023-01-01T08:00:00, PlannerID: 67890
 func listGoals(g *handle.GoalControl) {
 	fmt.Println("Listing goals...")
 	goals, err := g.ListGoals()
@@ -582,6 +657,15 @@ func listGoals(g *handle.GoalControl) {
 	}
 }
 
+// createPlan is a function that creates a plan by prompting the user to enter various details such as plan name, goal ID, description, date, and time.
+// It takes a *handle.PlanControl parameter p, which is an instance of the PlanControl struct.
+// It uses the promptUser function to prompt the user for input and validate it.
+// It then creates a handle.CreatePlanRequest object with the provided input, and calls the CreatePlan method of p.Service with the request.
+// If there is an error during plan creation, it prints the error message.
+// Finally, it prints the ID of the created plan.
+// Note that this function runs in a Goroutine, allowing for concurrent plan creation.
+// Parameters:
+// - p: A pointer to an instance of the handle.PlanControl struct which contains a PlanService instance for plan CRUD operations.
 func createPlan(p *handle.PlanControl) {
 	fmt.Println("Creating plan...")
 	reader := bufio.NewReader(os.Stdin)
@@ -620,6 +704,18 @@ func createPlan(p *handle.PlanControl) {
 	fmt.Println("Created plan with id: ", res.ID)
 }
 
+// getPlan function is used to retrieve a specific plan by its ID.
+// It prompts the user to enter the plan ID and passes it to the PlanControl.GetPlan method.
+// If the plan is found, it prints the plan details to the console.
+// If there is any error in retrieving the plan, it prints an error message.
+// The function does not return anything.
+//
+// Example usage:
+//
+//	p := &handle.PlanControl{
+//	  Service: <PlanServiceInstance>,
+//	}
+//	getPlan(p)
 func getPlan(p *handle.PlanControl) {
 	fmt.Println("Getting plan...")
 	reader := bufio.NewReader(os.Stdin)
@@ -640,6 +736,10 @@ func getPlan(p *handle.PlanControl) {
 	fmt.Println("GoalID: ", plan.Plan.GoalId)
 }
 
+// getPlanByName is a function that retrieves a plan by its name from PlanControl.
+// It prompts the user to enter the plan name and uses the PlanControl service to get the plan.
+// If there is an error retrieving the plan, the error message is logged in GetPlanByName.
+// The function prints the plan name and description if the plan is found.
 func getPlanByName(p *handle.PlanControl) {
 	fmt.Println("Getting plan...")
 	reader := bufio.NewReader(os.Stdin)
@@ -659,6 +759,18 @@ func getPlanByName(p *handle.PlanControl) {
 	fmt.Println("Description: ", plan.Plan.PlanDescription)
 }
 
+// getPlanByGoal retrieves plans based on a goal ID.
+// It prompts the user to enter a plan goal ID and makes a request to the PlanControl to get the plans.
+// It then prints the plan names and descriptions.
+//
+// Parameters:
+// - p: A pointer to the PlanControl struct.
+//
+// Example usage:
+//
+//	getPlanByGoal(p)
+//
+// Returns: None
 func getPlanByGoal(p *handle.PlanControl) {
 	fmt.Println("Getting plan...")
 	reader := bufio.NewReader(os.Stdin)
@@ -680,6 +792,12 @@ func getPlanByGoal(p *handle.PlanControl) {
 	}
 }
 
+// updatePlans is a function that allows the user to update a specific plan.
+// It prompts the user to enter the plan ID of the plan to be updated.
+// It then retrieves the plan information using the plan ID.
+// It prompts the user to enter a new plan name, description, date, and time.
+// After receiving the new values, it creates an UpdatePlanRequest object and sends it to the PlanControl's UpdatePlan method.
+// If an error occurs during the process, it prints an error message.
 func updatePlans(p *handle.PlanControl) {
 	reader := bufio.NewReader(os.Stdin)
 	id, err := promptUser(reader, "Enter plan id of plan to be updated: ")
@@ -730,6 +848,15 @@ func updatePlans(p *handle.PlanControl) {
 	fmt.Println("Updated plan with id: ", plan.Plan.Id)
 }
 
+// deletePlan is a function that allows the user to delete a plan based on its ID.
+// It prompts the user to enter the plan ID to be deleted.
+// It then retrieves the plan details using the GetPlan method from the PlanControl service.
+// If the plan is found, it displays the plan name and asks for confirmation to delete.
+// If the user confirms with 'y', it calls the DeletePlan method from the PlanControl service to delete the plan.
+// If the plan is successfully deleted, it displays a success message.
+// If the user enters 'n' or any other input, it cancels the deletion process.
+// Parameters:
+// - p: a pointer to the PlanControl structure that provides access to plan-related operations.
 func deletePlan(p *handle.PlanControl) {
 	reader := bufio.NewReader(os.Stdin)
 	id, err := promptUser(reader, "Enter plan id to be deleted: ")
@@ -786,7 +913,10 @@ func listPlans(p *handle.PlanControl) {
 	}
 }
 
-// createPlanner prompts the user to enter a planner title and userid, and then uses the PlannerControl service to create and store the planner. It prints the ID of the created planner
+// createPlanner is a function that creates a planner by prompting the user to enter a title and userid.
+// It uses the PlannerControl struct to make a request to create the planner using the PlannerService.
+// If the creation is successful, it prints the planner's ID.
+// If there is an error during the creation process, it prints the error message.
 func createPlanner(p *handle.PlannerControl) {
 	fmt.Println("Creating planner...")
 	reader := bufio.NewReader(os.Stdin)
@@ -810,28 +940,19 @@ func createPlanner(p *handle.PlannerControl) {
 	fmt.Println("Created planner with id: ", res.Id)
 }
 
-// getPlanner prompts the user to enter a planner ID and retrieves the planner from PlannerControl if it exists.
-//
-// The function takes a *handle.PlannerControl as input.
-//
-// It first prompts the user to enter a planner ID using the promptUser function.
-// If there is an error reading from stdin, it logs a fatal error and exits.
-//
-// Then, it creates a handle.GetPlannerRequest with the entered ID and calls p.GetPlanner to get the planner.
-// If there is an error getting the planner, it prints an error message and returns.
-//
-// Finally, it prints details about the retrieved planner, including the title and user ID.
-//
+// getPlanner retrieves a planner from the PlannerControl service by its id.
+// It prompts the user to enter the planner id, and then uses the GetPlanner method of the PlannerControl service to retrieve the planner.
+// If there is an error reading from stdin, it will log a fatal error and exit.
+// If there is an error retrieving the planner, it will print an error message and return.
+// Otherwise, it will print the planner's title and owner's user ID.
+// Function signature: func getPlanner(p *handle.PlannerControl)
+// Parameter:
+// - p: a pointer to a PlannerControl instance
 // Example usage:
 //
-//	p := &handle.PlannerControl{...}
-//	getPlanner(p)
-//
-//	Output:
-//	  Getting planner...
-//	  Enter planner id: 1
-//	  Got planner: My Planner
-//	  User ID: 123
+//	reader := bufio.NewReader(os.Stdin)
+//	plannerControl := handle.PlannerControl{Service: &services.PlannerService{}}
+//	getPlanner(&plannerControl)
 func getPlanner(p *handle.PlannerControl) {
 	fmt.Println("Getting planner...")
 	reader := bufio.NewReader(os.Stdin)
@@ -870,6 +991,7 @@ func getPlannerByGoal(p *handle.PlannerControl) {
 	fmt.Println("User ID: ", planner.UserId)
 }
 
+// getPlannerByOwner retrieves a list of planners owned by a specific user.
 func getPlannerByOwner(p *handle.PlannerControl) {
 	fmt.Println("Getting planner...")
 	reader := bufio.NewReader(os.Stdin)
@@ -891,7 +1013,13 @@ func getPlannerByOwner(p *handle.PlannerControl) {
 	}
 }
 
-// updatePlanners takes a PlannerControl pointer as input. It prompts the user to enter the ID of the planner to be updated and retrieves the planner using the GetPlanner method from
+// updatePlanners is a function that updates a planner in the PlannerControl object.
+// It prompts the user to enter the planner ID of the planner to be updated.
+// It then retrieves the planner from the PlannerControl object using the GetPlanner method.
+// If the planner is found, it prompts the user to enter the new title and user ID for the planner.
+// It then creates an UpdatePlannerRequest object with the updated details.
+// Finally, it calls the UpdatePlanner method of the PlannerControl object to update the planner.
+// If there is an error retrieving or updating the planner, it prints an error message.
 func updatePlanners(p *handle.PlannerControl) {
 	reader := bufio.NewReader(os.Stdin)
 	id, err := promptUser(reader, "Enter planner id of planner to be updated: ")
@@ -932,15 +1060,12 @@ func updatePlanners(p *handle.PlannerControl) {
 	fmt.Println("Updated planner with id: ", planner.Id)
 }
 
-// deletePlanner deletes a planner based on user input.
-// It prompts the user to enter a planner ID to be deleted.
-// It then retrieves the planner from the PlannerControl and displays its details to the user.
-// The user is then asked to confirm the deletion.
-// If the user confirms with 'y', the planner is deleted using the DeletePlanner method of the PlannerControl.
-// If the deletion is successful, a success message is printed.
-// If the user enters 'n', the deletion is canceled.
-// If the user enters any other value, an invalid input message is printed.
-// If there is an error in any step, appropriate error messages are printed.
+// deletePlanner is a function that prompts the user to enter a planner ID and then deletes the planner with that ID.
+// It first gets the planner information to show the user what planner is being deleted.
+// After confirming with the user, it proceeds to delete the planner and prints a success message.
+// If there is any error during the process, it prints an error message.
+// Parameters:
+// - p: a pointer to a PlannerControl struct that contains the planner service.
 func deletePlanner(p *handle.PlannerControl) {
 	reader := bufio.NewReader(os.Stdin)
 	id, err := promptUser(reader, "Enter planner id to be deleted: ")
@@ -981,6 +1106,12 @@ func deletePlanner(p *handle.PlannerControl) {
 	}
 }
 
+// listPlanners is a function that retrieves a list of planners from the PlannerControl service and prints the details of each planner.
+// It takes a pointer to a PlannerControl instance as a parameter.
+// First, it prints a message indicating that the planners are being listed.
+// Then, it calls the ListPlanners method of the PlannerControl service to get the list of planners.
+// If there is an error during the retrieval, it prints an error message and returns.
+// Otherwise, it iterates over the list of planners and prints the ID, Title, and User ID of each planner.
 func listPlanners(p *handle.PlannerControl) {
 	fmt.Println("Listing planners...")
 	planners, err := p.ListPlanners()
@@ -994,6 +1125,22 @@ func listPlanners(p *handle.PlannerControl) {
 	}
 }
 
+// runCommand takes a command string as input and executes the corresponding command.
+// It initializes the necessary routers and database connection using cliSetup.
+// If the command string is empty, it prints a message and returns.
+// It trims any newline characters from the command string.
+// It splits the command string into individual words.
+// If the first word is "exit", it exits the application.
+// If the first word matches a command in the taskCommands map,
+// it executes the corresponding command using the taskRouter.
+// If the first word matches a command in the goalCommands map,
+// it executes the corresponding command using the goalRouter.
+// If the first word matches a command in the planCommands map,
+// it executes the corresponding command using the planRouter.
+// If the first word matches a command in the plannerCommands map,
+// it executes the corresponding command using the plannerRouter.
+// If no command matches the first word, it prints a message.
+// It returns nil to indicate success.
 func runCommand(commandStr string) error {
 	taskRouter, goalRouter, planRouter, plannerRouter, db := cliSetup()
 	defer func() {

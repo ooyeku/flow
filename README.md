@@ -18,7 +18,7 @@ The project is structured as follows:
 - Server
 
 ## Roadmap
-Current Version: **0.0.4** as of **01-19-2024**
+Current Version: **0.0.5** as of **02-03-2024**
 - [ ] *Version 1.0.0*
   - [x] Task service creation
   - [x] Planning service creation
@@ -26,8 +26,8 @@ Current Version: **0.0.4** as of **01-19-2024**
   - [x] Plan service creation
   - [X] Basic CLI - 0.0.5
     - [X] MVP
-    - [ ] Testing
-  - [X] Basic Rest API - 0.0.5
+    - [X] Testing
+  - [X] Basic Rest API - 0.0.6
     - [X] MVP
     - [ ] Testing
   - [ ] Simple reporting service - 0.0.6
