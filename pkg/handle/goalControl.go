@@ -252,6 +252,7 @@ type ListGoalsResponse struct {
 // get goal id and objective of each goal
 func (c *GoalControl) ListGoals() (*ListGoalsResponse, error) {
 	goals, err := c.Service.ListGoals()
+
 	if err != nil {
 		return nil, err
 	}

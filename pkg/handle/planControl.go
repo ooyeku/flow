@@ -266,9 +266,15 @@ func (c *PlanControl) GetPlansByGoal(req *GetPlansByGoalRequest) (*GetPlansByGoa
 	if err != nil {
 		return nil, err
 	}
-	return &GetPlansByGoalResponse{
-		Plans: plans,
-	}, nil
+
+	res := &GetPlansByGoalResponse{
+		Plans: make([]*models.Plan, len(plans)),
+	}
+	for i, plan := range plans {
+		res.Plans[i] = plan
+	}
+
+	return res, nil
 }
 
 // ListPlansResponse is a type that represents the response of retrieving all plans.

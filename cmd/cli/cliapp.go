@@ -578,7 +578,7 @@ func listGoals(g *handle.GoalControl) {
 	}
 	// get goal id and objective of each goal
 	for _, goal := range goals.Goals {
-		fmt.Printf("Goal id: %s, Objective: %s, Deadline %s\nPlannerID: %s\nPlans: %v\n", goal.Id, goal.Objective, goal.Deadline, goal.PlannerId, goal.Plans)
+		fmt.Printf("Goal id: %s, Objective: %s, Deadline %s\nPlannerID: %s\n", goal.Id, goal.Objective, goal.Deadline, goal.PlannerId)
 	}
 }
 
@@ -1004,6 +1004,11 @@ func runCommand(commandStr string) error {
 
 	commandStr = strings.TrimSuffix(commandStr, "\n")
 	arrCommandStr := strings.Fields(commandStr)
+	if len(arrCommandStr) == 0 {
+		fmt.Println("No command entered. Please try again.")
+		return nil
+	}
+
 	commandName := arrCommandStr[0]
 
 	if commandName == "exit" {
