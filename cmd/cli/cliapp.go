@@ -97,45 +97,73 @@ func promptUser(reader *bufio.Reader, prompt string) (string, error) {
 // The key represents the command name and the value represents the corresponding function to be executed.
 var taskCommands = map[string]func(*handle.TaskControl){
 	"create-task":       createTask,
+	"ct":                createTask,
 	"get-task":          getTask,
+	"gt":                getTask,
 	"get-task-by-title": getTaskByTitle,
+	"gtk":               getTaskByTitle,
 	"get-task-by-owner": getTaskByOwner,
+	"gto":               getTaskByOwner,
 	"update-task":       updateTasks,
+	"ut":                updateTasks,
 	"delete-task":       deleteTask,
+	"dt":                deleteTask,
 	"list-tasks":        listTasks,
+	"lt":                listTasks,
 }
 
 // goalCommands is a map that contains various commands related to goal operations. The key represents the command name and the value represents the corresponding function to be executed.
 var goalCommands = map[string]func(*handle.GoalControl){
 	"create-goal":         createGoal,
+	"cg":                  createGoal,
 	"get-goal":            getGoal,
+	"gg":                  getGoal,
 	"get-goal-by-title":   getGoalByObjective,
+	"ggt":                 getGoalByObjective,
 	"get-goal-by-planner": getGoalsByPlannerId,
+	"ggp":                 getGoalsByPlannerId,
 	"update-goal":         updateGoals,
+	"ug":                  updateGoals,
 	"delete-goal":         deleteGoal,
+	"dg":                  deleteGoal,
 	"list-goals":          listGoals,
+	"lg":                  listGoals,
 }
 
 // planCommands is a map that contains various commands related to plan operations. The key represents the command name and the value represents the corresponding function to be executed
 var planCommands = map[string]func(*handle.PlanControl){
 	"create-plan":      createPlan,
+	"cp":               createPlan,
 	"get-plan":         getPlan,
+	"gp":               getPlan,
 	"get-plan-by-name": getPlanByName,
+	"gpn":              getPlanByName,
 	"get-plan-by-goal": getPlanByGoal,
+	"gpg":              getPlanByGoal,
 	"update-plan":      updatePlans,
+	"up":               updatePlans,
 	"delete-plan":      deletePlan,
+	"dp":               deletePlan,
 	"list-plans":       listPlans,
+	"lp":               listPlans,
 }
 
 // plannerCommands is a map that contains various commands related to planner operations. The key represents the command name and the value represents the corresponding function to be executed
 var plannerCommands = map[string]func(*handle.PlannerControl){
 	"create-planner":       createPlanner,
+	"cpl":                  createPlanner,
 	"get-planner":          getPlanner,
+	"gpl":                  getPlanner,
 	"get-planner-by-title": getPlannerByGoal,
+	"gpt":                  getPlannerByGoal,
 	"get-planner-by-owner": getPlannerByOwner,
+	"gpo":                  getPlannerByOwner,
 	"update-planner":       updatePlanners,
+	"upl":                  updatePlanners,
 	"delete-planner":       deletePlanner,
+	"dpl":                  deletePlanner,
 	"list-planners":        listPlanners,
+	"lpl":                  listPlanners,
 }
 
 // createTask is a function that prompts the user to enter information for a new task,
