@@ -17,53 +17,27 @@ The project is structured as follows:
 - CLI
 - Server
 
-## Roadmap
-Current Version: **0.0.5** as of **02-03-2024**
-- [ ] *Version 1.0.0*
-  - [x] Task service creation
-  - [x] Planning service creation
-  - [x] Goal service creation
-  - [x] Plan service creation
-  - [X] Basic CLI - 0.0.5
-    - [X] MVP
-    - [X] Testing
-  - [X] Basic Rest API - 0.0.6
-    - [X] MVP
-    - [ ] Testing
-  - [ ] Simple reporting service - 0.0.6
-  - [ ] Bulk Upload and management - 0.0.7
-  - [ ] Version Control - 0.0.8
- 
--[ ] *Version 2.0.0*
-    - [ ] Web UI
-    - [ ] Advanced reporting service
-  - [ ] Flow Modules (pre-defined "flows")
-    - [ ] Project Module
-    - [ ] Learning Module
+## Installation
+To install the CLI, run the following command:
+```bash
+go get github.com/ooyeku/workflow/
+```
 
-## Planned Usage
 
-### CLI
+## Usage
+To build:
+```bash
+cd workflow
+go build
+```
 
-The CLI will be the primary interface for the application. It will be used to
-manage tasks, workflows and reports.  It will also be used to configure the
-application (along with config.json).
+To run the CLI:
+```bash
+./flow cli
+```
 
-### REST API
-
-The REST API will be used to allow other applications to interact with the
-application. It will be used to manage tasks, workflows and reports.
-
-### Web UI
-
-The web UI will be used to allow users to interact with the application.
-
-## Planned Features
-- [ ] Task management
-- [ ] Workflow management
-- [ ] Planning
-- [ ] Reporting
-- [ ] CLI
-- [ ] Web UI
-- [ ] REST API
+To run the server:
+```bash
+./flow server
+```
 
