@@ -53,5 +53,5 @@ func (g *Goal) GenerateGoalInstance(id, objective string, deadline time.Time) *G
 
 // ConvertDeadline converts a date string to a time.Time value using the format "2006-01-02". It returns the converted time value and an error if the conversion fails.
 func (g *Goal) ConvertDeadline(date string) (time.Time, error) {
-	return time.Parse("2006-01-02", date)
+	return time.Parse("2006-01-02T15:04:05", date)
 }

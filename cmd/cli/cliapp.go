@@ -377,14 +377,18 @@ func createGoal(g *handle.GoalControl) {
 	if err != nil {
 		log.Fatalf("Could not read from stdin: %s", err)
 	}
-	deadline, err := promptUser(reader, "Enter goal deadline in YYYY-MM-DD format: ")
+	deadline, err := promptUser(reader, "Enter goal deadline date in YYYY-MM-DD format: ")
 	if err != nil {
 		log.Fatalf("Could not read from stdin: %s", err)
 	}
+	deadlineTime, err := promptUser(reader, "Enter goal deadline time in HH:MM format: ")
 	plannerid, err := promptUser(reader, "Enter goal plannerid: ")
 	if err != nil {
 		log.Fatalf("Could not read from stdin: %s", err)
 	}
+
+	// Convert deadline to time.Time
+	deadline = deadline + "T" + deadlineTime + ":00"
 
 	req := handle.CreateGoalRequest{
 		Objective: objective,
