@@ -1,9 +1,9 @@
 package inmemory
 
 import (
-	"flow/internal/models"
 	"github.com/asdine/storm"
 	"github.com/google/uuid"
+	"github.com/ooyeku/flow/internal/models"
 )
 
 // BoltPlanStore represents a store for managing plans using BoltDB.

@@ -1,9 +1,9 @@
 package handle
 
 import (
-	"flow/internal/models"
-	"flow/pkg/services"
 	"github.com/google/uuid"
+	"github.com/ooyeku/flow/internal/models"
+	"github.com/ooyeku/flow/pkg/services"
 )
 
 // PlannerControl represents a controller that provides methods to manage planners.

@@ -2,7 +2,7 @@ package mock
 
 import (
 	"errors"
-	"flow/internal/models"
+	"github.com/ooyeku/flow/internal/models"
 	"sync"
 )
 

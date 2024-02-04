@@ -1,11 +1,11 @@
 package main
 
 import (
-	"flow/internal/inmemory"
-	"flow/internal/models"
-	handle2 "flow/pkg/handle"
-	"flow/pkg/services"
 	"github.com/asdine/storm"
+	"github.com/ooyeku/flow/internal/inmemory"
+	"github.com/ooyeku/flow/internal/models"
+	handle2 "github.com/ooyeku/flow/pkg/handle"
+	"github.com/ooyeku/flow/pkg/services"
 	"log"
 )
 

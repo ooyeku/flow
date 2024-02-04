@@ -1,8 +1,8 @@
 package inmemory
 
 import (
-	"flow/internal/models"
 	"github.com/asdine/storm"
+	"github.com/ooyeku/flow/internal/models"
 )
 
 // BoltPlannerStore represents a store for managing planners using a BoltDB database.

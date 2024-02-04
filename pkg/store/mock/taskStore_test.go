@@ -1,7 +1,7 @@
 package mock
 
 import (
-	"flow/internal/models"
+	"github.com/ooyeku/flow/internal/models"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

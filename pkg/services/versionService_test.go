@@ -2,9 +2,9 @@ package services_test
 
 import (
 	"errors"
-	"flow/internal/models"
-	"flow/pkg/services"
-	_ "flow/pkg/store"
+	"github.com/ooyeku/flow/internal/models"
+	"github.com/ooyeku/flow/pkg/services"
+	_ "github.com/ooyeku/flow/pkg/store"
 	"testing"
 
 	"github.com/stretchr/testify/mock"

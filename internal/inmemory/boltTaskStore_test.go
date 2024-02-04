@@ -1,9 +1,9 @@
 package inmemory
 
 import (
-	"flow/pkg/handle"
-	"flow/pkg/services"
 	"github.com/asdine/storm"
+	"github.com/ooyeku/flow/pkg/handle"
+	"github.com/ooyeku/flow/pkg/services"
 	"log"
 	"testing"
 )

@@ -1,9 +1,9 @@
 package handle
 
 import (
-	"flow/internal/models"
-	"flow/pkg/services"
 	"github.com/google/uuid"
+	"github.com/ooyeku/flow/internal/models"
+	"github.com/ooyeku/flow/pkg/services"
 )
 
 // PlanControl is a type that provides control operations for managing plans.

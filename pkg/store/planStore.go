@@ -1,6 +1,6 @@
 package store
 
-import "flow/internal/models"
+import "github.com/ooyeku/flow/internal/models"
 
 // PlanStore is an interface that defines the methods to interact with plans.
 // CreatePlan creates a new plan.

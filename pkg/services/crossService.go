@@ -1,7 +1,7 @@
 package services
 
 import (
-	"flow/internal/models"
+	"github.com/ooyeku/flow/internal/models"
 )
 
 type CrossService struct {

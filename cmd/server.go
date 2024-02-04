@@ -39,8 +39,8 @@ func handleError(cmd *cobra.Command, err error) {
 var (
 	serverCommand = &cobra.Command{
 		Use:   "server",
-		Short: "run workflow in server mode",
-		Long:  "run workflow in server mode",
+		Short: "run flow in server mode",
+		Long:  "run flow in server mode",
 		Run: func(cmd *cobra.Command, args []string) {
 			executeServer(cmd)
 		},

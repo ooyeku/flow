@@ -8,8 +8,8 @@ var (
 	// 	root entry
 	rootCmd = &cobra.Command{
 		Use:   "flow",
-		Short: "A workflow and process management tool",
-		Long: `Work-flow is a CLI tool for managing your workflow and processes.
+		Short: "A flow and process management tool",
+		Long: `Work-flow is a CLI tool for managing your flow and processes.
 				Complete documentation is available at...`,
 	}
 )

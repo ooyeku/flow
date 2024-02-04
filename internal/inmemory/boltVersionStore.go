@@ -2,8 +2,8 @@ package inmemory
 
 import (
 	"errors"
-	"flow/internal/models"
 	"github.com/asdine/storm"
+	"github.com/ooyeku/flow/internal/models"
 )
 
 type BoltVersionStore struct {

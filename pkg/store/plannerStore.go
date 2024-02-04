@@ -1,6 +1,6 @@
 package store
 
-import "flow/internal/models"
+import "github.com/ooyeku/flow/internal/models"
 
 // PlannerStore is an interface that defines the methods for managing planners in a store.
 // It provides functionality for creating, updating, deleting, retrieving, and listing planners.

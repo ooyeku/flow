@@ -21,7 +21,7 @@ The project is structured as follows:
 ## Usage
 To build:
 ```bash
-cd workflow
+cd flow
 go build
 ```
 

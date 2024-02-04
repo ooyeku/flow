@@ -12,8 +12,8 @@ func init() {
 
 var CliCmd = &cobra.Command{
 	Use:   "cli",
-	Short: "run workflow in cli mode",
-	Long:  `run workflow in cli mode`,
+	Short: "run flow in cli mode",
+	Long:  `run flow in cli mode`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// run cli loop
 		cli := exec.Command("go", "run", "cmd/cli/cliapp.go")

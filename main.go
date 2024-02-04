@@ -1,7 +1,7 @@
 package main
 
 import (
-	"flow/cmd"
+	"github.com/ooyeku/flow/cmd"
 )
 
 func main() {

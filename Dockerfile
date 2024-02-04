@@ -30,9 +30,9 @@ ENTRYPOINT ["/app/main"]
 CMD ["cli"]
 
 # For CLI build:
-# docker build -t workflow-cli-build .
-# docker run -it --name workflow-cli workflow-cli-build
+# docker build -t flow-cli-build .
+# docker run -it --name flow-cli flow-cli-build
 
 # For server build:
-# docker build -t workflow-server-build .
-# docker run --name workflow-server -p 8080:8080 workflow-server-build
+# docker build -t flow-server-build .
+# docker run --name flow-server -p 8080:8080 flow-server-build

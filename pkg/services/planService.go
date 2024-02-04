@@ -1,8 +1,8 @@
 package services
 
 import (
-	"flow/internal/models"
-	store2 "flow/pkg/store"
+	"github.com/ooyeku/flow/internal/models"
+	store2 "github.com/ooyeku/flow/pkg/store"
 )
 
 // PlanService is a type that provides operations for managing plans.

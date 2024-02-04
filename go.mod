@@ -1,4 +1,4 @@
-module flow
+module github.com/ooyeku/flow
 
 go 1.21
 

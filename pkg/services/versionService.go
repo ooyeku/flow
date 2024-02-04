@@ -1,8 +1,8 @@
 package services
 
 import (
-	"flow/internal/models"
-	"flow/pkg/store"
+	"github.com/ooyeku/flow/internal/models"
+	"github.com/ooyeku/flow/pkg/store"
 )
 
 type VersionService struct {
