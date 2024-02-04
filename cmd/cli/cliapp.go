@@ -107,13 +107,13 @@ var taskCommands = map[string]func(*handle.TaskControl){
 
 // goalCommands is a map that contains various commands related to goal operations. The key represents the command name and the value represents the corresponding function to be executed.
 var goalCommands = map[string]func(*handle.GoalControl){
-	"create-goal":       createGoal,
-	"get-goal":          getGoal,
-	"get-goal-by-title": getGoalByObjective,
-	"get-goal-by-owner": getGoalsByPlannerId,
-	"update-goal":       updateGoals,
-	"delete-goal":       deleteGoal,
-	"list-goals":        listGoals,
+	"create-goal":         createGoal,
+	"get-goal":            getGoal,
+	"get-goal-by-title":   getGoalByObjective,
+	"get-goal-by-planner": getGoalsByPlannerId,
+	"update-goal":         updateGoals,
+	"delete-goal":         deleteGoal,
+	"list-goals":          listGoals,
 }
 
 // planCommands is a map that contains various commands related to plan operations. The key represents the command name and the value represents the corresponding function to be executed
@@ -190,6 +190,7 @@ func createTask(t *handle.TaskControl) {
 	res, err := t.CreateTask(req)
 	if err != nil {
 		fmt.Println("Error creating task: ", err)
+		return
 	}
 	fmt.Println("Created task with id: ", res.ID)
 }
@@ -234,6 +235,7 @@ func getTaskByTitle(t *handle.TaskControl) {
 	task, err := t.GetTaskByTitle(&req)
 	if err != nil {
 		// error message is logged in GetTaskByTitle
+		fmt.Printf("Error getting task with title %s: %s\n", title, err)
 		return
 	}
 	fmt.Println("Got task: ", task.Title)
@@ -390,7 +392,7 @@ func listTasks(t *handle.TaskControl) {
 	}
 	// get task id and title of each task
 	for _, task := range tasks {
-		fmt.Printf("Task id: %s, Title: %s, Description %s\n", task.ID, task.Title, task.Description)
+		fmt.Printf("|Task id: %s, Title: %s, Description %s|\n", task.ID, task.Title, task.Description)
 	}
 }
 
@@ -466,7 +468,7 @@ func getGoal(g *handle.GoalControl) {
 func getGoalByObjective(g *handle.GoalControl) {
 	fmt.Println("Getting goal...")
 	reader := bufio.NewReader(os.Stdin)
-	objective, err := promptUser(reader, "Enter goal objective: ")
+	objective, err := promptUser(reader, "Enter goal title(objective): ")
 	if err != nil {
 		log.Fatalf("Could not read from stdin: %s", err)
 	}
@@ -476,6 +478,7 @@ func getGoalByObjective(g *handle.GoalControl) {
 	goal, err := g.GetGoalByObjective(&req)
 	if err != nil {
 		// error message is logged in GetGoalByObjective
+		fmt.Println("Error getting goal: ", err)
 		return
 	}
 	fmt.Println("Got goal: ", goal.Goal.Objective)
@@ -517,6 +520,7 @@ func getGoalsByPlannerId(g *handle.GoalControl) {
 	goals, err := g.GetGoalsByPlannerId(&req)
 	if err != nil {
 		// error message is logged in GetGoalByObjective
+		fmt.Println("Error getting goals: ", err)
 		return
 	}
 	for _, goal := range goals.Goals {
@@ -653,7 +657,7 @@ func listGoals(g *handle.GoalControl) {
 	}
 	// get goal id and objective of each goal
 	for _, goal := range goals.Goals {
-		fmt.Printf("Goal id: %s, Objective: %s, Deadline %s\nPlannerID: %s\n", goal.Id, goal.Objective, goal.Deadline, goal.PlannerId)
+		fmt.Printf("|Goal id: %s, Objective: %s, Deadline %s, PlannerID: %s|\n", goal.Id, goal.Objective, goal.Deadline, goal.PlannerId)
 	}
 }
 
@@ -753,6 +757,7 @@ func getPlanByName(p *handle.PlanControl) {
 	plan, err := p.GetPlanByName(&req)
 	if err != nil {
 		// error message is logged in GetPlanByTitle
+		fmt.Printf("Error getting plan with name %s: %s\n", name, err)
 		return
 	}
 	fmt.Println("Got plan: ", plan.Plan.PlanName)
@@ -784,7 +789,8 @@ func getPlanByGoal(p *handle.PlanControl) {
 	plans, err := p.GetPlansByGoal(&req)
 	if err != nil {
 		// error message is logged in GetPlanByTitle
-		log.Fatalf("Error getting plans by goal: %s", err)
+		fmt.Printf("Error getting plans with goal id %s: %s\n", goalid, err)
+		return
 	}
 	for _, plan := range plans.Plans {
 		fmt.Println("Got plan: ", plan.PlanName)
@@ -909,7 +915,7 @@ func listPlans(p *handle.PlanControl) {
 	}
 	// get plan id and name of each plan
 	for _, plan := range plans.Plans {
-		fmt.Printf("Plan id: %s, Name: %s, Description %s\n", plan.Id, plan.PlanName, plan.PlanDescription)
+		fmt.Printf("|Plan id: %s, Name: %s, Description %s|\n", plan.Id, plan.PlanName, plan.PlanDescription)
 	}
 }
 
@@ -985,6 +991,7 @@ func getPlannerByGoal(p *handle.PlannerControl) {
 	planner, err := p.GetPlannerByTitle(&req)
 	if err != nil {
 		// error message is logged in GetPlannerByTitle
+		fmt.Println("Error getting planner: ", err)
 		return
 	}
 	fmt.Println("Got planner: ", planner.Title)
@@ -1005,6 +1012,7 @@ func getPlannerByOwner(p *handle.PlannerControl) {
 	planners, err := p.GetPlannerByOwner(&req)
 	if err != nil {
 		// error message is logged in GetPlannerByTitle
+		fmt.Println("Error getting planner: ", err)
 		return
 	}
 	for _, planner := range planners {
@@ -1121,7 +1129,7 @@ func listPlanners(p *handle.PlannerControl) {
 	}
 	// get planner id and title of each planner
 	for _, planner := range planners.Planners {
-		fmt.Printf("Planner id: %s, Title: %s, User ID %s\n", planner.Id, planner.Title, planner.UserId)
+		fmt.Printf("|Planner id: %s, Title: %s, User ID %s|\n", planner.Id, planner.Title, planner.UserId)
 	}
 }
 
