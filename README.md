@@ -16,6 +16,7 @@ The project is structured as follows:
 #### Modes:
 - CLI
 - Server
+- Chat (AI Chat from the terminal) -**Requires Google AI Studio api key**
 
 
 ## Usage
