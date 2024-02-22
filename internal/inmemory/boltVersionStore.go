@@ -3,7 +3,7 @@ package inmemory
 import (
 	"errors"
 	"github.com/asdine/storm"
-	"github.com/ooyeku/flow/internal/models"
+	"github.com/ooyeku/flow/pkg/models"
 )
 
 type BoltVersionStore struct {

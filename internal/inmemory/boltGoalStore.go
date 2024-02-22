@@ -3,7 +3,7 @@ package inmemory
 import (
 	"github.com/asdine/storm"
 	"github.com/google/uuid"
-	"github.com/ooyeku/flow/internal/models"
+	"github.com/ooyeku/flow/pkg/models"
 )
 
 // BoltGoalStore represents a goal store implementation that uses BoltDB as the underlying database.

@@ -2,7 +2,7 @@ package handle
 
 import (
 	"github.com/google/uuid"
-	"github.com/ooyeku/flow/internal/models"
+	"github.com/ooyeku/flow/pkg/models"
 	"github.com/ooyeku/flow/pkg/services"
 )
 

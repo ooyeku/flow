@@ -1,7 +1,7 @@
 package store
 
 import (
-	"github.com/ooyeku/flow/internal/models"
+	"github.com/ooyeku/flow/pkg/models"
 )
 
 // TaskStore represents an interface for managing tasks

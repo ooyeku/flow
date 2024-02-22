@@ -1,6 +1,6 @@
 package store
 
-import "github.com/ooyeku/flow/internal/models"
+import "github.com/ooyeku/flow/pkg/models"
 
 type VersionStore interface {
 	CreateVersion(version *models.Version) error

@@ -35,7 +35,7 @@ func TestConvertDeadline(t *testing.T) {
 	date := "2022-12-31"
 	expectedTime, _ := time.Parse("2006-01-02", date)
 
-	result, err := g.ConvertDeadline(date)
+	result, err := g.ConvertDeadtime(date)
 
 	if err != nil {
 		t.Errorf("Expected no error, but got %v", err)
@@ -46,7 +46,7 @@ func TestConvertDeadline(t *testing.T) {
 	}
 
 	invalidDate := "invalid-date"
-	_, err = g.ConvertDeadline(invalidDate)
+	_, err = g.ConvertDeadtime(invalidDate)
 
 	if err == nil {
 		t.Errorf("Expected error, but got nil")

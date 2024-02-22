@@ -2,7 +2,7 @@ package services_test
 
 import (
 	"errors"
-	"github.com/ooyeku/flow/internal/models"
+	"github.com/ooyeku/flow/pkg/models"
 	"github.com/ooyeku/flow/pkg/services"
 	_ "github.com/ooyeku/flow/pkg/store"
 	"testing"

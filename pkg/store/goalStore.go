@@ -1,6 +1,6 @@
 package store
 
-import "github.com/ooyeku/flow/internal/models"
+import "github.com/ooyeku/flow/pkg/models"
 
 // GoalStore is an interface that defines methods for creating, updating, deleting, retrieving, and listing goals.
 // CreateGoal creates a new goal.

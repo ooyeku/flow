@@ -2,7 +2,7 @@ package handle
 
 import (
 	"github.com/google/uuid"
-	"github.com/ooyeku/flow/internal/models"
+	"github.com/ooyeku/flow/pkg/models"
 	"github.com/ooyeku/flow/pkg/services"
 )
 
@@ -47,7 +47,7 @@ func (c *GoalControl) CreateGoal(req *CreateGoalRequest) (*CreateGoalResponse, e
 	}
 	m := &models.Goal{}
 	// convert deadline to time.Time
-	deadline, err := m.ConvertDeadline(req.Deadline)
+	deadline, err := m.ConvertDeadtime(req.Deadline)
 	goal := m.GenerateGoalInstance(id, req.Objective, deadline)
 	goal.PlannerId = req.PlannerId
 	err = c.Service.CreateGoal(goal)
@@ -95,7 +95,7 @@ type UpdateGoalResponse struct {
 func (c *GoalControl) UpdateGoal(req *UpdateGoalRequest) error {
 	m := &models.Goal{}
 	// convert deadline to time.Time
-	deadline, err := m.ConvertDeadline(req.Deadline)
+	deadline, err := m.ConvertDeadtime(req.Deadline)
 	goal := m.GenerateGoalInstance(req.Id, req.Objective, deadline)
 	goal.PlannerId = req.PlannerId
 

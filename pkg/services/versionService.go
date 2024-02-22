@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/ooyeku/flow/internal/models"
+	"github.com/ooyeku/flow/pkg/models"
 	"github.com/ooyeku/flow/pkg/store"
 )
 
