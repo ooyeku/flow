@@ -20,7 +20,7 @@ import (
 func main() {
 
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Welcome to your CLI app! 😼")
+	fmt.Println("Welcome to flow CLI app! 😼")
 	for {
 		fmt.Println("Enter command: ")
 		cmdString, err := reader.ReadString('\n')

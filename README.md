@@ -35,6 +35,10 @@ To run the server:
 ./flow server
 ```
 
+To run the chat:
+```bash
+./flow chat
+```
 
 ## License
 

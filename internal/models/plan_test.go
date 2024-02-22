@@ -12,8 +12,9 @@ func TestGeneratePlanInstance(t *testing.T) {
 	planDescription := "test-description"
 	planDate := time.Now()
 	planTime := time.Now()
+	goal_id := "test-goal-id"
 
-	result := p.GeneratePlanInstance(id, planName, planDescription, planDate, planTime)
+	result := p.GeneratePlanInstance(id, planName, planDescription, planDate, planTime, goal_id)
 
 	if result.Id != id {
 		t.Errorf("Expected Id %s, but got %s", id, result.Id)
