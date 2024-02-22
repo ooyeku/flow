@@ -5,36 +5,30 @@ import (
 )
 
 func TestGenerateTaskInstance(t *testing.T) {
-	task := Task{}
-	id := "test-id"
-	title := "test-title"
-	description := "test-description"
-	owner := "test-owner"
+	task := createTask()
 
-	result := task.GenerateTaskInstance(id, title, description, owner)
-
-	if result.ID != id {
-		t.Errorf("Expected ID %s, but got %s", id, result.ID)
+	if task.ID != "test-id" {
+		t.Errorf("Expected ID test-id, but got %s", task.ID)
 	}
 
-	if result.Title != title {
-		t.Errorf("Expected Title %s, but got %s", title, result.Title)
+	if task.Title != "test-title" {
+		t.Errorf("Expected Title test-title, but got %s", task.Title)
 	}
 
-	if result.Description != description {
-		t.Errorf("Expected Description %s, but got %s", description, result.Description)
+	if task.Description != "test-description" {
+		t.Errorf("Expected Description test-description, but got %s", task.Description)
 	}
 
-	if result.Owner != owner {
-		t.Errorf("Expected Owner %s, but got %s", owner, result.Owner)
+	if task.Owner != "test" {
+		t.Errorf("Expected Owner test, but got %s", task.Owner)
 	}
 
-	if result.Started != false {
-		t.Errorf("Expected Started to be false, but got %v", result.Started)
+	if task.Started != false {
+		t.Errorf("Expected Started to be false, but got true")
 	}
 
-	if result.Completed != false {
-		t.Errorf("Expected Completed to be false, but got %v", result.Completed)
+	if task.Completed != false {
+		t.Errorf("Expected Completed to be false, but got true")
 	}
 }
 
@@ -62,5 +56,26 @@ func TestStart(t *testing.T) {
 
 	if task.Started != true {
 		t.Errorf("Expected Started to be true, but got false")
+	}
+}
+
+func TestComplete(t *testing.T) {
+	task := Task{}
+	task.Completed = true
+
+	if task.Completed != true {
+		t.Errorf("Expected Completed to be true, but got false")
+	}
+}
+
+// utility for creating a task
+func createTask() *Task {
+	return &Task{
+		ID:          "test-id",
+		Title:       "test-title",
+		Description: "test-description",
+		Owner:       "test",
+		Started:     false,
+		Completed:   false,
 	}
 }

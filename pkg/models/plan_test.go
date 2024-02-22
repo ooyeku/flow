@@ -8,8 +8,8 @@ import (
 func TestGeneratePlanInstance(t *testing.T) {
 	p := createPlan()
 
-	if p.Id != id {
-		t.Errorf("Expected Id %s, but got %s", id, p.Id)
+	if p.Id != pid {
+		t.Errorf("Expected Id %s, but got %s", pid, p.Id)
 	}
 
 	if p.PlanName != planName {
@@ -71,7 +71,7 @@ func createPlan() *Plan {
 
 // dummy data for testing
 var (
-	id              = "test-id"
+	pid             = "test-id"
 	planName        = "test-plan"
 	planDescription = "test-description"
 	planDate        = time.Now()

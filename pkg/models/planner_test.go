@@ -5,22 +5,31 @@ import (
 )
 
 func TestGeneratePlannerInstance(t *testing.T) {
-	p := Planner{}
-	id := "test-id"
-	title := "test-title"
-	userId := "test-userId"
+	p := createPlanner()
 
-	result := p.GeneratePlannerInstance(id, title, userId)
-
-	if result.Id != id {
-		t.Errorf("Expected Id %s, but got %s", id, result.Id)
+	if p.Id != "test-id" {
+		t.Errorf("Expected Id test-id, but got %s", p.Id)
 	}
 
-	if result.Title != title {
-		t.Errorf("Expected Title %s, but got %s", title, result.Title)
+	if p.Title != "test-title" {
+		t.Errorf("Expected Title test-title, but got %s", p.Title)
 	}
 
-	if result.UserId != userId {
-		t.Errorf("Expected UserId %s, but got %s", userId, result.UserId)
+	if p.UserId != "test-userId" {
+		t.Errorf("Expected UserId test-userId, but got %s", p.UserId)
+	}
+
+	if len(p.Goals) != 0 {
+		t.Errorf("Expected Goals to be empty, but got %v", p.Goals)
+	}
+}
+
+// utility for creating a planner
+func createPlanner() *Planner {
+	return &Planner{
+		Id:     "test-id",
+		Title:  "test-title",
+		UserId: "test-userId",
+		Goals:  []Goal{},
 	}
 }
