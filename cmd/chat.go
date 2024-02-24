@@ -11,23 +11,24 @@ var chatVersion string
 var chatCmd = &cobra.Command{
 	Use:   "chat",
 	Short: "Launch a chat with the AI",
-	Long: `Launch a chat with the AI using the simple_chat or cv2 version.
+	Long: `Launch a chat with the AI using the cv1(non-streaming) or sv1(streaming) version.
 
-
-The simple_chat version uses the logrusorgru/aurora package to colorize the output.
-The cv2 version uses the fatih/color package to colorize the output.
+chat history will be stored in a local chat.db file and can be accessed by running scripts/getchathistory.go
 
 The chat will run until you type 'exit' and press enter.
 
 Example usage:
-go run main.go chat --version cv2 
-go run main.go chat --v simple_chat`,
+go run main.go chat --version cv1 
+go run main.go chat -v cv1`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var chat *exec.Cmd
-		if chatVersion == "cv2" {
-			chat = exec.Command("go", "run", "cmd/chat/cv2.go")
+		if chatVersion == "cv1" {
+			chat = exec.Command("go", "run", "cmd/chat/cv1.go")
+		} else if chatVersion == "sv1" {
+			chat = exec.Command("go", "run", "cmd/chat/sv1.go")
 		} else {
-			chat = exec.Command("go", "run", "cmd/chat/simple_chat.go")
+			cmd.PrintErrf("invalid chat version: %s", chatVersion)
+			return
 		}
 		chat.Stdin = cmd.InOrStdin()
 		chat.Stdout = cmd.OutOrStdout()

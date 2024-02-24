@@ -8,6 +8,7 @@ import (
 	"github.com/ooyeku/flow/internal/conf"
 	"github.com/ooyeku/flow/internal/inmemory"
 	"github.com/ooyeku/flow/pkg/handle"
+	"github.com/ooyeku/flow/pkg/models"
 	"github.com/ooyeku/flow/pkg/services"
 	"log"
 	"os"
@@ -454,16 +455,29 @@ func deleteTask(t *handle.TaskControl) {
 //	t := &handle.TaskControl{}
 //	listTasks(t)
 func listTasks(t *handle.TaskControl) {
-	fmt.Println("Listing tasks...")
-	tasks, err := t.ListTasks()
-	if err != nil {
-		fmt.Println("Error listing tasks: ", err)
-		return
+	// using channel to get tasks
+	taskChan := make(chan *handle.GetTaskResponse)
+
+	go func() {
+		tasks, err := t.ListTasks()
+		if err != nil {
+			fmt.Println("Error listing tasks: ", err)
+			taskChan <- nil
+		}
+		for _, task := range tasks {
+			taskChan <- &handle.GetTaskResponse{
+				ID:          task.ID,
+				Title:       task.Title,
+				Description: task.Description,
+			}
+		}
+		close(taskChan)
+	}()
+
+	for task := range taskChan {
+		fmt.Printf("| Task ID: %s | Task Title: %s | Task Description: %s |\n", task.ID, task.Title, task.Description)
 	}
-	// get task id and title of each task
-	for _, task := range tasks {
-		fmt.Printf("|Task id: %s, Title: %s, Description %s|\n", task.ID, task.Title, task.Description)
-	}
+
 }
 
 // Prompt user to enter goal objective
@@ -720,14 +734,24 @@ func deleteGoal(g *handle.GoalControl) {
 //	Goal id: 2, Objective: Exercise daily, Deadline: 2023-01-01T08:00:00, PlannerID: 67890
 func listGoals(g *handle.GoalControl) {
 	fmt.Println("Listing goals...")
-	goals, err := g.ListGoals()
-	if err != nil {
-		fmt.Println("Error listing goals: ", err)
-		return
-	}
-	// get goal id and objective of each goal
-	for _, goal := range goals.Goals {
-		fmt.Printf("|Goal id: %s, Objective: %s, Deadline %s, PlannerID: %s|\n", goal.Id, goal.Objective, goal.Deadline, goal.PlannerId)
+
+	goalChan := make(chan *models.Goal)
+
+	go func() {
+		goals, err := g.Service.ListGoals()
+		if err != nil {
+			log.Printf("Error listing goals: %s", err)
+			close(goalChan)
+			return
+		}
+		for _, goal := range goals {
+			goalChan <- goal
+		}
+		close(goalChan)
+	}()
+
+	for goal := range goalChan {
+		fmt.Printf("Goal id: %s, Objective: %s, Deadline: %s, PlannerID: %s\n", goal.Id, goal.Objective, goal.Deadline, goal.PlannerId)
 	}
 }
 
@@ -978,14 +1002,24 @@ func deletePlan(p *handle.PlanControl) {
 // to get the list of plans. It then iterates over the list and prints the ID, name, and description of each plan.
 func listPlans(p *handle.PlanControl) {
 	fmt.Println("Listing plans...")
-	plans, err := p.ListPlans()
-	if err != nil {
-		fmt.Println("Error listing plans: ", err)
-		return
-	}
-	// get plan id and name of each plan
-	for _, plan := range plans.Plans {
-		fmt.Printf("|Plan id: %s, Name: %s, Description %s|\n", plan.Id, plan.PlanName, plan.PlanDescription)
+
+	planChan := make(chan *models.Plan)
+
+	go func() {
+		plans, err := p.Service.ListPlans()
+		if err != nil {
+			log.Printf("Error listing plans: %s", err)
+			close(planChan)
+			return
+		}
+		for _, plan := range plans {
+			planChan <- plan
+		}
+		close(planChan)
+	}()
+
+	for plan := range planChan {
+		fmt.Printf("Plan id: %s, Plan Name: %s, Plan Description: %s\n", plan.Id, plan.PlanName, plan.PlanDescription)
 	}
 }
 
@@ -1192,14 +1226,28 @@ func deletePlanner(p *handle.PlannerControl) {
 // Otherwise, it iterates over the list of planners and prints the ID, Title, and User ID of each planner.
 func listPlanners(p *handle.PlannerControl) {
 	fmt.Println("Listing planners...")
-	planners, err := p.ListPlanners()
-	if err != nil {
-		fmt.Println("Error listing planners: ", err)
-		return
-	}
-	// get planner id and title of each planner
-	for _, planner := range planners.Planners {
-		fmt.Printf("|Planner id: %s, Title: %s, User ID %s|\n", planner.Id, planner.Title, planner.UserId)
+
+	plannerChan := make(chan *handle.GetPlannerResponse)
+
+	go func() {
+		planners, err := p.ListPlanners()
+		if err != nil {
+			fmt.Println("Error listing planners: ", err)
+			close(plannerChan)
+			return
+		}
+		for _, planner := range planners.Planners {
+			plannerChan <- &handle.GetPlannerResponse{
+				Id:     planner.Id,
+				Title:  planner.Title,
+				UserId: planner.UserId,
+			}
+		}
+		close(plannerChan)
+	}()
+
+	for planner := range plannerChan {
+		fmt.Printf("| Planner ID: %s | Planner Title: %s | User ID: %s |\n", planner.Id, planner.Title, planner.UserId)
 	}
 }
 

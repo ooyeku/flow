@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/google/generative-ai-go/genai"
 	"github.com/logrusorgru/aurora"
+	util "github.com/ooyeku/flow/internal/util"
 	"github.com/ooyeku/flow/pkg/chat"
 	"google.golang.org/api/option"
 	"log"
@@ -14,7 +15,7 @@ import (
 	"syscall"
 )
 
-// ChatConfig  holds configuration options for the chat application.
+// ChatConfig holds configuration options for the chat application.
 type ChatConfig struct {
 	ModelName string
 	ApiKey    string
@@ -30,7 +31,7 @@ type ChatApp struct {
 	scanner   *bufio.Scanner
 }
 
-// NewChatApp creates a new instance of ChatAppS with the provided configuration.
+// NewChatApp creates a new instance of ChatApp with the provided configuration.
 func NewChatApp(config *ChatConfig) (*ChatApp, error) {
 	ctx := context.Background()
 
@@ -55,11 +56,19 @@ func NewChatApp(config *ChatConfig) (*ChatApp, error) {
 	}, nil
 }
 
-// Run starts the chat application loop.
+// Run starts the non-streaming chat application loop.
+// It displays a welcome message and a stylish box.
+// It then enters a loop where it prompts the user for input, generates an AI response using the model,
+// and saves the user input and AI response to the chat store.
+// The loop continues until the user enters "exit" or encounters an error.
+// It returns nil if the user enters "exit" or encounters no errors.
+// Otherwise, it returns an error indicating the cause.
 func (app *ChatApp) Run() error {
 	au := aurora.NewAurora(true)
 
-	fmt.Println(au.Cyan("Welcome to the chat! Type your message and press enter to chat with the AI. Type 'exit' to quit."))
+	// Welcome message with stylish box
+	fmt.Println(au.Bold(au.BgCyan(" Welcome to Go Flow Chat (Non-Streaming) ")))
+	fmt.Println(au.Bold(au.BgCyan("---------------------------------------")))
 
 	for {
 		fmt.Print(au.Green("You: "))
@@ -82,6 +91,7 @@ func (app *ChatApp) Run() error {
 		}
 
 		aiResponse := fmt.Sprintf("AI: %s\n", au.Blue(response.Candidates[0].Content))
+		aiResponse = util.RemoveCurlyBraces(aiResponse)
 		fmt.Print(aiResponse)
 
 		// Save chat history
@@ -92,7 +102,7 @@ func (app *ChatApp) Run() error {
 	}
 }
 
-// Close gracefully shuts down the chat application.
+// Close gracefully shuts down the chat application. It closes the genai client and chat store connections.
 func (app *ChatApp) Close() {
 	if err := app.client.Close(); err != nil {
 		log.Printf("Error closing genai client: %s", err)
@@ -102,6 +112,13 @@ func (app *ChatApp) Close() {
 	}
 }
 
+// main is the entry point function for the chat application.
+// It loads the configuration, creates a chat app, sets up signal handling, and starts the chat loop.
+// It waits for a shutdown signal before exiting.
+//
+// The chat loop runs in a separate goroutine and continuously prompts the user for input.
+// It sends the user input to the AI model to generate a response, and then displays the response.
+// The chat loop also saves the user input and AI response to a chat store for future retrieval.
 func main() {
 	// Load configuration from file or environment variables...
 	config := &ChatConfig{
