@@ -27,7 +27,7 @@ EXPOSE 8080
 
 # Command to run the executable
 ENTRYPOINT ["/app/main"]
-CMD ["cli"]
+CMD ["chat"]
 
 # For CLI build:
 # docker build -t flow-cli-build .

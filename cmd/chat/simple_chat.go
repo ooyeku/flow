@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/google/generative-ai-go/genai"
 	"github.com/logrusorgru/aurora"
+	"github.com/ooyeku/flow/pkg/chat"
 	"google.golang.org/api/option"
 	"log"
 	"os"
@@ -18,6 +19,17 @@ var au = aurora.NewAurora(true) // Assuming you want to enable colors, otherwise
 // var commandEnterPressed bool
 
 func main() {
+	chatStore, err := chat.NewChatStore("chat.db")
+	if err != nil {
+		log.Fatalf("error creating chat store: %s", err)
+	}
+	defer func(chatStore *chat.ChatStore) {
+		err := chatStore.Close()
+		if err != nil {
+			log.Fatalf("error closing chat store: %s", err)
+		}
+	}(chatStore)
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -27,7 +39,7 @@ func main() {
 
 	// Start the chat loop in a separate goroutine, so we can listen for the interrupt signal concurrently.
 	go func() {
-		if err := chatLoop(ctx); err != nil {
+		if err := chatLoop(ctx, chatStore); err != nil {
 			log.Println("Chat loop error:", err)
 			cancel()
 		}
@@ -43,7 +55,7 @@ func main() {
 	fmt.Println("Goodbye!")
 }
 
-func chatLoop(ctx context.Context) error {
+func chatLoop(ctx context.Context, chatStore *chat.ChatStore) error {
 	client, err := genai.NewClient(ctx, option.WithAPIKey(os.Getenv("GOOGLE_AI_STUDIO")))
 	if err != nil {
 		return fmt.Errorf("failed to create a client: %w", err)
@@ -86,6 +98,14 @@ func chatLoop(ctx context.Context) error {
 
 		aiResponse := fmt.Sprintf("AI: %s\n", au.Colorize(response.Candidates[0].Content, aurora.BlueFg))
 		fmt.Print(aiResponse)
+
+		// convert response.Candidates[0].Content to string
+		aiReHis := fmt.Sprintf("AI: %s\n", response.Candidates[0].Content)
+
+		err = chatStore.SaveEntry(userInput, aiReHis)
+		if err != nil {
+			return fmt.Errorf("error saving chat entry: %w", err)
+		}
 
 		select {
 		case <-ctx.Done():
