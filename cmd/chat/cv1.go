@@ -22,7 +22,7 @@ type ChatConfig struct {
 	DbPath    string
 }
 
-// ChatApp represents the chat application.
+// ChatApp represents a non-streaming chat application.
 type ChatApp struct {
 	config    *ChatConfig
 	client    *genai.Client
@@ -92,7 +92,7 @@ func (app *ChatApp) Run() error {
 
 		aiResponse := fmt.Sprintf("AI: %s\n", au.Blue(response.Candidates[0].Content))
 		aiResponse = util.RemoveCurlyBraces(aiResponse)
-		fmt.Print(aiResponse)
+		fmt.Println(aiResponse)
 
 		// Save chat history
 		err = app.chatStore.SaveEntry(userInput, aiResponse)

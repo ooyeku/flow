@@ -455,6 +455,7 @@ func deleteTask(t *handle.TaskControl) {
 //	t := &handle.TaskControl{}
 //	listTasks(t)
 func listTasks(t *handle.TaskControl) {
+	fmt.Println("Listing tasks...")
 	// using channel to get tasks
 	taskChan := make(chan *handle.GetTaskResponse)
 
