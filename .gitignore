@@ -3,3 +3,6 @@ go.sum
 .idea
 internal/inmemory/test.db
 internal/imnmemory/goworkflow.db
+chat.db
+flow
+config.json

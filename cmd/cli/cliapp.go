@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/asdine/storm"
+	"github.com/logrusorgru/aurora"
 	"github.com/ooyeku/flow/internal/conf"
 	"github.com/ooyeku/flow/internal/inmemory"
 	"github.com/ooyeku/flow/pkg/handle"
@@ -13,6 +14,46 @@ import (
 	"strings"
 )
 
+var au = aurora.NewAurora(true)
+
+// commandBox displays a box containing the available commands and their descriptions with colors.
+func commandBox() {
+	fmt.Println(au.Bold(au.Cyan("Available commands:")))
+	fmt.Println(au.Green("Task commands:"))
+	fmt.Println(au.Cyan("create-task or ct"), " - Create a new task")
+	fmt.Println(au.Cyan("get-task or gt"), " - Get a task by ID")
+	fmt.Println(au.Cyan("get-task-by-title or gtk"), " - Get a task by title")
+	fmt.Println(au.Bold(au.Cyan("get-task-by-owner or gto")), " - Get tasks by owner")
+	fmt.Println(au.Cyan("update-task or ut"), " - Update a task")
+	fmt.Println(au.Cyan("delete-task or dt"), " - Delete a task")
+	fmt.Println(au.Cyan("list-tasks or lt"), " - List all tasks")
+	fmt.Println(au.Green("Goal commands:"))
+	fmt.Println(au.Cyan("create-goal or cg"), " - Create a new goal")
+	fmt.Println(au.Cyan("get-goal or gg"), " - Get a goal by ID")
+	fmt.Println(au.Cyan("get-goal-by-title or ggt"), " - Get a goal by title")
+	fmt.Println(au.Cyan("get-goal-by-planner or ggp"), " - Get goals by planner ID")
+	fmt.Println(au.Cyan("update-goal or ug"), " - Update a goal")
+	fmt.Println(au.Cyan("delete-goal or dg"), " - Delete a goal")
+	fmt.Println(au.Cyan("list-goals or lg"), " - List all goals")
+	fmt.Println(au.Green("Plan commands:"))
+	fmt.Println(au.Cyan("create-plan or cp"), " - Create a new plan")
+	fmt.Println(au.Cyan("get-plan or gp"), " - Get a plan by ID")
+	fmt.Println(au.Cyan("get-plan-by-name or gpn"), " - Get a plan by name")
+	fmt.Println(au.Cyan("get-plan-by-goal or gpg"), " - Get plans by goal ID")
+	fmt.Println(au.Cyan("update-plan or up"), " - Update a plan")
+	fmt.Println(au.Cyan("delete-plan or dp"), " - Delete a plan")
+	fmt.Println(au.Cyan("list-plans or lp"), " - List all plans")
+	fmt.Println(au.Green("Planner commands:"))
+	fmt.Println(au.Cyan("create-planner or cpl"), " - Create a new planner")
+	fmt.Println(au.Cyan("get-planner or gpl"), " - Get a planner by ID")
+	fmt.Println(au.Cyan("get-planner-by-title or gpt"), " - Get a planner by title")
+	fmt.Println(au.Cyan("get-planner-by-owner or gpo"), " - Get planners by owner")
+	fmt.Println(au.Cyan("update-planner or upl"), " - Update a planner")
+	fmt.Println(au.Cyan("delete-planner or dpl"), " - Delete a planner")
+	fmt.Println(au.Cyan("list-planners or lpl"), " - List all planners")
+	fmt.Println(au.Bold(au.BgMagenta("__________________________________________________________")))
+}
+
 // main is the entry point function for the CLI application.
 // It displays a welcome message and continuously prompts the user for a command.
 // The entered command string is passed to the runCommand function for execution.
@@ -20,9 +61,10 @@ import (
 func main() {
 
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Welcome to flow CLI app! 😼")
+	fmt.Println(au.Bold(au.Cyan("Welcome to flow CLI app! 😼")))
+	commandBox()
 	for {
-		fmt.Println("Enter command: ")
+		fmt.Println(au.Green("Enter a command: "))
 		cmdString, err := reader.ReadString('\n')
 		if err != nil {
 			_, err := fmt.Fprintln(os.Stderr, err)
@@ -1188,7 +1230,7 @@ func runCommand(commandStr string) error {
 	commandStr = strings.TrimSuffix(commandStr, "\n")
 	arrCommandStr := strings.Fields(commandStr)
 	if len(arrCommandStr) == 0 {
-		fmt.Println("No command entered. Please try again.")
+		commandBox() // display command options
 		return nil
 	}
 

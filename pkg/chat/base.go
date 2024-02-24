@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type ChatEntry struct {
+type Entry struct {
 	ID         int       `json:"id" storm:"id,increment"`
 	Timestamp  time.Time `json:"timestamp"`
 	UserInput  string    `json:"user_input"`
@@ -29,7 +29,7 @@ func (cs *ChatStore) Close() error {
 }
 
 func (cs *ChatStore) SaveEntry(userInput, aiResponse string) error {
-	entry := &ChatEntry{
+	entry := &Entry{
 		Timestamp:  time.Now(),
 		UserInput:  userInput,
 		AIResponse: aiResponse,
@@ -37,8 +37,8 @@ func (cs *ChatStore) SaveEntry(userInput, aiResponse string) error {
 	return cs.db.Save(entry)
 }
 
-func (cs *ChatStore) RetrieveEntries() ([]ChatEntry, error) {
-	var entries []ChatEntry
+func (cs *ChatStore) RetrieveEntries() ([]Entry, error) {
+	var entries []Entry
 	err := cs.db.All(&entries)
 	if err != nil {
 		return nil, err

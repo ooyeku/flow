@@ -19,7 +19,7 @@ func setupChatStore(t *testing.T) *ChatStore {
 }
 
 func teardownChatStore(t *testing.T, cs *ChatStore) {
-	err := cs.db.Select(q.True()).Delete(new(ChatEntry))
+	err := cs.db.Select(q.True()).Delete(new(Entry))
 	if err != nil {
 		t.Fatalf("failed to delete entries: %v", err)
 	}
