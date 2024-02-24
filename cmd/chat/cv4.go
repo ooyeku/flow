@@ -2,61 +2,67 @@ package main
 
 import (
 	"bufio"
+	_ "bufio"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/google/generative-ai-go/genai"
 	"github.com/logrusorgru/aurora"
 	"github.com/ooyeku/flow/pkg/chat"
+	_ "github.com/ooyeku/flow/pkg/chat"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	_ "google.golang.org/api/option"
+	_ "io"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
-// ChatConfig  holds configuration options for the chat application.
-type ChatConfig struct {
+// ChatConfigS holds configuration options for the chat application.
+type ChatConfigS struct {
 	ModelName string
 	ApiKey    string
 	DbPath    string
 }
 
-// ChatApp represents the chat application.
-type ChatApp struct {
-	config    *ChatConfig
+// ChatAppS represents the chat application with streaming response handling.
+type ChatAppS struct {
+	config    *ChatConfigS
 	client    *genai.Client
 	model     *genai.GenerativeModel
 	chatStore *chat.ChatStore
 	scanner   *bufio.Scanner
 }
 
-// NewChatApp creates a new instance of ChatAppS with the provided configuration.
-func NewChatApp(config *ChatConfig) (*ChatApp, error) {
-	ctx := context.Background()
+func NewChatAppS(config *ChatConfigS) (*ChatAppS, error) {
+	chatStore, err := chat.NewChatStore(config.DbPath)
+	if err != nil {
+		return nil, fmt.Errorf("error creating chat store: %w", err)
+	}
 
+	ctx := context.Background()
 	client, err := genai.NewClient(ctx, option.WithAPIKey(config.ApiKey))
 	if err != nil {
-		return nil, fmt.Errorf("failed to create client: %w", err)
+		return nil, fmt.Errorf("failed to create a client: %w", err)
 	}
 
 	model := client.GenerativeModel(config.ModelName)
 
-	chatStore, err := chat.NewChatStore(config.DbPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create chat store: %w", err)
-	}
+	scanner := bufio.NewScanner(os.Stdin)
 
-	return &ChatApp{
+	return &ChatAppS{
 		config:    config,
 		client:    client,
 		model:     model,
 		chatStore: chatStore,
-		scanner:   bufio.NewScanner(os.Stdin),
+		scanner:   scanner,
 	}, nil
 }
 
-// Run starts the chat application loop.
-func (app *ChatApp) Run() error {
+// Run starts the chat application loop with streaming response handling.
+func (app *ChatAppS) RunS() error {
 	au := aurora.NewAurora(true)
 
 	fmt.Println(au.Cyan("Welcome to the chat! Type your message and press enter to chat with the AI. Type 'exit' to quit."))
@@ -76,24 +82,33 @@ func (app *ChatApp) Run() error {
 
 		// Handle multi-line input or commands here...
 
-		response, err := app.model.GenerateContent(context.Background(), genai.Text(userInput))
-		if err != nil {
-			return fmt.Errorf("error generating response: %w", err)
-		}
+		// Generate response stream
+		stream := app.model.GenerateContentStream(context.Background(), genai.Text(userInput))
 
-		aiResponse := fmt.Sprintf("AI: %s\n", au.Blue(response.Candidates[0].Content))
-		fmt.Print(aiResponse)
+		// Handle streaming response
+		for {
+			response, err := stream.Next()
+			if errors.Is(err, iterator.Done) {
+				break
+			}
+			if err != nil {
+				return fmt.Errorf("error getting next response: %w", err)
+			}
 
-		// Save chat history
-		err = app.chatStore.SaveEntry(userInput, aiResponse)
-		if err != nil {
-			return fmt.Errorf("error saving chat entry: %w", err)
+			aiResponse := fmt.Sprintf("AI: %s", au.Blue(response.Candidates[0].Content))
+			fmt.Println(aiResponse)
+
+			// Save chat history
+			err = app.chatStore.SaveEntry(userInput, aiResponse)
+			if err != nil {
+				return fmt.Errorf("error saving chat entry: %w", err)
+			}
 		}
 	}
 }
 
-// Close gracefully shuts down the chat application.
-func (app *ChatApp) Close() {
+// ... (Close and main functions remain the same)
+func (app *ChatAppS) CloseS() {
 	if err := app.client.Close(); err != nil {
 		log.Printf("Error closing genai client: %s", err)
 	}
@@ -104,24 +119,24 @@ func (app *ChatApp) Close() {
 
 func main() {
 	// Load configuration from file or environment variables...
-	config := &ChatConfig{
+	config := &ChatConfigS{
 		ModelName: "gemini-1.0-pro",
 		ApiKey:    os.Getenv("GOOGLE_AI_STUDIO"),
 		DbPath:    "chat.db",
 	}
 
-	app, err := NewChatApp(config)
+	app, err := NewChatAppS(config)
 	if err != nil {
 		log.Fatalf("Error creating chat app: %s", err)
 	}
-	defer app.Close()
+	defer app.CloseS()
 
 	// Setup signal handling
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
-		if err := app.Run(); err != nil {
+		if err := app.RunS(); err != nil {
 			log.Println("Chat loop error:", err)
 		}
 		signals <- syscall.SIGINT // Signal shutdown after chat loop exits

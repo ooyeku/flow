@@ -20,7 +20,7 @@ type BoltTaskStore struct {
 //		log.Fatalf("Failed to open database: %v", err)
 //	}
 //	defer func(db *storm.DB) {
-//		err := db.Close()
+//		err := db.CloseS()
 //		if err != nil {
 //			log.Fatalf("Failed to close database: %v", err)
 //		}
