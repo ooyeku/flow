@@ -26,6 +26,8 @@ go run main.go chat -v cv1`,
 			chat = exec.Command("go", "run", "cmd/chat/cv1.go")
 		} else if chatVersion == "sv1" {
 			chat = exec.Command("go", "run", "cmd/chat/sv1.go")
+		} else if chatVersion == "pv1" {
+			chat = exec.Command("go", "run", "cmd/chat/pv1.go")
 		} else {
 			cmd.PrintErrf("invalid chat version: %s", chatVersion)
 			return

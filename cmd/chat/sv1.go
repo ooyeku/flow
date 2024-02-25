@@ -171,7 +171,7 @@ func main() {
 	config := &ChatConfigS{
 		ModelName: "gemini-1.0-pro",
 		ApiKey:    os.Getenv("GOOGLE_AI_STUDIO"),
-		DbPath:    "chat.db",
+		DbPath:    "internal/inmemory/sv1.db",
 	}
 
 	app, err := NewChatAppS(config)
