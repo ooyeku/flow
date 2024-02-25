@@ -42,5 +42,5 @@ go run main.go chat -v cv1`,
 
 func init() {
 	rootCmd.AddCommand(chatCmd)
-	chatCmd.Flags().StringVarP(&chatVersion, "version", "v", "simple_chat", "specify chat version to run (simple_chat or cv2)")
+	chatCmd.Flags().StringVarP(&chatVersion, "version", "v", "cv1", "specify chat version to run (cv1 or sv1)")
 }
