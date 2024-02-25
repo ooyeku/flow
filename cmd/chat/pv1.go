@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 )
 
@@ -63,6 +64,27 @@ func (app *ChatAppP) RunP() error {
 			return nil
 		}
 
+		// Check if the user input starts with $
+		if strings.HasPrefix(userInput, "$") {
+			// Handle command
+			command := strings.TrimPrefix(userInput, "$")
+			switch command {
+			case "history":
+				// Retrieve and display chat history
+				entries, err := app.chatStore.RetrieveEntries()
+				if err != nil {
+					return err
+				}
+				for _, entry := range entries {
+					fmt.Printf("You: %s\nAI: %s\n", entry.UserInput, entry.AIResponse)
+				}
+			default:
+				fmt.Println("Unknown command")
+			}
+			continue
+		}
+
+		// Rest of the chat loop...
 		payload := map[string]interface{}{
 			"model": "pplx-70b-online",
 			"messages": []map[string]string{
