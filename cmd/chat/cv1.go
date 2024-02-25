@@ -12,17 +12,16 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 )
 
-// ChatConfig holds configuration options for the chat application.
 type ChatConfig struct {
 	ModelName string
 	ApiKey    string
 	DbPath    string
 }
 
-// ChatApp represents a non-streaming chat application.
 type ChatApp struct {
 	config    *ChatConfig
 	client    *genai.Client
@@ -31,7 +30,6 @@ type ChatApp struct {
 	scanner   *bufio.Scanner
 }
 
-// NewChatApp creates a new instance of ChatApp with the provided configuration.
 func NewChatApp(config *ChatConfig) (*ChatApp, error) {
 	ctx := context.Background()
 
@@ -56,17 +54,9 @@ func NewChatApp(config *ChatConfig) (*ChatApp, error) {
 	}, nil
 }
 
-// Run starts the non-streaming chat application loop.
-// It displays a welcome message and a stylish box.
-// It then enters a loop where it prompts the user for input, generates an AI response using the model,
-// and saves the user input and AI response to the chat store.
-// The loop continues until the user enters "exit" or encounters an error.
-// It returns nil if the user enters "exit" or encounters no errors.
-// Otherwise, it returns an error indicating the cause.
 func (app *ChatApp) Run() error {
 	au := aurora.NewAurora(true)
 
-	// Welcome message with stylish box
 	fmt.Println(au.Bold(au.BgCyan(" Welcome to Go Flow Chat (Non-Streaming) ")))
 	fmt.Println(au.Bold(au.BgCyan("---------------------------------------")))
 
@@ -83,7 +73,25 @@ func (app *ChatApp) Run() error {
 			return nil
 		}
 
-		// Handle multi-line input or commands here...
+		// Check if the user input starts with $
+		if strings.HasPrefix(userInput, "$") {
+			// Handle command
+			command := strings.TrimPrefix(userInput, "$")
+			switch command {
+			case "history":
+				// Retrieve and display chat history
+				entries, err := app.chatStore.RetrieveEntries()
+				if err != nil {
+					return err
+				}
+				for _, entry := range entries {
+					fmt.Printf("You: %s\nAI: %s\n", entry.UserInput, entry.AIResponse)
+				}
+			default:
+				fmt.Println("Unknown command")
+			}
+			continue
+		}
 
 		response, err := app.model.GenerateContent(context.Background(), genai.Text(userInput))
 		if err != nil {
@@ -94,7 +102,6 @@ func (app *ChatApp) Run() error {
 		aiResponse = util.RemoveCurlyBraces(aiResponse)
 		fmt.Println(aiResponse)
 
-		// Save chat history
 		err = app.chatStore.SaveEntry(userInput, aiResponse)
 		if err != nil {
 			return fmt.Errorf("error saving chat entry: %w", err)
@@ -102,7 +109,6 @@ func (app *ChatApp) Run() error {
 	}
 }
 
-// Close gracefully shuts down the chat application. It closes the genai client and chat store connections.
 func (app *ChatApp) Close() {
 	if err := app.client.Close(); err != nil {
 		log.Printf("Error closing genai client: %s", err)
@@ -112,15 +118,7 @@ func (app *ChatApp) Close() {
 	}
 }
 
-// main is the entry point function for the chat application.
-// It loads the configuration, creates a chat app, sets up signal handling, and starts the chat loop.
-// It waits for a shutdown signal before exiting.
-//
-// The chat loop runs in a separate goroutine and continuously prompts the user for input.
-// It sends the user input to the AI model to generate a response, and then displays the response.
-// The chat loop also saves the user input and AI response to a chat store for future retrieval.
 func main() {
-	// Load configuration from file or environment variables...
 	config := &ChatConfig{
 		ModelName: "gemini-1.0-pro",
 		ApiKey:    os.Getenv("GOOGLE_AI_STUDIO"),
@@ -133,7 +131,6 @@ func main() {
 	}
 	defer app.Close()
 
-	// Setup signal handling
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 
@@ -141,8 +138,8 @@ func main() {
 		if err := app.Run(); err != nil {
 			log.Println("Chat loop error:", err)
 		}
-		signals <- syscall.SIGINT // Signal shutdown after chat loop exits
+		signals <- syscall.SIGINT
 	}()
 
-	<-signals // Wait for shutdown signal
+	<-signals
 }

@@ -11,7 +11,7 @@ var chatVersion string
 var chatCmd = &cobra.Command{
 	Use:   "chat",
 	Short: "Launch a chat with the AI",
-	Long: `Launch a chat with the AI using the cv1(non-streaming) or sv1(streaming) version.
+	Long: `Launch a chat with the AI using the cv1(non-streaming), sv1(streaming) version, and pv1(perplexity).
 
 chat history will be stored in a local chat.db file and can be accessed by running scripts/getchathistory.go
 
@@ -44,5 +44,5 @@ go run main.go chat -v cv1`,
 
 func init() {
 	rootCmd.AddCommand(chatCmd)
-	chatCmd.Flags().StringVarP(&chatVersion, "version", "v", "cv1", "specify chat version to run (cv1 or sv1)")
+	chatCmd.Flags().StringVarP(&chatVersion, "version", "v", "cv1", "specify chat version to run (cv1, sv1, pv1)")
 }

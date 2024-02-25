@@ -1,13 +1,36 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/ooyeku/flow/pkg/chat"
 	"log"
 )
 
+/* Usage: go run getchathistory.go -chat cv1
+ */
+
 func main() {
-	chatStore, err := chat.NewChatStore("chat.db")
+	// Define a string flag for the chat version
+	chatVersion := flag.String("chat", "cv1", "chat version (cv1, sv1, pv1)")
+
+	// Parse the flags
+	flag.Parse()
+
+	// Determine the database path based on the chat version
+	var dbPath string
+	switch *chatVersion {
+	case "cv1":
+		dbPath = "internal/inmemory/cv1.db"
+	case "sv1":
+		dbPath = "internal/inmemory/sv1.db"
+	case "pv1":
+		dbPath = "internal/inmemory/pv1.db"
+	default:
+		log.Fatalf("invalid chat version: %s", *chatVersion)
+	}
+
+	chatStore, err := chat.NewChatStore(dbPath)
 	if err != nil {
 		log.Fatalf("error creating chat store: %s", err)
 	}
