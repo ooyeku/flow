@@ -78,6 +78,23 @@ func (app *ChatAppP) RunP() error {
 				for _, entry := range entries {
 					fmt.Printf("You: %s\nAI: %s\n", entry.UserInput, entry.AIResponse)
 				}
+			case "clear":
+				fmt.Print(au.Bold(au.Red("Are you sure you want to clear chat history? (yes/no): ")))
+				scanned := app.scanner.Scan()
+				if !scanned {
+					return app.scanner.Err()
+				}
+				confirmation := app.scanner.Text()
+				if confirmation != "yes" {
+					fmt.Println(au.Red("Chat history not cleared"))
+					continue
+				} else {
+					err := app.chatStore.ClearEntries()
+					if err != nil {
+						return fmt.Errorf("error clearing chat history: %w", err)
+					}
+					fmt.Println(au.Bold(au.Green("Chat history cleared")))
+				}
 			default:
 				fmt.Println("Unknown command")
 			}

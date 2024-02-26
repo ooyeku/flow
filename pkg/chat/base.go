@@ -45,3 +45,8 @@ func (cs *ChatStore) RetrieveEntries() ([]Entry, error) {
 	}
 	return entries, nil
 }
+
+func (cs *ChatStore) ClearEntries() (err error) {
+	err = cs.db.Drop(&Entry{})
+	return err
+}
