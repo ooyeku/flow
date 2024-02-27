@@ -9,7 +9,21 @@ type Entry struct {
 	ID         int       `json:"id" storm:"id,increment"`
 	Timestamp  time.Time `json:"timestamp"`
 	UserInput  string    `json:"user_input"`
-	AIResponse string    `json:"ai_response"`
+	AIResponse Response  `json:"ai_response"`
+}
+
+type Response struct {
+	ID      string `json:"id"`
+	Model   string `json:"model"`
+	Created string `json:"created"`
+	Object  string `json:"object"`
+
+	Choices []struct {
+		Message struct {
+			Role    string `json:"role"`
+			Content string `json:"content"`
+		} `json:"message"`
+	} `json:"choices"`
 }
 
 type ChatStore struct {
@@ -28,7 +42,7 @@ func (cs *ChatStore) Close() error {
 	return cs.db.Close()
 }
 
-func (cs *ChatStore) SaveEntry(userInput, aiResponse string) error {
+func (cs *ChatStore) SaveEntry(userInput string, aiResponse Response) error {
 	entry := &Entry{
 		Timestamp:  time.Now(),
 		UserInput:  userInput,

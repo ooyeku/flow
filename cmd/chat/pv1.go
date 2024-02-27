@@ -18,6 +18,16 @@ import (
 	"syscall"
 )
 
+// model options
+const sonarSmallChat = "sonar-small-chat"
+const sonarSmallOnline = "sonar-small-online"
+const sonarMediumChat = "sonar-medium-chat"
+const sonarMediumOnline = "sonar-medium-online"
+const pplx70b = "pplx-70b-online"
+const codeLLama70b = "code-llama-70b-instruct"
+const mixtral7b = "mixtral-7b-instruct"
+const mixtral8x7b = "mixtral-8x7b-instruct"
+
 type ChatAppP struct {
 	client    *http.Client
 	chatStore *chat.ChatStore
@@ -103,11 +113,12 @@ func (app *ChatAppP) RunP() error {
 
 		// Rest of the chat loop...
 		payload := map[string]interface{}{
-			"model": "pplx-70b-online",
+			"model": pplx70b,
 			"messages": []map[string]string{
 				{"role": "system", "content": "Be precise and concise."},
 				{"role": "user", "content": userInput},
 			},
+			"stream": "false",
 		}
 		payloadBytes, _ := json.Marshal(payload)
 
@@ -125,13 +136,14 @@ func (app *ChatAppP) RunP() error {
 		}(res.Body)
 
 		body, _ := io.ReadAll(res.Body)
-		var result map[string]interface{}
+		var result chat.Response
 		_ = json.Unmarshal(body, &result)
 
-		aiResponse := fmt.Sprintf("AI: %s\n", au.Blue(body))
+		ai := au.Bold(au.BrightBlue("AI: "))
+		aiResponse := fmt.Sprintf("%s%s", ai, result.Choices[0].Message.Content)
 		fmt.Println(aiResponse)
 
-		err := app.chatStore.SaveEntry(userInput, aiResponse)
+		err := app.chatStore.SaveEntry(userInput, result)
 		if err != nil {
 			return err
 		}
