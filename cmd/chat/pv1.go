@@ -64,7 +64,7 @@ func (app *ChatAppP) RunP() error {
 
 	// spinner configuration
 	cfg := yacspin.Config{
-		Frequency:       100 * time.Microsecond,
+		Frequency:       100 * time.Millisecond,
 		CharSet:         yacspin.CharSets[59],
 		Suffix:          au.Bold(au.BrightBlue("Pondering...")).String(),
 		SuffixAutoColon: true,
@@ -78,6 +78,12 @@ func (app *ChatAppP) RunP() error {
 
 	fmt.Println(au.Bold(au.BgCyan(" Welcome to Go Flow Chat (Perplexity AI) ")))
 	fmt.Println(au.Bold(au.BgCyan("-----------------------------------------")))
+	// current model
+	fmt.Println(au.Bold(au.BrightBlue("Model: ")), au.Bold(au.BrightGreen(app.model)))
+	// options
+	fmt.Println(au.Bold(au.BrightBlue("Type $models to change model")))
+	fmt.Println(au.Bold(au.BrightBlue("Type $history to view chat history")))
+	fmt.Println(au.Bold(au.BrightBlue("Type $clear to clear chat history")))
 
 	for {
 		fmt.Print(au.Green("You: "))
@@ -123,7 +129,7 @@ func (app *ChatAppP) RunP() error {
 					}
 					fmt.Println(au.Bold(au.Green("Chat history cleared")))
 				}
-			case "model":
+			case "models":
 				fmt.Print(au.Bold(au.BrightBlue("Enter model name: ")))
 				// display model options
 				fmt.Println(au.Bold(au.BrightBlue("Model options: ")))
@@ -131,7 +137,7 @@ func (app *ChatAppP) RunP() error {
 				fmt.Println(au.Bold(au.BrightGreen("sonar-small-online")))
 				fmt.Println(au.Bold(au.BrightGreen("sonar-medium-chat")))
 				fmt.Println(au.Bold(au.BrightGreen("sonar-medium-online")))
-				fmt.Println(au.Bold(au.BrightGreen("pplx-70b")))
+				fmt.Println(au.Bold(au.BrightGreen("pplx-70b-online")))
 				fmt.Println(au.Bold(au.BrightGreen("code-llama-70b")))
 				fmt.Println(au.Bold(au.BrightGreen("mixtral-7b")))
 				fmt.Println(au.Bold(au.BrightGreen("mixtral-8x7b")))
@@ -141,6 +147,15 @@ func (app *ChatAppP) RunP() error {
 				}
 
 				app.model = app.scanner.Text()
+				// check if model is valid
+				switch app.model {
+				case sonarSmallChat, sonarSmallOnline, sonarMediumChat, sonarMediumOnline, pplx70b, codeLLama70b, mixtral7b, mixtral8x7b:
+				default:
+					fmt.Println(au.Bold(au.BrightRed("Invalid model")))
+					app.model = pplx70b // set back to default
+					continue
+				}
+
 				fmt.Println(au.Bold(au.BrightBlue("Model set to: ")), au.Bold(au.BrightGreen(app.model)))
 				continue
 			default:
