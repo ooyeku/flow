@@ -26,7 +26,7 @@ const sonarSmallOnline = "sonar-small-online"
 const sonarMediumChat = "sonar-medium-chat"
 const sonarMediumOnline = "sonar-medium-online"
 const pplx70b = "pplx-70b-online"
-const codeLLama70b = "code-llama-70b-instruct"
+const codeLLama70b = "codellama-70b-instruct"
 const mixtral7b = "mixtral-7b-instruct"
 const mixtral8x7b = "mixtral-8x7b-instruct"
 
@@ -130,17 +130,17 @@ func (app *ChatAppP) RunP() error {
 					fmt.Println(au.Bold(au.Green("Chat history cleared")))
 				}
 			case "models":
-				fmt.Print(au.Bold(au.BrightBlue("Enter model name: ")))
+				fmt.Println(au.Bold(au.BrightBlue("Enter model name: ")))
 				// display model options
-				fmt.Println(au.Bold(au.BrightBlue("Model options: ")))
+				fmt.Println(au.Bold(au.BgBrown("options")))
 				fmt.Println(au.Bold(au.BrightGreen("sonar-small-chat")))
 				fmt.Println(au.Bold(au.BrightGreen("sonar-small-online")))
 				fmt.Println(au.Bold(au.BrightGreen("sonar-medium-chat")))
 				fmt.Println(au.Bold(au.BrightGreen("sonar-medium-online")))
 				fmt.Println(au.Bold(au.BrightGreen("pplx-70b-online")))
-				fmt.Println(au.Bold(au.BrightGreen("code-llama-70b")))
-				fmt.Println(au.Bold(au.BrightGreen("mixtral-7b")))
-				fmt.Println(au.Bold(au.BrightGreen("mixtral-8x7b")))
+				fmt.Println(au.Bold(au.BrightGreen("code$llama-70b-instruct")))
+				fmt.Println(au.Bold(au.BrightGreen("mixtral-7b-instruct")))
+				fmt.Println(au.Bold(au.BrightGreen("mixtral-8x7b-instruct")))
 				scanned := app.scanner.Scan()
 				if !scanned {
 					return app.scanner.Err()
@@ -153,6 +153,7 @@ func (app *ChatAppP) RunP() error {
 				default:
 					fmt.Println(au.Bold(au.BrightRed("Invalid model")))
 					app.model = pplx70b // set back to default
+					fmt.Println(au.Bold(au.BrightBlue("Model set to default: ")), au.Bold(au.BrightGreen(app.model)))
 					continue
 				}
 

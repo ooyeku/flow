@@ -57,6 +57,7 @@ func (cs *ChatStore) RetrieveEntries() ([]Entry, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return entries, nil
 }
 
