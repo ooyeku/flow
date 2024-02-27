@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/logrusorgru/aurora"
 	"github.com/ooyeku/flow/pkg/chat"
+	"github.com/theckman/yacspin"
 	"io"
 	_ "io/ioutil"
 	"log"
@@ -16,6 +17,7 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 )
 
 // model options
@@ -57,6 +59,20 @@ func NewChatAppP(dbPath string) (*ChatAppP, error) {
 
 func (app *ChatAppP) RunP() error {
 	au := aurora.NewAurora(true)
+
+	// spinner configuration
+	cfg := yacspin.Config{
+		Frequency:       100 * time.Microsecond,
+		CharSet:         yacspin.CharSets[59],
+		Suffix:          au.Bold(au.BrightBlue("Pondering...")).String(),
+		SuffixAutoColon: true,
+		StopCharacter:   "💡",
+	}
+
+	spinner, err := yacspin.New(cfg)
+	if err != nil {
+		log.Fatal("error creating spinner: ", err)
+	}
 
 	fmt.Println(au.Bold(au.BgCyan(" Welcome to Go Flow Chat (Perplexity AI) ")))
 	fmt.Println(au.Bold(au.BgCyan("-----------------------------------------")))
@@ -127,6 +143,11 @@ func (app *ChatAppP) RunP() error {
 		req.Header.Add("content-type", "application/json")
 		req.Header.Add("authorization", "Bearer "+app.apikey)
 
+		err := spinner.Start()
+		if err != nil {
+			log.Fatal("error starting spinner: ", err)
+		}
+
 		res, _ := app.client.Do(req)
 		defer func(Body io.ReadCloser) {
 			err := Body.Close()
@@ -139,11 +160,16 @@ func (app *ChatAppP) RunP() error {
 		var result chat.Response
 		_ = json.Unmarshal(body, &result)
 
+		err = spinner.Stop()
+		if err != nil {
+			log.Fatal("error stopping spinner: ", err)
+		}
+
 		ai := au.Bold(au.BrightBlue("AI: "))
 		aiResponse := fmt.Sprintf("%s%s", ai, result.Choices[0].Message.Content)
 		fmt.Println(aiResponse)
 
-		err := app.chatStore.SaveEntry(userInput, result)
+		err = app.chatStore.SaveEntry(userInput, result)
 		if err != nil {
 			return err
 		}
