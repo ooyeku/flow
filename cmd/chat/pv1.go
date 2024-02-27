@@ -35,6 +35,7 @@ type ChatAppP struct {
 	chatStore *chat.ChatStore
 	scanner   *bufio.Scanner
 	apikey    string
+	model     string
 }
 
 func NewChatAppP(dbPath string) (*ChatAppP, error) {
@@ -54,6 +55,7 @@ func NewChatAppP(dbPath string) (*ChatAppP, error) {
 		chatStore: chatStore,
 		scanner:   bufio.NewScanner(os.Stdin),
 		apikey:    apikey,
+		model:     pplx70b, // default model
 	}, nil
 }
 
@@ -121,6 +123,26 @@ func (app *ChatAppP) RunP() error {
 					}
 					fmt.Println(au.Bold(au.Green("Chat history cleared")))
 				}
+			case "model":
+				fmt.Print(au.Bold(au.BrightBlue("Enter model name: ")))
+				// display model options
+				fmt.Println(au.Bold(au.BrightBlue("Model options: ")))
+				fmt.Println(au.Bold(au.BrightGreen("sonar-small-chat")))
+				fmt.Println(au.Bold(au.BrightGreen("sonar-small-online")))
+				fmt.Println(au.Bold(au.BrightGreen("sonar-medium-chat")))
+				fmt.Println(au.Bold(au.BrightGreen("sonar-medium-online")))
+				fmt.Println(au.Bold(au.BrightGreen("pplx-70b")))
+				fmt.Println(au.Bold(au.BrightGreen("code-llama-70b")))
+				fmt.Println(au.Bold(au.BrightGreen("mixtral-7b")))
+				fmt.Println(au.Bold(au.BrightGreen("mixtral-8x7b")))
+				scanned := app.scanner.Scan()
+				if !scanned {
+					return app.scanner.Err()
+				}
+
+				app.model = app.scanner.Text()
+				fmt.Println(au.Bold(au.BrightBlue("Model set to: ")), au.Bold(au.BrightGreen(app.model)))
+				continue
 			default:
 				fmt.Println("Unknown command")
 			}
@@ -129,7 +151,7 @@ func (app *ChatAppP) RunP() error {
 
 		// Rest of the chat loop...
 		payload := map[string]interface{}{
-			"model": pplx70b,
+			"model": app.model,
 			"messages": []map[string]string{
 				{"role": "system", "content": "Be precise and concise."},
 				{"role": "user", "content": userInput},
