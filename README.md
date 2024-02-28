@@ -16,7 +16,7 @@ The project is structured as follows:
 #### Modes:
 - CLI
 - Server
-- Chat (AI Chat from the terminal) -**Requires Google AI Studio api key**
+- Chat (AI Chat from the terminal) -**Requires PerplexityAI API Key)
 
 
 ## Usage
