@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/logrusorgru/aurora"
+	"github.com/ooyeku/flow/cmd/chat/helpers"
 	"github.com/ooyeku/flow/pkg/chat"
 	"github.com/theckman/yacspin"
 	"io"
@@ -76,15 +77,9 @@ func (app *ChatAppP) RunP() error {
 		log.Fatal("error creating spinner: ", err)
 	}
 
-	fmt.Println(au.Bold(au.Cyan(" Welcome to Go Flow Chat (Perplexity AI) ")))
-	fmt.Println(au.Bold(au.BgCyan("-----------------------------------------")))
-	// current model
+	helpers.Intro()
+	//// current model
 	fmt.Println(au.Bold(au.BrightBlue("Model: ")), au.Bold(au.BrightGreen(app.model)))
-	// options
-	fmt.Println(au.Bold(au.BrightBlue("Type 'exit' to quit the chat")))
-	fmt.Println(au.Bold(au.BrightBlue("Type $models to change model")))
-	fmt.Println(au.Bold(au.BrightBlue("Type $history to view chat history")))
-	fmt.Println(au.Bold(au.BrightBlue("Type $clear to clear chat history")))
 
 	for {
 		fmt.Print(au.Green("You: "))
@@ -96,6 +91,7 @@ func (app *ChatAppP) RunP() error {
 		userInput := app.scanner.Text()
 
 		if userInput == "exit" {
+			fmt.Println(au.Bold(au.BrightBlue("Goodbye!")))
 			return nil
 		}
 
@@ -111,7 +107,12 @@ func (app *ChatAppP) RunP() error {
 					return err
 				}
 				for _, entry := range entries {
-					fmt.Printf("You: %s\nAI: %s\n", entry.UserInput, entry.AIResponse)
+					fmt.Println(au.Bold(au.BrightGreen("You: ")), au.Green(entry.UserInput))
+					fmt.Println(au.Bold(au.BrightBlue("AI: ")), entry.AIResponse.Choices[0].Message.Content)
+					// print model details
+					fmt.Println(au.Bold(au.BrightYellow("Model: ")), au.Bold(au.Magenta(entry.AIResponse.Model)))
+					// print separator
+					fmt.Println(au.Bold(au.BrightBlue("-------------------------------------------------")))
 				}
 			case "clear":
 				fmt.Print(au.Bold(au.Red("Are you sure you want to clear chat history? (yes/no): ")))
@@ -133,16 +134,7 @@ func (app *ChatAppP) RunP() error {
 			case "models":
 				fmt.Println(au.Bold(au.BrightBlue("Enter model name: ")))
 				// display model options
-				fmt.Println(au.Bold(au.BgBrown("options")))
-				fmt.Println(au.Bold(au.BrightGreen("sonar-small-chat")))
-				fmt.Println(au.Bold(au.BrightGreen("sonar-small-online")))
-				fmt.Println(au.Bold(au.BrightGreen("sonar-medium-chat")))
-				fmt.Println(au.Bold(au.BrightGreen("sonar-medium-online")))
-				fmt.Println(au.Bold(au.BrightGreen("pplx-70b-online")))
-				fmt.Println(au.Bold(au.BrightGreen("code$llama-70b-instruct")))
-				fmt.Println(au.Bold(au.BrightGreen("mixtral-7b-instruct")))
-				fmt.Println(au.Bold(au.BrightGreen("mixtral-8x7b-instruct")))
-				fmt.Println("")
+				helpers.DisplayModels()
 				scanned := app.scanner.Scan()
 				if !scanned {
 					return app.scanner.Err()
@@ -161,20 +153,26 @@ func (app *ChatAppP) RunP() error {
 
 				fmt.Println(au.Bold(au.BrightBlue("Model set to: ")), au.Bold(au.BrightGreen(app.model)))
 				continue
+			case "exit":
+				// Goodbye message
+				fmt.Println(au.Bold(au.BrightBlue("Goodbye!")))
+				return nil
 			default:
 				fmt.Println("Unknown command")
 			}
 			continue
 		}
 
-		// Rest of the chat loop...
 		payload := map[string]interface{}{
 			"model": app.model,
 			"messages": []map[string]string{
-				{"role": "system", "content": "Be precise and concise."},
+				{"role": "system", "content": helpers.SysMessage},
 				{"role": "user", "content": userInput},
 			},
-			"stream": "false",
+			"temperature":       helpers.Temperature,
+			"top_p":             helpers.TopP,
+			"frequency_penalty": helpers.FrequencyPenalty,
+			"stream":            helpers.Stream,
 		}
 		payloadBytes, _ := json.Marshal(payload)
 
