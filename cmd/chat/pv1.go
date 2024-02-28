@@ -76,11 +76,12 @@ func (app *ChatAppP) RunP() error {
 		log.Fatal("error creating spinner: ", err)
 	}
 
-	fmt.Println(au.Bold(au.BgCyan(" Welcome to Go Flow Chat (Perplexity AI) ")))
+	fmt.Println(au.Bold(au.Cyan(" Welcome to Go Flow Chat (Perplexity AI) ")))
 	fmt.Println(au.Bold(au.BgCyan("-----------------------------------------")))
 	// current model
 	fmt.Println(au.Bold(au.BrightBlue("Model: ")), au.Bold(au.BrightGreen(app.model)))
 	// options
+	fmt.Println(au.Bold(au.BrightBlue("Type 'exit' to quit the chat")))
 	fmt.Println(au.Bold(au.BrightBlue("Type $models to change model")))
 	fmt.Println(au.Bold(au.BrightBlue("Type $history to view chat history")))
 	fmt.Println(au.Bold(au.BrightBlue("Type $clear to clear chat history")))
@@ -141,6 +142,7 @@ func (app *ChatAppP) RunP() error {
 				fmt.Println(au.Bold(au.BrightGreen("code$llama-70b-instruct")))
 				fmt.Println(au.Bold(au.BrightGreen("mixtral-7b-instruct")))
 				fmt.Println(au.Bold(au.BrightGreen("mixtral-8x7b-instruct")))
+				fmt.Println("")
 				scanned := app.scanner.Scan()
 				if !scanned {
 					return app.scanner.Err()
