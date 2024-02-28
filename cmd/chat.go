@@ -1,9 +1,8 @@
 package cmd
 
 import (
-	"os/exec"
-
 	"github.com/spf13/cobra"
+	"os/exec"
 )
 
 var chatVersion string

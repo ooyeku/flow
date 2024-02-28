@@ -23,14 +23,48 @@ import (
 
 // model options
 const sonarSmallChat = "sonar-small-chat"
+
+// model options
 const sonarSmallOnline = "sonar-small-online"
+
+// model options
 const sonarMediumChat = "sonar-medium-chat"
+
+// model options
 const sonarMediumOnline = "sonar-medium-online"
+
+// pplx70b is a constant representing the default model ("pplx-70b-online") for the ChatAppP application.
+// It is used in the initialization of ChatAppP to set the default model for chat interactions.
+// The "pplx70b" constant is used in the following ways:
+// 1. In the NewChatAppP function of the ChatAppP type, it is assigned to the "model" field of the ChatAppP struct. This ensures that the default model is used for chat interactions.
+// 2. In the RunP method of the ChatAppP type, the value of the "model" field is printed to the console when displaying the current model. This allows the user to see which model is currently being used.
+// 3. In the "models" command handler of the RunP method, the "pplx70b" constant is checked as a valid model option. If the user selects "pplx70b" as the new model, it is assigned to the "model" field of the ChatAppP struct.
+// Note: The code examples provided are part of a larger codebase and are
 const pplx70b = "pplx-70b-online"
+
+// model options
 const codeLLama70b = "codellama-70b-instruct"
+
+// model options
 const mixtral7b = "mixtral-7b-instruct"
+
+// mixtral8x7b is a constant representing the model "mixtral-8x7b-instruct". It is one of the model options that can be assigned to the `model` field in the `ChatAppP` struct.
+// Usage example:
 const mixtral8x7b = "mixtral-8x7b-instruct"
 
+// ChatAppP is a type that represents a chat application. It has the following properties:
+// - client: an HTTP client used for making API requests
+// - chatStore: a chat store used for storing chat history
+// - scanner: a scanner used for reading user input from the console
+// - apikey: the API key used for authentication
+// - model: the current model for generating AI responses
+// It also has the following methods:
+// - RunP: starts the chat application and handles user input and AI responses
+// - CloseP: closes the chat store
+// The ChatAppP type can be created using the NewChatAppP function, which takes a database path as a parameter and returns an instance of ChatAppP.
+// The ChatStore type, which is used by ChatAppP, is a separate type that represents a chat store. It has methods for saving chat entries, retrieving chat history, and clearing chat history. It can be created using the NewChatStore function, which takes a database path as a parameter and returns an instance of ChatStore.
+// The pplx70b constant represents the default model for the ChatAppP type.
+// The helpers.Intro function prints an introduction message and provides instructions for using the chat application.
 type ChatAppP struct {
 	client    *http.Client
 	chatStore *chat.ChatStore
@@ -39,6 +73,34 @@ type ChatAppP struct {
 	model     string
 }
 
+// NewChatAppP returns a new instance of ChatAppP with the specified database path.
+// It initializes the chatStore using the NewChatStore function.
+// It retrieves the API key from the environment using os.Getenv("PAI_KEY").
+// If the API key is not set, it returns an error.
+// It initializes and returns the ChatAppP struct with the client, chatStore, scanner, apikey, and model.
+// The model is set to "pplx-70b-online" by default.
+// If there is an error creating the chatStore, it returns the error.
+//
+// Example usage:
+// app, err := NewChatAppP(dbPath)
+//
+//	if err != nil {
+//	    log.Fatalf("Error creating chat app: %s", err)
+//	}
+//
+// defer app.CloseP()
+//
+// signals := make(chan os.Signal, 1)
+// signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
+//
+//	go func() {
+//	    if err := app.RunP(); err != nil {
+//	        log.Println("Chat loop error:", err)
+//	    }
+//	    signals <- syscall.SIGINT
+//	}()
+//
+// <-signals
 func NewChatAppP(dbPath string) (*ChatAppP, error) {
 	chatStore, err := chat.NewChatStore(dbPath)
 	if err != nil {
@@ -60,6 +122,7 @@ func NewChatAppP(dbPath string) (*ChatAppP, error) {
 	}, nil
 }
 
+// RunP runs the chat application
 func (app *ChatAppP) RunP() error {
 	au := aurora.NewAurora(true)
 
@@ -214,12 +277,30 @@ func (app *ChatAppP) RunP() error {
 	}
 }
 
+// CloseP closes the chat store associated with the ChatAppP instance.
+// The method first attempts to close the chat store by calling app.chatStore.Close().
+// If an error occurs during the closing process, the error is logged using log.Printf.
+// Example usage:
+// ```
+// dbPath := "internal/inmemory/pv1.db"
+// app, err := NewChatAppP(dbPath)
+//
+//	if err != nil {
+//	    log.Fatalf("Error creating chat app: %s", err)
+//	}
+//
+// defer app.CloseP()
+// ```
+// Note: The CloseP method is defined on the ChatAppP struct. The ChatAppP struct has a field called chatStore
+// which is an instance of the ChatStore struct. The ChatStore struct has a Close method that is invoked by app.chatStore.Close()
+// in the CloseP method implementation.
 func (app *ChatAppP) CloseP() {
 	if err := app.chatStore.Close(); err != nil {
 		log.Printf("Error closing chat store: %s", err)
 	}
 }
 
+// main is the entry point of the program.
 func main() {
 	dbPath := "internal/inmemory/pv1.db"
 

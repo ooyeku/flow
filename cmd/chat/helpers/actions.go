@@ -24,8 +24,7 @@ func DisplayModels() {
 	fmt.Println(au.Bold(au.BrightGreen("sonar-medium-chat")))
 	fmt.Println(au.Bold(au.BrightGreen("sonar-medium-online")))
 	fmt.Println(au.Bold(au.BrightGreen("pplx-70b-online")))
-	fmt.Println(au.Bold(au.BrightGreen("code$llama-70b-instruct")))
-	fmt.Println(au.Bold(au.BrightGreen("mixtral-7b-instruct")))
+	fmt.Println(au.Bold(au.BrightGreen("codellama-70b-instruct")))
 	fmt.Println(au.Bold(au.BrightGreen("mixtral-8x7b-instruct")))
 	fmt.Println("")
 }

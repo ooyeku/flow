@@ -1,22 +1,19 @@
-# Go Flow
+# Flow ♾️
 
-This project is a task/workflow manager written in Go. It is designed to be
-simple, easy to use, and easy to extend. It is also designed to be
-cross-platform, and should work on any system that Go supports.
+Easily create and manage your own workflows from the terminal.  
+Flow is a CLI tool that allows you to create and manage goals, tasks, projects, and more from the terminal,
+while also providing a chat mode to interact with an AI chatbot. The project began as a keep track of projects and workflows
+from the terminal, but has since evolved to include a chat mode that uses the PerplexityAI API (more coming soon).
 
-## Project Structure
+### Status
+This project is still in development and is not yet ready for production use.  The CLI, Server, and Chat modes are all functional, but 
+features are still being added and bugs are still being fixed.  The project is being developed in my free time, so updates may take a while.  if you would like to contribute, please feel free to submit a pull request.
 
-The project is structured as follows:
-#### Layers:
-- Model
-- Store
-- Service
-- Handle (control)
-- API
+
 #### Modes:
 - CLI
 - Server
-- Chat (AI Chat from the terminal) -**Requires PerplexityAI API Key)
+- Chat **Requires PerplexityAI API Key** [Chat README](cmd/chat/README.md)
 
 
 ## Usage
