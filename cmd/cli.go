@@ -8,6 +8,7 @@ import (
 
 func init() {
 	rootCmd.AddCommand(CliCmd)
+
 }
 
 var CliCmd = &cobra.Command{
@@ -16,7 +17,8 @@ var CliCmd = &cobra.Command{
 	Long:  `run flow in cli mode`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// run cli loop
-		cli := exec.Command("go", "run", "cmd/cli/cliapp.go")
+		//exec.Command("go", "build", "cmd/cli/cliapp.go").Run()
+		cli := exec.Command("bash", "-c", "./cliapp")
 		cli.Stdin = os.Stdin
 		cli.Stdout = os.Stdout
 		cli.Stderr = os.Stderr

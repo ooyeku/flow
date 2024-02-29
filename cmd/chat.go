@@ -22,7 +22,7 @@ go run main.go chat -v pv1`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var chat *exec.Cmd
 		if chatVersion == "pv1" {
-			chat = exec.Command("go", "run", "cmd/chat/pv1.go")
+			chat = exec.Command("bash", "-c", "./pv1")
 		} else {
 			cmd.PrintErrf("invalid chat version: %s", chatVersion)
 			return
