@@ -4,6 +4,10 @@ FROM golang:1.21
 # Add Maintainer Info
 LABEL maintainer="Ola Yeku <ooyeku@gmail.com>"
 
+ARG PAI_KEY
+
+ENV PAI_KEY={PAI_KEY}
+
 # Set the Current Working Directory inside the container
 WORKDIR /app
 
@@ -25,14 +29,3 @@ RUN go install .
 # Expose port 8080 to the outside world
 EXPOSE 8080
 
-# Command to run the executable
-ENTRYPOINT ["/app/main"]
-CMD ["chat"]
-
-# For CLI build:
-# docker build -t flow-cli-build .
-# docker run -it --name flow-cli flow-cli-build
-
-# For server build:
-# docker build -t flow-server-build .
-# docker run --name flow-server -p 8080:8080 flow-server-build
