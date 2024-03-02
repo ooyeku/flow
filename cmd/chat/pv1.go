@@ -29,27 +29,10 @@ const sonarSmallOnline = "sonar-small-online"
 
 // model options
 const sonarMediumChat = "sonar-medium-chat"
-
-// model options
 const sonarMediumOnline = "sonar-medium-online"
-
-// pplx70b is a constant representing the default model ("pplx-70b-online") for the ChatAppP application.
-// It is used in the initialization of ChatAppP to set the default model for chat interactions.
-// The "pplx70b" constant is used in the following ways:
-// 1. In the NewChatAppP function of the ChatAppP type, it is assigned to the "model" field of the ChatAppP struct. This ensures that the default model is used for chat interactions.
-// 2. In the RunP method of the ChatAppP type, the value of the "model" field is printed to the console when displaying the current model. This allows the user to see which model is currently being used.
-// 3. In the "models" command handler of the RunP method, the "pplx70b" constant is checked as a valid model option. If the user selects "pplx70b" as the new model, it is assigned to the "model" field of the ChatAppP struct.
-// Note: The code examples provided are part of a larger codebase and are
 const pplx70b = "pplx-70b-online"
-
-// model options
 const codeLLama70b = "codellama-70b-instruct"
-
-// model options
 const mixtral7b = "mixtral-7b-instruct"
-
-// mixtral8x7b is a constant representing the model "mixtral-8x7b-instruct". It is one of the model options that can be assigned to the `model` field in the `ChatAppP` struct.
-// Usage example:
 const mixtral8x7b = "mixtral-8x7b-instruct"
 
 // ChatAppP is a type that represents a chat application. It has the following properties:
