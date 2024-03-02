@@ -31,7 +31,7 @@ func cliSetup() (*chat.ChatApp, *chat.ChatService, *storm.DB) {
 	client := &http.Client{}
 	scanner := bufio.NewScanner(os.Stdin)
 	apikey := os.Getenv("PAI_KEY")
-	models := []string{"sonar-small-chat", "sonar-small-online", "sonar-medium-chat", "sonar-medium-online", "pplx-70b-online", "codellama-70b-instruct", "mixtral-7b-instruct", "mixtral-8x7b-instruct"}
+	models := []string{"sonar-small-chat", "sonar-small-online", "sonar-medium-chat", "sonar-medium-online", "pplx-70b-online", "codellama-70b-instruct", "mistral-7b-instruct", "mixtral-8x7b-instruct"}
 
 	app, err := chat.NewChatApp(client, chatservice, scanner, apikey, models)
 	if err != nil {
@@ -232,6 +232,10 @@ func topicRun(app *chat.ChatApp) error {
 		for _, topic := range app.Topics {
 			// if topic exists, delete it
 			if topic.Name == deleteTopicName {
+				// if topic is the current topic, set the current topic to nil
+				if app.CurrentTopic.Name == deleteTopicName {
+					app.CurrentTopic = chat.ChatTopic{}
+				}
 				err := app.ChatService.DeleteTopic(topic.ID)
 				if err != nil {
 					log.Fatalf("error deleting topic: %s", err)
