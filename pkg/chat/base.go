@@ -23,6 +23,7 @@ type Response struct {
 			Role    string `json:"role"`
 			Content string `json:"content"`
 		} `json:"message"`
+		FinishReason string `json:"finish_reason"`
 	} `json:"choices"`
 }
 

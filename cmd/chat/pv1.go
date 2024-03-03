@@ -35,7 +35,7 @@ const codeLLama70b = "codellama-70b-instruct"
 const mixtral7b = "mixtral-7b-instruct"
 const mixtral8x7b = "mixtral-8x7b-instruct"
 
-// ChatAppP is a type that represents a chat application. It has the following properties:
+// ChatAppP ChatAppO is a type that represents a chat application. It has the following properties:
 // - client: an HTTP client used for making API requests
 // - chatStore: a chat store used for storing chat history
 // - scanner: a scanner used for reading user input from the console
@@ -44,9 +44,9 @@ const mixtral8x7b = "mixtral-8x7b-instruct"
 // It also has the following methods:
 // - RunP: starts the chat application and handles user input and AI responses
 // - CloseP: closes the chat store
-// The ChatAppP type can be created using the NewChatAppP function, which takes a database path as a parameter and returns an instance of ChatAppP.
-// The ChatStore type, which is used by ChatAppP, is a separate type that represents a chat store. It has methods for saving chat entries, retrieving chat history, and clearing chat history. It can be created using the NewChatStore function, which takes a database path as a parameter and returns an instance of ChatStore.
-// The pplx70b constant represents the default model for the ChatAppP type.
+// The ChatAppO type can be created using the NewChatAppO function, which takes a database path as a parameter and returns an instance of ChatAppO.
+// The ChatStore type, which is used by ChatAppO, is a separate type that represents a chat store. It has methods for saving chat entries, retrieving chat history, and clearing chat history. It can be created using the NewChatStore function, which takes a database path as a parameter and returns an instance of ChatStore.
+// The pplx70b constant represents the default model for the ChatAppO type.
 // The helpers.Intro function prints an introduction message and provides instructions for using the chat application.
 type ChatAppP struct {
 	client    *http.Client
@@ -56,16 +56,16 @@ type ChatAppP struct {
 	model     string
 }
 
-// NewChatAppP returns a new instance of ChatAppP with the specified database path.
+// NewChatAppP  returns a new instance of ChatAppO with the specified database path.
 // It initializes the chatStore using the NewChatStore function.
 // It retrieves the API key from the environment using os.Getenv("PAI_KEY").
 // If the API key is not set, it returns an error.
-// It initializes and returns the ChatAppP struct with the client, chatStore, scanner, apikey, and model.
+// It initializes and returns the ChatAppO struct with the client, chatStore, scanner, apikey, and model.
 // The model is set to "pplx-70b-online" by default.
 // If there is an error creating the chatStore, it returns the error.
 //
 // Example usage:
-// app, err := NewChatAppP(dbPath)
+// app, err := NewChatAppO(dbPath)
 //
 //	if err != nil {
 //	    log.Fatalf("Error creating chat app: %s", err)
@@ -260,13 +260,13 @@ func (app *ChatAppP) RunP() error {
 	}
 }
 
-// CloseP closes the chat store associated with the ChatAppP instance.
+// CloseP closes the chat store associated with the ChatAppO instance.
 // The method first attempts to close the chat store by calling app.chatStore.Close().
 // If an error occurs during the closing process, the error is logged using log.Printf.
 // Example usage:
 // ```
 // dbPath := "internal/inmemory/pv1.db"
-// app, err := NewChatAppP(dbPath)
+// app, err := NewChatAppO(dbPath)
 //
 //	if err != nil {
 //	    log.Fatalf("Error creating chat app: %s", err)
@@ -274,7 +274,7 @@ func (app *ChatAppP) RunP() error {
 //
 // defer app.CloseP()
 // ```
-// Note: The CloseP method is defined on the ChatAppP struct. The ChatAppP struct has a field called chatStore
+// Note: The CloseP method is defined on the ChatAppO struct. The ChatAppO struct has a field called chatStore
 // which is an instance of the ChatStore struct. The ChatStore struct has a Close method that is invoked by app.chatStore.Close()
 // in the CloseP method implementation.
 func (app *ChatAppP) CloseP() {

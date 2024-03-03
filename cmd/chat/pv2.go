@@ -19,7 +19,7 @@ import (
 )
 
 func cliSetup() (*chat.ChatApp, *chat.ChatService, *storm.DB) {
-	dbPath := "pv2.db"
+	dbPath := "internal/inmemory/pv2.db"
 	db, err := storm.Open(dbPath, storm.BoltOptions(0600, nil))
 	if err != nil {
 		log.Fatalf("error opening db: %s", err)
@@ -40,12 +40,14 @@ func cliSetup() (*chat.ChatApp, *chat.ChatService, *storm.DB) {
 
 	// Get topics from db
 	topics, err := chatservice.ListTopics()
-	// set current topic to the first topic
-	app.CurrentTopic = *topics[0]
+	// set current topic to General
+	app.CurrentTopic = *chat.NewChatTopic("General", "Standard chat topic")
 	if err != nil {
 		log.Fatalf("error getting topics: %s", err)
 	}
 	app.Topics = topics
+
+	app.CurrentModel = "pplx-70b-online"
 
 	return app, chatservice, db
 }
@@ -117,7 +119,10 @@ func run(app *chat.ChatApp) error {
 			continue
 		}
 
-		spinner.Start()
+		err := spinner.Start()
+		if err != nil {
+			return err
+		}
 
 		payload := map[string]interface{}{
 			"model": app.CurrentModel,
@@ -424,7 +429,12 @@ func clearHisRun(app *chat.ChatApp) error {
 
 func main() {
 	app, _, db := cliSetup()
-	defer db.Close()
+	defer func(db *storm.DB) {
+		err := db.Close()
+		if err != nil {
+			log.Fatalf("error closing db: %s", err)
+		}
+	}(db)
 
 	err := run(app)
 	if err != nil {
