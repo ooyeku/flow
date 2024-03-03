@@ -23,6 +23,8 @@ go run main.go chat -v pv1`,
 		var chat *exec.Cmd
 		if chatVersion == "pv1" {
 			chat = exec.Command("bash", "-c", "./pv1")
+		} else if chatVersion == "pv2" {
+			chat = exec.Command("bash", "-c", "./pv2")
 		} else {
 			cmd.PrintErrf("invalid chat version: %s", chatVersion)
 			return

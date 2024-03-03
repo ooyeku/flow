@@ -2,6 +2,7 @@ package chat
 
 import (
 	"github.com/asdine/storm"
+	_ "github.com/sashabaranov/go-openai"
 	"time"
 )
 
@@ -25,6 +26,13 @@ type Response struct {
 		} `json:"message"`
 		FinishReason string `json:"finish_reason"`
 	} `json:"choices"`
+}
+
+type OResponse struct {
+	ID    string `json:"id"`
+	Model string `json:"model"`
+	Time  string `json:"time"`
+	Text  string `json:"text"`
 }
 
 type ChatStore struct {

@@ -82,7 +82,8 @@ func (app *ChatAppO) RunP() error {
 			case "$history":
 				history, err := app.chatStore.RetrieveEntries()
 				if err != nil {
-					return err
+					fmt.Println(au.Bold(au.BrightRed("Error retrieving chat history")))
+					continue
 				}
 				// handle empty history
 				if len(history) == 0 {
@@ -91,7 +92,7 @@ func (app *ChatAppO) RunP() error {
 				}
 				for _, entry := range history {
 					fmt.Println(au.Bold(au.BrightGreen("You: ")), au.Green(entry.UserInput))
-					fmt.Println(au.Bold(au.BrightBlue("AI: ")), entry.AIResponse.Choices[0].Message.Content)
+					fmt.Println(au.Bold(au.BrightBlue("AI: ")), entry.AIResponse)
 					fmt.Println(au.Bold(au.BrightBlue("Time: ")), entry.Timestamp)
 					fmt.Println(au.Bold(au.BrightBlue("Model: ")), app.model)
 					// print a line to separate chat history entries
@@ -128,6 +129,7 @@ func (app *ChatAppO) RunP() error {
 		result.ID = resp.ID
 		result.Model = app.model
 		result.Created = time.Now().Format(time.RFC3339)
+		resp.Choices[0].Message.Content = aiResponse
 
 		err = app.chatStore.SaveEntry(prompt, result)
 		if err != nil {

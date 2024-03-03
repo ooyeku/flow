@@ -18,6 +18,9 @@ import (
 	"time"
 )
 
+// cliSetup initializes the chat app by creating a database, chat service, and chat app instances.
+// It also sets up the necessary dependencies for the chat app to function properly.
+// The function returns the chat app, chat service, and database instances.
 func cliSetup() (*chat.ChatApp, *chat.ChatService, *storm.DB) {
 	dbPath := "internal/inmemory/pv2.db"
 	db, err := storm.Open(dbPath, storm.BoltOptions(0600, nil))
@@ -40,7 +43,7 @@ func cliSetup() (*chat.ChatApp, *chat.ChatService, *storm.DB) {
 
 	// Get topics from db
 	topics, err := chatservice.ListTopics()
-	// set current topic to General
+	// set current topic to General$h
 	app.CurrentTopic = *chat.NewChatTopic("General", "Standard chat topic")
 	if err != nil {
 		log.Fatalf("error getting topics: %s", err)
@@ -52,12 +55,14 @@ func cliSetup() (*chat.ChatApp, *chat.ChatService, *storm.DB) {
 	return app, chatservice, db
 }
 
+// run is the main function responsible for running the chat application.
+// It takes a pointer to a ChatApp struct as input and returns an error.
 func run(app *chat.ChatApp) error {
 	au := aurora.NewAurora(true)
 
 	cfg := yacspin.Config{
 		Frequency:       100 * time.Millisecond,
-		CharSet:         yacspin.CharSets[59],
+		CharSet:         yacspin.CharSets[11],
 		Suffix:          au.Bold(au.BrightBlue("Pondering...")).String(),
 		SuffixAutoColon: true,
 		StopCharacter:   "💡",
@@ -113,6 +118,9 @@ func run(app *chat.ChatApp) error {
 					log.Fatalf("error running clear command: %s", err)
 				}
 				continue
+			case "exit":
+				fmt.Println(au.Bold(au.BrightBlue("Goodbye!")))
+				return nil
 			default:
 				fmt.Println(au.Bold(au.BrightRed("Invalid command")))
 			}
@@ -173,6 +181,7 @@ func run(app *chat.ChatApp) error {
 	}
 }
 
+// ...
 func introMessage() {
 	au := aurora.NewAurora(true)
 	fmt.Println(au.Bold(au.Cyan(" Welcome to Flow Chat")))
@@ -186,6 +195,7 @@ func introMessage() {
 	fmt.Println(au.Gray(12, "Type $by-topic after $history to view history by topic"))
 }
 
+// topicRun displays the current topic and available topics, allows the user to switch to a new topic or create/delete a topic.
 func topicRun(app *chat.ChatApp) error {
 	au := aurora.NewAurora(true)
 
@@ -269,6 +279,18 @@ func topicRun(app *chat.ChatApp) error {
 	return nil
 }
 
+// modelRun is a function in the chat package that allows the user to change the current model used in the chat application.
+// Parameters:
+// - app: a pointer to a ChatApp struct that contains the chat application state and configuration.
+// Errors:
+// - Returns an error if there is an error scanning user input or if the specified model does not exist.
+// Behavior:
+// - Prints the current model and available models.
+// - Prompts the user to enter a model name.
+// - Checks if the specified model exists.
+// - If the model exists, sets it as the current model in the app.
+// - If the model does not exist, notifies the user.
+// - Returns nil if there are no errors.
 func modelRun(app *chat.ChatApp) error {
 	au := aurora.NewAurora(true)
 
@@ -303,6 +325,7 @@ func modelRun(app *chat.ChatApp) error {
 	return nil
 }
 
+// historyRun retrieves and displays the chat history based on user input.
 func historyRun(app *chat.ChatApp) error {
 	au := aurora.NewAurora(true)
 
@@ -328,9 +351,12 @@ func historyRun(app *chat.ChatApp) error {
 		}
 		topicName := app.Scanner.Text()
 
+		fmt.Println(au.Bold(au.BrightRed("-------------------------------------------------")))
+		fmt.Println(au.Bold(au.BrightRed("Begin Chat History for Topic: ")), au.BrightRed(topicName))
 		// Display chat history for the specified topic
 		for _, chatResponse := range chatResponses {
 			if chatResponse.Topic != nil && chatResponse.Topic.Name == topicName {
+				fmt.Println(au.Bold(au.BrightYellow("Time: ")), au.Magenta(chatResponse.Time))
 				fmt.Println(au.Bold(au.BrightGreen("You: ")), au.Green(chatResponse.UserQuery.Query))
 				fmt.Println(au.Bold(au.BrightBlue("AI: ")), chatResponse.Object)
 				fmt.Println(au.Bold(au.BrightYellow("Model: ")), au.Magenta(chatResponse.Model))
@@ -340,7 +366,10 @@ func historyRun(app *chat.ChatApp) error {
 		}
 	} else {
 		// Display all chat history
+		fmt.Println(au.Bold(au.BrightRed("-------------------------------------------------")))
+		fmt.Println(au.Bold(au.BrightRed("Begin Full Chat History")))
 		for _, chatResponse := range chatResponses {
+			fmt.Println(au.Bold(au.BrightYellow("Time: ")), au.Magenta(chatResponse.Time))
 			fmt.Println(au.Bold(au.BrightGreen("You: ")), au.Green(chatResponse.UserQuery.Query))
 			fmt.Println(au.Bold(au.BrightBlue("AI: ")), chatResponse.Object)
 			fmt.Println(au.Bold(au.BrightYellow("Model: ")), au.Magenta(chatResponse.Model))
@@ -356,6 +385,17 @@ func historyRun(app *chat.ChatApp) error {
 	return nil
 }
 
+// clearHisRun clears the chat history based on user input.
+// If the user enters "$all", it will prompt for confirmation and then clear all history.
+// If the user enters "$by-topic", it will display available topics, prompt for a specific topic name,
+// check if the topic exists, confirm deletion, and then clear the history of the specified topic.
+// If the user enters an invalid command, it will display an error message.
+//
+// Parameters:
+//   - app: A pointer to the ChatApp struct.
+//
+// Returns:
+//   - An error, if any.
 func clearHisRun(app *chat.ChatApp) error {
 	au := aurora.NewAurora(true)
 
