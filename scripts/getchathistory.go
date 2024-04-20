@@ -30,6 +30,7 @@ func main() {
 		log.Fatalf("invalid chat version: %s", *chatVersion)
 	}
 
+	// Create a chat store
 	chatStore, err := chat.NewChatStore(dbPath)
 	if err != nil {
 		log.Fatalf("error creating chat store: %s", err)
@@ -41,12 +42,14 @@ func main() {
 		}
 	}(chatStore)
 
-	entries, err := chatStore.RetrieveEntries()
+	// Retrieve the chat entries
+	chatEntries, err := chatStore.RetrieveEntries()
 	if err != nil {
 		log.Fatalf("error retrieving chat entries: %s", err)
 	}
 
-	for _, entry := range entries {
+	// Print the chat entries
+	for _, entry := range chatEntries {
 		fmt.Printf("%s: %s\n", entry.Timestamp.Format("2006-01-02 15:04:05"), entry.UserInput)
 		fmt.Printf("AI: %s\n", entry.AIResponse)
 	}

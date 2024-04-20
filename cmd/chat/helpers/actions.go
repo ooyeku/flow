@@ -19,12 +19,10 @@ func Intro() {
 
 func DisplayModels() {
 	fmt.Println(au.Bold(au.BgBrown("options")))
-	fmt.Println(au.Bold(au.BrightGreen("sonar-small-chat")))
-	fmt.Println(au.Bold(au.BrightGreen("sonar-small-online")))
-	fmt.Println(au.Bold(au.BrightGreen("sonar-medium-chat")))
-	fmt.Println(au.Bold(au.BrightGreen("sonar-medium-online")))
 	fmt.Println(au.Bold(au.BrightGreen("pplx-70b-online")))
 	fmt.Println(au.Bold(au.BrightGreen("codellama-70b-instruct")))
 	fmt.Println(au.Bold(au.BrightGreen("mixtral-8x7b-instruct")))
+	fmt.Println(au.Bold(au.BrightGreen("mixtral-8x22b-instruct")))
+	fmt.Println(au.Bold(au.BrightGreen("llama-3-70b-instruct")))
 	fmt.Println("")
 }

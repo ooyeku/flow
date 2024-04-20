@@ -37,6 +37,10 @@ const mixtral7b = "mixtral-7b-instruct"
 
 const mixtral8x7b = "mixtral-8x7b-instruct"
 
+const mixtral8x22b = "mixtral-8x22b-instruct"
+
+const llama370b = "llama-3-70b-instruct"
+
 // ChatAppP ChatAppO is a type that represents a chat application. It has the following properties:
 // - client: an HTTP client used for making API requests
 // - chatStore: a chat store used for storing chat history
@@ -191,7 +195,7 @@ func (app *ChatAppP) RunP() error {
 				app.model = app.scanner.Text()
 				// check if model is valid
 				switch app.model {
-				case sonarSmallChat, sonarSmallOnline, sonarMediumChat, sonarMediumOnline, pplx70b, codeLLama70b, mixtral7b, mixtral8x7b:
+				case sonarSmallChat, sonarSmallOnline, sonarMediumChat, sonarMediumOnline, pplx70b, codeLLama70b, mixtral7b, mixtral8x7b, mixtral8x22b, llama370b:
 				default:
 					fmt.Println(au.Bold(au.BrightRed("Invalid model")))
 					app.model = pplx70b // set back to default

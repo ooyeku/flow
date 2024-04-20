@@ -34,7 +34,7 @@ func cliSetup() (*chat.ChatApp, *chat.ChatService, *storm.DB) {
 	client := &http.Client{}
 	scanner := bufio.NewScanner(os.Stdin)
 	apikey := os.Getenv("PAI_KEY")
-	models := []string{"sonar-small-chat", "sonar-small-online", "sonar-medium-chat", "sonar-medium-online", "pplx-70b-online", "codellama-70b-instruct", "mistral-7b-instruct", "mixtral-8x7b-instruct"}
+	models := []string{"pplx-70b-online", "codellama-70b-instruct", "mistral-7b-instruct", "mixtral-8x7b-instruct", "mixtral-8x22b-instruct", "llama-3-70b-instruct"}
 
 	app, err := chat.NewChatApp(client, chatservice, scanner, apikey, models)
 	if err != nil {

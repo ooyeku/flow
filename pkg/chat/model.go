@@ -94,13 +94,3 @@ type ChatResponse struct {
 	Object    string     `json:"object"`
 	Topic     *ChatTopic `json:"topic"`
 }
-
-//func NewChatResponse(userQuery Message) *ChatResponse {
-//	return &ChatResponse{
-//		ID:        uuid.New().String(),
-//		Model:     userQuery.Model,
-//		Time:      time.Now().String(),
-//		UserQuery: *Message,
-//
-//	}
-//}
